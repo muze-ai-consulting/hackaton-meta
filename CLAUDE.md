@@ -25,7 +25,8 @@ Proyecto Labs de Muze para la **Meta Global AI Developer Hackathon** (26-oct al 
 Placeholder hasta el día 1. Capas previstas: ingesta (Ad Library) → variantes (Muse Image) → población (1.000 personas, semillas fijas, caché) → feed simulado (Spark 1.3, cuatro órdenes) → ranking con explicación → tablero. Intermedios en `data/`, resultados en `results/`.
 
 ## Deployment
-Docker Compose con `restart: unless-stopped` y health check en el VPS, en `labs.muze.cl/ensayo` vía nginx. Deploy solo con OK de Mark.
+- **Web del plan (equipo):** https://labs.muze.cl/hackaton-meta/ — estática y pública por decisión de Mark (solo `noindex`). Fuente en `site/`; el avance vive en `site/roadmap.json` (estados: `pendiente`, `en-curso`, `hecho`, `bloqueado`; riesgos `abierto`/`resuelto`). Informes HTML: `uv run --python 3.12 --with markdown scripts/build_site.py` → `site/informes/`. Publicar: `rsync -az site/ root@185.205.244.85:/var/www/hackaton-meta/` (sin `--delete`). Ruta nginx en `/etc/nginx/sites-enabled/labs.muze.cl` (bloque `location /hackaton-meta/`); respaldos en `/root/nginx-backups/`.
+- **Producto (Ensayo):** Docker Compose con `restart: unless-stopped` y health check en el VPS, en `labs.muze.cl/ensayo` vía nginx. Deploy solo con OK de Mark.
 
 ## Mistakes Log
 <!-- formato: - AAAA-MM-DD — qué pasó — regla que lo evita -->
