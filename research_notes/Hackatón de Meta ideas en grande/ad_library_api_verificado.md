@@ -35,3 +35,18 @@ spend, impressions, currency, demographic_distribution, estimated_audience_size,
 - Contamination guard: only ads with ad_delivery_start_time after 2026-09-02 (Muse Spark 1.3 release).
 - Live forward test: ads launched Oct 27–Nov 1 by tracked EU advertisers; hash-commit predicted ranking before Nov 4; resolve with eu_total_reach and active status re-queried during judging (Nov 4–8) and afterwards.
 - Active status can be filtered with the ad_active_status request parameter (ACTIVE/INACTIVE/ALL) — confirm on day 0.
+
+## Día 0 (27-oct-2026): términos y comportamiento, verificado en facebook.com/ads/library/api y developers.facebook.com/terms
+
+- Cobertura: anuncios de cualquier tipo entregados en UK o la UE "durante el último año". Cubre todo lo posterior al 2-sep-2026.
+- `ad_delivery_start_time` es observado: desde agosto de 2020 la fecha de inicio "se genera cuando un anuncio entrega una impresión por primera vez". La fecha de término sigue siendo dudosa para anuncios activos.
+- Paginación: hasta 5.000 anuncios por página de resultados, seguir `paging.next`. `search_page_ids` acepta hasta 10 IDs por consulta. `search_terms` máximo 100 caracteres. `ad_reached_countries` es obligatorio. Versión vigente de la Graph API: v26.0.
+- Creatividades: no hay descarga en lote; se puede descargar imagen y texto de un anuncio individual "para análisis", cumpliendo los términos de almacenamiento.
+- Términos de la plataforma (§3.a.iv): prohibido vender, licenciar o comprar datos de la plataforma. §3.d.i.2: borrar los datos cuando ya no se necesiten o al dejar de operar el producto. §3.a.viii: solo usos permitidos por la documentación. El texto no menciona explícitamente el entrenamiento de modelos.
+- Publicación: la FAQ permite "crear y publicar informes o artículos" y publicar los datos procesados o analizados. Los datos crudos solo se comparten con quien también tenga verificación en Facebook.com/ID y cuenta de desarrollador.
+- **Consecuencias para Ensayo:**
+  - Guardar las creatividades solo en `data/raw/` (ya está en `.gitignore`) y borrarlas después de la hackatón.
+  - En el repo y en el demo publicar solo métricas agregadas y rankings, nunca el dataset crudo.
+  - No usar los datos para ajustar modelos: Spark 1.3 no se ajusta, así que no aplica.
+- La web de la Ad Library tiene un filtro de fechas por impresiones, no por fecha de inicio. Además, muchos anuncios muestran "Este anuncio tiene varias versiones" (creatividad dinámica): esas variantes comparten un solo ID y su alcance no se puede separar, así que el backtest compara IDs distintos.
+- Anunciantes de catálogo (por ejemplo Zalando: anuncios por producto con el mismo texto) no sirven para comparar creatividades. Hay que filtrarlos.

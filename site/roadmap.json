@@ -17,9 +17,10 @@
         { "t": "Confirmar correo de aceptación y track asignado", "owner": "Mark", "status": "pendiente" },
         { "t": "Verificar identidad en facebook.com/ID", "owner": "Mark", "status": "pendiente" },
         { "t": "Crear app de desarrollador de Meta y token", "owner": "Mark", "status": "pendiente" },
-        { "t": "Activar key de la Model API y probar Spark 1.3 con imagen y video", "owner": "Claude", "status": "pendiente" },
-        { "t": "Lista de 30 a 50 anunciantes de la UE con muchas variantes", "owner": "Christopher", "status": "pendiente" },
-        { "t": "Leer términos de almacenamiento y de ad_snapshot_url", "owner": "Claude", "status": "pendiente" }
+        { "t": "Crear la key de la Model API en dev.meta.ai y dejarla en .env", "owner": "Mark", "status": "pendiente" },
+        { "t": "Probar Spark 1.3 con imagen y video (script listo, falta la key)", "owner": "Claude", "status": "bloqueado" },
+        { "t": "Verificar con la API los 47 candidatos de data/advertisers_candidates.csv", "owner": "Christopher", "status": "en-curso" },
+        { "t": "Leer términos de almacenamiento y de ad_snapshot_url", "owner": "Claude", "status": "hecho" }
       ],
       "cut": "Si Spark 1.3 no acepta imagen por la API: preguntar en Discord y evaluar un modelo abierto de Meta con visión."
     },
@@ -104,8 +105,9 @@
   ],
   "risks": [
     { "t": "Que Muse Spark 1.3 acepte imagen y video por la API", "status": "abierto" },
+    { "t": "Muchos anuncios tienen varias versiones y su alcance mezcla variantes: solo sirven los de una versión", "status": "abierto" },
     { "t": "Cuánto tarda Meta en aprobar el acceso a la Ad Library API", "status": "abierto" },
-    { "t": "Si los términos permiten abrir ad_snapshot_url desde un script", "status": "abierto" },
+    { "t": "Términos: se puede bajar la creatividad de a un anuncio, solo para análisis; no publicar datos crudos", "status": "resuelto" },
     { "t": "Cada cuánto se actualiza eu_total_reach (afecta la prueba en vivo)", "status": "abierto" },
     { "t": "Límite real de llamadas a la API (200/hora no confirmado)", "status": "abierto" },
     { "t": "Reglas oficiales: video, código preexistente, propiedad intelectual", "status": "abierto" }
