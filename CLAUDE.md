@@ -17,7 +17,7 @@ Proyecto Labs de Muze para la **Meta Global AI Developer Hackathon** (26-oct al 
 - **Set sellado:** después de abrir el set de evaluación sellado no se toca el modelo.
 - **Rivales obligatorios:** azar y una sola llamada a Spark 1.3 sin población. Si la población no le gana a la llamada única el jueves 29-oct, se pivota (ver PLAN.md).
 - **Prueba en vivo:** el hash SHA-256 de los rankings se publica en un commit antes del 3-nov 23:59. No se cambian después.
-- **Ad Library:** solo anuncios entregados en la UE/UK (los comerciales de otros países no salen en la API). Sin descarga en lote; `ad_snapshot_url` de a un anuncio, para análisis, respetando los términos de almacenamiento de Meta.
+- **Ad Library:** solo anuncios entregados en la UE/UK (los comerciales de otros países no salen en la API). EE.UU. descartado (27-oct): sin la DSA, Meta no publica alcance de anuncios comerciales allá; los políticos quedan fuera por decisión de Mark. Criterio: ir donde haya más datos; se suman marcas de EE.UU. que pautan en UK y se baja cada página con `ad_reached_countries=ALL`. Sin descarga en lote; `ad_snapshot_url` de a un anuncio, para análisis, respetando los términos de almacenamiento de Meta.
 - **Datos de clientes** van por el endpoint estándar de la Model API, nunca por el `contributor` (Meta usa esos datos). El contributor solo para datos públicos de la Ad Library.
 - Credenciales (token de Meta, key de la Model API) solo en `.env`, nunca en el repo.
 

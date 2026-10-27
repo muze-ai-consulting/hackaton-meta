@@ -2,7 +2,7 @@
 
 Para cada candidato de data/advertisers_candidates.csv:
 1. Resuelve su página (page_id) buscando por nombre en el país indicado.
-2. Baja sus anuncios entregados desde el 3-sep-2026 y se queda con los que partieron después del 2-sep (regla de contaminación).
+2. Baja sus anuncios entregados en cualquier país de la UE o UK desde el 3-sep-2026 y se queda con los que partieron después del 2-sep (regla de contaminación).
 3. Mide cuántas creatividades distintas tiene y cuántos grupos comparables (misma semana de lanzamiento,
    3+ anuncios de una sola versión con alcance UE).
 
@@ -152,7 +152,8 @@ def main() -> None:
             page_id, page_name = page
             ads = paginate(client, {
                 "access_token": token, "search_page_ids": json.dumps([page_id]),
-                "ad_reached_countries": json.dumps([c["country"]]), "ad_type": "ALL",
+                # ALL = todo país con datos; para anuncios comerciales eso es UE y UK. Maximiza anuncios por página.
+                "ad_reached_countries": json.dumps(["ALL"]), "ad_type": "ALL",
                 "ad_active_status": "ALL", "ad_delivery_date_min": DELIVERY_MIN, "fields": FIELDS, "limit": 500,
             })
             stats = score_page(ads)
