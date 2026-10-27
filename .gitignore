@@ -9,3 +9,6 @@ node_modules/
 data/raw/
 .claude/settings.local.json
 !.env.example
+data/batches/
+data/sealed/
+data/populations/

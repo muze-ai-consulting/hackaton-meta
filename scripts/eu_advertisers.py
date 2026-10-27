@@ -35,6 +35,8 @@ RAW = ROOT / "data" / "raw" / "ad_library"
 FIELDS = ",".join([
     "id", "page_id", "page_name", "ad_delivery_start_time", "ad_delivery_stop_time",
     "ad_creative_bodies", "ad_creative_link_titles", "publisher_platforms", "eu_total_reach",
+    # Para ensayo.batches: segmentación (entrada de la población) y desglose de alcance (calibración en dev).
+    "target_ages", "target_gender", "target_locations", "age_country_gender_reach_breakdown", "ad_snapshot_url",
 ])
 MIN_GROUP = 3  # anuncios por semana de lanzamiento para que el grupo sirva de comparación
 
@@ -43,7 +45,9 @@ log = logging.getLogger("eu_advertisers")
 
 def get(client: httpx.Client, params: dict[str, Any]) -> dict[str, Any]:
     """GET con caché en disco y reintento ante el límite de tasa (error 613)."""
-    key = hashlib.sha256(json.dumps(params, sort_keys=True).encode()).hexdigest()[:16]
+    # La caché no depende del token: si el token se renueva, las respuestas guardadas siguen sirviendo.
+    cacheable = {k: v for k, v in params.items() if k != "access_token"}
+    key = hashlib.sha256(json.dumps(cacheable, sort_keys=True).encode()).hexdigest()[:16]
     cache = RAW / f"{key}.json"
     if cache.exists():
         return json.loads(cache.read_text(encoding="utf-8"))

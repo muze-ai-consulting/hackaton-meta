@@ -29,8 +29,8 @@
       "goal": "Tener los primeros lotes de anuncios reales y el motor de población corriendo.",
       "tasks": [
         { "t": "Primeras consultas a ads_archive y límite real de llamadas", "owner": "Claude", "status": "pendiente" },
-        { "t": "Armar lotes por anunciante y sellar las etiquetas", "owner": "Claude", "status": "pendiente" },
-        { "t": "Motor de población: 1.000 personas, semillas fijas, caché", "owner": "Claude", "status": "pendiente" },
+        { "t": "Armar lotes por anunciante y sellar las etiquetas (código listo, faltan los datos)", "owner": "Claude", "status": "en-curso" },
+        { "t": "Motor de población: 1.000 personas, semillas fijas, caché", "owner": "Claude", "status": "hecho" },
         { "t": "Si no hay acceso: registrar 10 a 15 lotes a mano desde la web", "owner": "Christopher", "status": "pendiente" }
       ],
       "cut": "Si el jueves a mediodía no hay acceso ni set manual usable: plan B."
