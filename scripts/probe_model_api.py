@@ -2,7 +2,7 @@
 
 Lee MODEL_API_KEY desde .env. Guarda el resultado en results/probe_model_api.json.
 
-Uso: uv run --python 3.12 --with httpx --with pillow --with python-dotenv scripts/probe_model_api.py
+Uso: uv run python scripts/probe_model_api.py
 """
 
 import base64
@@ -21,12 +21,15 @@ import httpx
 from dotenv import load_dotenv
 from PIL import Image, ImageDraw, ImageFont
 
+from ensayo.costs import IMAGE_PRICE, PRICES, Ledger
+
 ROOT = Path(__file__).resolve().parent.parent
 BASE = os.environ.get("MODEL_API_BASE", "https://api.meta.ai/v1")
 SPARK = "muse-spark-1.3"
 SPARK_CONTRIB = "muse-spark-1.3-contributor"
 IMAGE_MODEL = "muse-image-1.0"
 SECRET_WORD = "ENSAYO 42"
+LEDGER = Ledger()
 
 log = logging.getLogger("probe")
 
@@ -88,6 +91,8 @@ def chat(client: httpx.Client, model: str, content: Any, max_tokens: int = 200) 
         body = res.pop("body")
         res["answer"] = body["choices"][0]["message"].get("content")
         res["usage"] = body.get("usage")
+        if model in PRICES and res["usage"]:
+            res["usd"] = round(LEDGER.record_chat("pruebas", model, res["usage"], note="probe_model_api"), 6)
     return res
 
 
@@ -136,6 +141,22 @@ def main() -> None:
         out["image"]["passes"] = all(w in answer for w in ("ENSAYO", "42", "ROJ", "AZUL"))
         log.info(f"image: {out['image'].get('answer') or out['image']}")
 
+        # Tokens por imagen y caché: de estos dos números depende el costo por lote (ensayo.costs.estimate_batch_usd).
+        text_tokens = ((out["text"].get("usage") or {}).get("prompt_tokens")) or 0
+        img_tokens = ((out["image"].get("usage") or {}).get("prompt_tokens")) or 0
+        out["image_tokens_approx"] = img_tokens - text_tokens - 40 if img_tokens else None
+        long_prefix = "Instrucciones de simulación. " * 300  # ~1.800 tokens, sobre el mínimo típico para cachear
+        cache_runs = []
+        for _ in range(2):
+            res = chat(client, SPARK_CONTRIB, [
+                {"type": "text", "text": long_prefix},
+                {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{img_b64}"}},
+                {"type": "text", "text": "Responde solo: ok"},
+            ], max_tokens=5)
+            cache_runs.append((res.get("usage") or {}).get("prompt_tokens_details", {}).get("cached_tokens"))
+        out["cache"] = {"cached_tokens_second_call": cache_runs[-1], "works": bool(cache_runs[-1])}
+        log.info(f"tokens por imagen ≈ {out['image_tokens_approx']} · caché: {out['cache']}")
+
         video = test_video_mp4()
         if video is None:
             out["video"] = {"ok": False, "error": "ffmpeg no disponible"}
@@ -173,6 +194,7 @@ def main() -> None:
             else:
                 saved = item.get("url")
             out["image_generation"] = {"ok": True, "secs": gen["secs"], "saved": saved}
+            LEDGER.record("pruebas", IMAGE_MODEL, IMAGE_PRICE[IMAGE_MODEL], note="probe_model_api")
         else:
             out["image_generation"] = summarize(gen)
         log.info(f"image_generation: {out['image_generation']}")
@@ -182,7 +204,7 @@ def main() -> None:
     results = ROOT / "results"
     results.mkdir(exist_ok=True)
     (results / "probe_model_api.json").write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
-    log.info("Guardado en results/probe_model_api.json")
+    log.info(f"Guardado en results/probe_model_api.json · gasto: {LEDGER.report()}")
 
 
 if __name__ == "__main__":

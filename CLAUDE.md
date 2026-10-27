@@ -20,6 +20,11 @@ Proyecto Labs de Muze para la **Meta Global AI Developer Hackathon** (26-oct al 
 - **Ad Library:** solo anuncios entregados en la UE/UK (los comerciales de otros países no salen en la API). EE.UU. descartado (27-oct): sin la DSA, Meta no publica alcance de anuncios comerciales allá; los políticos quedan fuera por decisión de Mark. Criterio: ir donde haya más datos; se suman marcas de EE.UU. que pautan en UK y se baja cada página con `ad_reached_countries=ALL`. Sin descarga en lote; `ad_snapshot_url` de a un anuncio, para análisis, respetando los términos de almacenamiento de Meta.
 - **Datos de clientes** van por el endpoint estándar de la Model API, nunca por el `contributor` (Meta usa esos datos). El contributor solo para datos públicos de la Ad Library.
 - Credenciales (token de Meta, key de la Model API) solo en `.env`, nunca en el repo.
+- **Presupuesto: 150 créditos para toda la hackatón** (asumimos US$; confirmar al tener la key).
+  - Calibración, set sellado y prueba en vivo van en `muse-spark-1.3-contributor`, con 20 personas por llamada: unos US$ 0,25 por lote, frente a ~US$ 34 en estándar con una persona por llamada.
+  - El estándar se usa solo para el demo y para cualquier dato de cliente.
+  - Toda llamada pasa por `ensayo.costs.Ledger`, que tiene tope por fase y registra en `results/costs.jsonl`.
+  - Si agrupar personas empeora la calidad, primero se bajan a 200 personas; recién después se pasa a una por llamada.
 
 ## Arquitectura
 Capas previstas: ingesta (Ad Library) → variantes (Muse Image) → población (1.000 personas, semillas fijas, caché) → feed simulado (Spark 1.3, cuatro órdenes) → ranking con explicación → tablero. Intermedios en `data/`, resultados en `results/`.
@@ -27,6 +32,7 @@ Capas previstas: ingesta (Ad Library) → variantes (Muse Image) → población 
   - `population.py`: personas deterministas desde la segmentación del anuncio (nunca desde su alcance). Los pesos de edad y de plataforma son supuestos hasta calibrarlos con el set de desarrollo.
   - `batches.py`: lotes por página y semana con anuncios de una versión. Separa el sellado por hash del lote y escribe el SHA-256 de las etiquetas en `results/sealed_labels.sha256`.
   - `metrics.py`: pares bien ordenados, top-1, Spearman, bootstrap y rival al azar.
+  - `costs.py`: precios, medidor con topes por fase y estimación de costo por lote.
 - Scripts: `scripts/probe_model_api.py` (día 0) y `scripts/eu_advertisers.py` (descarga a `data/raw/ad_library/`, que alimenta `python -m ensayo.batches`).
 
 ## Deployment

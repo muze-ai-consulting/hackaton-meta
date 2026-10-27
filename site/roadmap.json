@@ -106,6 +106,7 @@
   "risks": [
     { "t": "Que Muse Spark 1.3 acepte imagen y video por la API", "status": "abierto" },
     { "t": "Muchos anuncios tienen varias versiones y su alcance mezcla variantes: solo sirven los de una versión", "status": "abierto" },
+    { "t": "150 créditos: confirmar que son US$ y que sirven en el tier contributor (si no, el backtest se achica)", "status": "abierto" },
     { "t": "Cuánto tarda Meta en aprobar el acceso a la Ad Library API", "status": "abierto" },
     { "t": "Términos: se puede bajar la creatividad de a un anuncio, solo para análisis; no publicar datos crudos", "status": "resuelto" },
     { "t": "Cada cuánto se actualiza eu_total_reach (afecta la prueba en vivo)", "status": "abierto" },
