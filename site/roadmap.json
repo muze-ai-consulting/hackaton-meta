@@ -1,0 +1,113 @@
+{
+  "updated": "2026-10-27",
+  "deadline": "2026-11-04T18:00:00-03:00",
+  "officialClose": "2026-11-04T23:00:00-03:00",
+  "ownersNote": "Responsables propuestos; se ajustan entre Mark y Christopher.",
+  "phases": [
+    { "name": "Accesos y datos", "days": [0, 1] },
+    { "name": "Validar", "days": [2, 3] },
+    { "name": "Producto", "days": [4, 5] },
+    { "name": "Prueba y entrega", "days": [6, 7, 8] }
+  ],
+  "days": [
+    {
+      "day": 0, "date": "2026-10-27", "label": "Mar 27 oct",
+      "goal": "Abrir todos los accesos y confirmar que Spark 1.3 entiende imágenes.",
+      "tasks": [
+        { "t": "Confirmar correo de aceptación y track asignado", "owner": "Mark", "status": "pendiente" },
+        { "t": "Verificar identidad en facebook.com/ID", "owner": "Mark", "status": "pendiente" },
+        { "t": "Crear app de desarrollador de Meta y token", "owner": "Mark", "status": "pendiente" },
+        { "t": "Activar key de la Model API y probar Spark 1.3 con imagen y video", "owner": "Claude", "status": "pendiente" },
+        { "t": "Lista de 30 a 50 anunciantes de la UE con muchas variantes", "owner": "Christopher", "status": "pendiente" },
+        { "t": "Leer términos de almacenamiento y de ad_snapshot_url", "owner": "Claude", "status": "pendiente" }
+      ],
+      "cut": "Si Spark 1.3 no acepta imagen por la API: preguntar en Discord y evaluar un modelo abierto de Meta con visión."
+    },
+    {
+      "day": 1, "date": "2026-10-28", "label": "Mié 28 oct",
+      "goal": "Tener los primeros lotes de anuncios reales y el motor de población corriendo.",
+      "tasks": [
+        { "t": "Primeras consultas a ads_archive y límite real de llamadas", "owner": "Claude", "status": "pendiente" },
+        { "t": "Armar lotes por anunciante y sellar las etiquetas", "owner": "Claude", "status": "pendiente" },
+        { "t": "Motor de población: 1.000 personas, semillas fijas, caché", "owner": "Claude", "status": "pendiente" },
+        { "t": "Si no hay acceso: registrar 10 a 15 lotes a mano desde la web", "owner": "Christopher", "status": "pendiente" }
+      ],
+      "cut": "Si el jueves a mediodía no hay acceso ni set manual usable: plan B."
+    },
+    {
+      "day": 2, "date": "2026-10-29", "label": "Jue 29 oct", "decision": true,
+      "goal": "Saber si la población le gana a una sola llamada al modelo.",
+      "tasks": [
+        { "t": "Correr la calibración contra el azar y la llamada única", "owner": "Claude", "status": "pendiente" },
+        { "t": "Decidir: seguir, rediseñar una vez o pivotar", "owner": "Mark y Christopher", "status": "pendiente" }
+      ],
+      "cut": "Si no gana: un rediseño con plazo al viernes a mediodía. Si sigue sin ganar, pivote a crowdfunding o Parche."
+    },
+    {
+      "day": 3, "date": "2026-10-30", "label": "Vie 30 oct",
+      "goal": "Congelar las métricas del backtest.",
+      "tasks": [
+        { "t": "Corrida única sobre el set sellado", "owner": "Claude", "status": "pendiente" },
+        { "t": "Capturar a diario los lotes nuevos (27 oct al 1 nov)", "owner": "Claude", "status": "pendiente" },
+        { "t": "Bocetos de la interfaz del demo", "owner": "Christopher", "status": "pendiente" }
+      ],
+      "cut": "Después de abrir el set sellado no se toca el modelo."
+    },
+    {
+      "day": 4, "date": "2026-10-31", "label": "Sáb 31 oct",
+      "goal": "El demo completo funciona de punta a punta.",
+      "tasks": [
+        { "t": "Interfaz: subir foto, variantes, feed simulado, tablero y evidencia", "owner": "Claude", "status": "pendiente" },
+        { "t": "Revisar la interfaz y el flujo del demo", "owner": "Christopher", "status": "pendiente" }
+      ],
+      "cut": "El flujo completo tiene que correr en menos de 3 minutos."
+    },
+    {
+      "day": 5, "date": "2026-11-01", "label": "Dom 1 nov",
+      "goal": "Ensayo en vivo en internet.",
+      "tasks": [
+        { "t": "Despliegue en el VPS con health check (con OK de Mark)", "owner": "Claude", "status": "pendiente" },
+        { "t": "Registro de costo y latencia por corrida", "owner": "Claude", "status": "pendiente" },
+        { "t": "Voice Transcribe en anuncios con video", "owner": "Claude", "status": "pendiente" }
+      ],
+      "cut": "Si algo opcional falla, se saca sin discutir."
+    },
+    {
+      "day": 6, "date": "2026-11-02", "label": "Lun 2 nov",
+      "goal": "Usuarios reales probando y lotes en vivo capturados.",
+      "tasks": [
+        { "t": "Dos o tres pymes o agencias prueban Ensayo, con autorización grabada", "owner": "Mark", "status": "pendiente" },
+        { "t": "Captura final de los lotes en vivo", "owner": "Claude", "status": "pendiente" },
+        { "t": "Manejo de errores y README", "owner": "Claude", "status": "pendiente" }
+      ],
+      "cut": "Sin usuarios reales: usar productos propios de Muze y decirlo."
+    },
+    {
+      "day": 7, "date": "2026-11-03", "label": "Mar 3 nov",
+      "goal": "Pronósticos sellados en público y video listo.",
+      "tasks": [
+        { "t": "Publicar el hash SHA-256 de los rankings en un commit", "owner": "Claude", "status": "pendiente" },
+        { "t": "Guía para que el jurado verifique los pronósticos", "owner": "Claude", "status": "pendiente" },
+        { "t": "Grabar y editar el video de 3 minutos", "owner": "Mark y Christopher", "status": "pendiente" }
+      ],
+      "cut": "El hash se publica antes de las 23:59."
+    },
+    {
+      "day": 8, "date": "2026-11-04", "label": "Mié 4 nov", "milestone": true,
+      "goal": "Entregar a más tardar a las 18:00 de Chile.",
+      "tasks": [
+        { "t": "Repositorio limpio y revisión final", "owner": "Claude", "status": "pendiente" },
+        { "t": "Enviar la postulación", "owner": "Mark", "status": "pendiente" }
+      ],
+      "cut": "Se envía aunque falte pulido."
+    }
+  ],
+  "risks": [
+    { "t": "Que Muse Spark 1.3 acepte imagen y video por la API", "status": "abierto" },
+    { "t": "Cuánto tarda Meta en aprobar el acceso a la Ad Library API", "status": "abierto" },
+    { "t": "Si los términos permiten abrir ad_snapshot_url desde un script", "status": "abierto" },
+    { "t": "Cada cuánto se actualiza eu_total_reach (afecta la prueba en vivo)", "status": "abierto" },
+    { "t": "Límite real de llamadas a la API (200/hora no confirmado)", "status": "abierto" },
+    { "t": "Reglas oficiales: video, código preexistente, propiedad intelectual", "status": "abierto" }
+  ]
+}
