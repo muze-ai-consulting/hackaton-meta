@@ -20,7 +20,7 @@ from ensayo.population import Persona
 log = logging.getLogger(__name__)
 
 LETTERS = "ABCDEFGH"
-IMAGE_TOKENS = 1200  # se reemplaza por lo que mida scripts/probe_model_api.py
+IMAGE_TOKENS = 300  # medido por scripts/probe_model_api.py el 2-nov: ~296 tokens por imagen
 
 # Prompts en inglés desde el 2-nov (decisión de Mark: todo el producto en inglés). Se cambió antes del backtest
 # de dev y del sellado; después de abrir el sellado no se tocan.

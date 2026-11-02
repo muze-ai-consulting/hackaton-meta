@@ -42,6 +42,8 @@ WEB = ROOT / "web"  # build de frontend/ (npm run build)
 DEV_BATCHES = DATA / "batches" / "dev.json"
 AD_IMAGES = DATA / "images"  # scripts/download_images.py: copia local porque las URLs de fbcdn vencen
 MAX_EXAMPLES = 20
+# Marcas que no se muestran como ejemplo en el demo (decisión de Mark, 2-nov: ropa interior de hombre en primer plano).
+HIDDEN_EXAMPLE_PAGES = {"Le Slip Français"}
 # Pedidos en modo real por visitante (IP) y por día. El gasto total lo limita la fase "demo" del Ledger.
 REAL_DAILY_LIMITS = {"simulate": 5, "variants": 3, "chat": 30}
 _real_usage: dict[tuple[str, str, str], int] = defaultdict(int)
@@ -298,7 +300,11 @@ def examples() -> list[dict[str, Any]]:
     if not DEV_BATCHES.exists():
         return []
     predictions = dev_predictions()
-    batches = [b for b in json.loads(DEV_BATCHES.read_text(encoding="utf-8")) if not b.get("sealed")]
+    batches = [
+        b
+        for b in json.loads(DEV_BATCHES.read_text(encoding="utf-8"))
+        if not b.get("sealed") and b.get("page_name") not in HIDDEN_EXAMPLE_PAGES
+    ]
     # Primero los que tienen imagen en todas las variantes y 3 o 4 versiones: se ven mejor en el demo.
     batches.sort(
         key=lambda b: (b["batch_id"] not in predictions, not all(v.get("image_url") for v in b["variants"]), abs(len(b["variants"]) - 3), b["batch_id"])

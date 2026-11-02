@@ -49,5 +49,10 @@ Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el pla
 - **Idioma:** ~~motivos en español~~ resuelto (2-nov): prompts de simulación, rival, chat y variantes, descripciones de personas y servidor falso en inglés, antes del backtest de dev. Caché de poblaciones nueva (`*-en.json`).
 - **Para encender el modo real en el VPS:** con la key, correr `scripts/run_backtest.py --source dev --personas 200 --yes`, subir el JSON a `/opt/ensayo/results/` y poner `ENSAYO_REAL=1` (con OK de Mark).
 
+## Resultados con la key (2-nov)
+- Sonda: modelos OK, contributor OK, Muse Image OK, ~296 tokens por imagen, caché funciona. Spark 1.3 razona y gasta max_tokens en eso: ahora `reasoning_effort=low` + margen (`ensayo/llm.py`). Key en `.env` como `META_API_KEY`.
+- **Backtest de dev (19 lotes, 1.000 personas, contributor, low): US$ 0,63, 0 fallas. La audiencia NO le gana al azar ni a la llamada única.** Pares bien ordenados: audiencia 0,453 [0,30–0,59], llamada única 0,487, azar 0,522. Ganadora: 26 % vs 37 % vs 32 %. Puntuar solo frenado o solo clic no cambia nada. Las etiquetas son débiles: en la mayoría de los lotes la ganadora llega a 1,0–1,5 veces lo que llega la segunda.
+- Decisión pendiente de Mark: qué contamos (ver mensaje del 2-nov). El sellado se corre igual antes del 3-nov 23:59.
+
 ## Fechas
 Entrega interna: miércoles 4-nov 18:00 Chile (cierre oficial 23:00 Chile). Hash de la prueba en vivo: antes del 3-nov 23:59.

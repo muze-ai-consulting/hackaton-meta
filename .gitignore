@@ -17,3 +17,4 @@ data/populations/
 results/*_mock*
 results/costs_mock.jsonl
 *.tsbuildinfo
+data/images/

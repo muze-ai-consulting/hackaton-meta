@@ -1,0 +1,2950 @@
+{
+ "source": "dev",
+ "mock": false,
+ "config": {
+  "source": "dev",
+  "mock": false,
+  "model": "muse-spark-1.3-contributor",
+  "phase": "calibracion",
+  "personas": 1000,
+  "per_call": 20,
+  "orders": 4,
+  "seed": 7,
+  "limit": 0,
+  "concurrency": 32,
+  "no_single": false,
+  "score": false,
+  "tag": "low",
+  "effort": "low"
+ },
+ "ran_at": "2026-11-02T11:27:31-0300",
+ "secs": 1133.0,
+ "usd": 0.6312,
+ "usd_note": "gasto real",
+ "batches": [
+  {
+   "batch_id": "103091995688814-2026W40",
+   "population": {
+    "ranking": [
+     "1638439194660195",
+     "1867188381310229",
+     "1159096303251080",
+     "1128553949595539",
+     "1665495248377193"
+    ],
+    "stats": {
+     "1128553949595539": {
+      "seen": 1000,
+      "stop_rate": 0.115,
+      "click_rate": 0.018,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.158,
+       "18-24 · instagram": 0.234,
+       "25-34 · facebook": 0.105,
+       "25-34 · instagram": 0.158,
+       "35-44 · facebook": 0.128,
+       "35-44 · instagram": 0.118,
+       "45-54 · facebook": 0.13,
+       "45-54 · instagram": 0.061,
+       "55-64 · facebook": 0.029,
+       "55-64 · instagram": 0.059,
+       "65+ · facebook": 0.088,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Provocative first line grabbed, curious about list",
+       "Provocative boring insult hooks, curious about summaries",
+       "Provocative hook grabs; morning routine fits health interest",
+       "Blunt boring callout hooks her attention instantly",
+       "Rich Dad Poor Dad relevant for finance"
+      ],
+      "score": 0.133
+     },
+     "1159096303251080": {
+      "seen": 1000,
+      "stop_rate": 0.179,
+      "click_rate": 0.028,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.158,
+       "18-24 · instagram": 0.213,
+       "25-34 · facebook": 0.284,
+       "25-34 · instagram": 0.23,
+       "35-44 · facebook": 0.183,
+       "35-44 · instagram": 0.176,
+       "45-54 · facebook": 0.099,
+       "45-54 · instagram": 0.106,
+       "55-64 · facebook": 0.171,
+       "55-64 · instagram": 0.088,
+       "65+ · facebook": 0.176,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Fitness guy curious about 5am routine hype",
+       "5am routine grabbed fitness interest immediately",
+       "Pink red images pop, morning trend intrigues",
+       "Health focused, morning routine promises benefit",
+       "Health tech dad curious about 5AM experiment"
+      ],
+      "score": 0.207
+     },
+     "1638439194660195": {
+      "seen": 1000,
+      "stop_rate": 0.381,
+      "click_rate": 0.057,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.316,
+       "18-24 · instagram": 0.255,
+       "25-34 · facebook": 0.337,
+       "25-34 · instagram": 0.416,
+       "35-44 · facebook": 0.431,
+       "35-44 · instagram": 0.333,
+       "45-54 · facebook": 0.405,
+       "45-54 · instagram": 0.424,
+       "55-64 · facebook": 0.419,
+       "55-64 · instagram": 0.353,
+       "65+ · facebook": 0.309,
+       "65+ · instagram": 0.333
+      },
+      "click_reasons": [
+       "Needs proof, Apple award convinces to tap",
+       "Social proof convinced, wanted 15-minute idea",
+       "Apple 40 Millionen und Harvard überzeugen ihn",
+       "Apple award plus 40 million feels trustworthy",
+       "40 million credible, wants smarter learning"
+      ],
+      "score": 0.438
+     },
+     "1665495248377193": {
+      "seen": 1000,
+      "stop_rate": 0.007,
+      "click_rate": 0.0,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.053,
+       "18-24 · instagram": 0.043,
+       "25-34 · facebook": 0.011,
+       "25-34 · instagram": 0.01,
+       "35-44 · facebook": 0.0,
+       "35-44 · instagram": 0.0,
+       "45-54 · facebook": 0.0,
+       "45-54 · instagram": 0.0,
+       "55-64 · facebook": 0.0,
+       "55-64 · instagram": 0.029,
+       "65+ · facebook": 0.0,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [],
+      "score": 0.007
+     },
+     "1867188381310229": {
+      "seen": 1000,
+      "stop_rate": 0.19,
+      "click_rate": 0.036,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.105,
+       "18-24 · instagram": 0.106,
+       "25-34 · facebook": 0.116,
+       "25-34 · instagram": 0.144,
+       "35-44 · facebook": 0.174,
+       "35-44 · instagram": 0.265,
+       "45-54 · facebook": 0.229,
+       "45-54 · instagram": 0.258,
+       "55-64 · facebook": 0.305,
+       "55-64 · instagram": 0.147,
+       "65+ · facebook": 0.118,
+       "65+ · instagram": 0.267
+      },
+      "click_reasons": [
+       "Harvard business books perfect for entrepreneur mindset",
+       "Business classics match finance interest, trusts Harvard",
+       "Finance health headlines relevant, Harvard persuades click",
+       "Harvard and Apple proof appeals to founder",
+       "Harvard book list fits finance ambition"
+      ],
+      "score": 0.226
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     [
+      1,
+      2,
+      3,
+      4,
+      0
+     ],
+     [
+      2,
+      3,
+      4,
+      0,
+      1
+     ],
+     [
+      4,
+      0,
+      1,
+      2,
+      3
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "1128553949595539",
+     "1665495248377193",
+     "1638439194660195",
+     "1867188381310229",
+     "1159096303251080"
+    ],
+    "incomplete": false,
+    "reason": "A and D are the same provocative 'HOER AUF SO VERF*CKT LANGWEILIG ZU SEIN' 42-day list concept which is the broad hero performance creative, with A having complete headline+text so gets primary delivery vs D with no headline as secondary test variant. Broad social proof C with Apple App des Tages and 40 Millionen and authority E with Harvard follow, while single-book story B about 5-Uhr-Club is narrowest and gets least reach."
+   },
+   "population_score": {
+    "pairwise": 0.2,
+    "top1": 0.0,
+    "spearman": -0.7
+   }
+  },
+  {
+   "batch_id": "103491966421603-2026W40",
+   "population": {
+    "ranking": [
+     "4666839616921205",
+     "1388496563331059",
+     "1109570231592826"
+    ],
+    "stats": {
+     "1109570231592826": {
+      "seen": 1000,
+      "stop_rate": 0.104,
+      "click_rate": 0.01,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.0,
+       "18-24 · instagram": 0.133,
+       "25-34 · facebook": 0.114,
+       "25-34 · instagram": 0.134,
+       "35-44 · facebook": 0.126,
+       "35-44 · instagram": 0.078,
+       "45-54 · facebook": 0.135,
+       "45-54 · instagram": 0.133,
+       "55-64 · facebook": 0.067,
+       "55-64 · instagram": 0.071,
+       "65+ · facebook": 0.015,
+       "65+ · instagram": 0.167
+      },
+      "click_reasons": [
+       "-20% first order grabs price-sensitive reader",
+       "Fitness parle, -20% première commande motive",
+       "Needs slips, -20% first order tempts",
+       "Fashion made in France, checked discount",
+       "Fashion fits, -20% hooks price-conscious retiree"
+      ],
+      "score": 0.114
+     },
+     "1388496563331059": {
+      "seen": 1000,
+      "stop_rate": 0.132,
+      "click_rate": 0.024,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.088,
+       "18-24 · instagram": 0.204,
+       "25-34 · facebook": 0.091,
+       "25-34 · instagram": 0.163,
+       "35-44 · facebook": 0.136,
+       "35-44 · instagram": 0.209,
+       "45-54 · facebook": 0.135,
+       "45-54 · instagram": 0.05,
+       "55-64 · facebook": 0.067,
+       "55-64 · instagram": 0.179,
+       "65+ · facebook": 0.045,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Made in France matches sustainability values",
+       "Made in France appeals, checks discount",
+       "-50% deal tempts budget young buyer",
+       "Made in France torso, sustainable gift idea",
+       "Striking torso, premium French, can afford"
+      ],
+      "score": 0.156
+     },
+     "4666839616921205": {
+      "seen": 1000,
+      "stop_rate": 0.262,
+      "click_rate": 0.074,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.206,
+       "18-24 · instagram": 0.265,
+       "25-34 · facebook": 0.352,
+       "25-34 · instagram": 0.32,
+       "35-44 · facebook": 0.291,
+       "35-44 · instagram": 0.287,
+       "45-54 · facebook": 0.25,
+       "45-54 · instagram": 0.25,
+       "55-64 · facebook": 0.229,
+       "55-64 · instagram": 0.214,
+       "65+ · facebook": 0.061,
+       "65+ · instagram": 0.083
+      },
+      "click_reasons": [
+       "Eye-catching visuals, -50% tempts to check",
+       "Funny lines hook comedy fan, checks -50%",
+       "-50% attire, mode et budget serré",
+       "Humour + -50% parfait petit budget",
+       "Funny prints and -50% pop while scrolling"
+      ],
+      "score": 0.336
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      1,
+      2,
+      0
+     ],
+     [
+      2,
+      0,
+      1
+     ],
+     [
+      2,
+      1,
+      0
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "1109570231592826",
+     "4666839616921205",
+     "1388496563331059"
+    ],
+    "incomplete": false,
+    "reason": "Meta Adult Content policy limits sexually suggestive imagery. Ad A is a neutral full-body studio product shot, most compliant so most delivery. Ad C puts model in bed 'sous la couette' implying intimate/sexual context, risking limited distribution. Ad B is an extreme close-crop on torso/groin focusing on intimate area, most likely to be flagged as sexually provocative so least reach."
+   },
+   "population_score": {
+    "pairwise": 0.0,
+    "top1": 0.0,
+    "spearman": -1.0
+   }
+  },
+  {
+   "batch_id": "103604591655541-2026W40",
+   "population": {
+    "ranking": [
+     "1112281047936122",
+     "1586079623267462",
+     "1574667787673966"
+    ],
+    "stats": {
+     "1112281047936122": {
+      "seen": 1000,
+      "stop_rate": 0.246,
+      "click_rate": 0.058,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.4,
+       "18-24 · instagram": 0.421,
+       "25-34 · facebook": 0.221,
+       "25-34 · instagram": 0.287,
+       "35-44 · facebook": 0.308,
+       "35-44 · instagram": 0.236,
+       "45-54 · facebook": 0.207,
+       "45-54 · instagram": 0.164,
+       "55-64 · facebook": 0.067,
+       "55-64 · instagram": 0.08,
+       "65+ · facebook": 0.06,
+       "65+ · instagram": 0.067
+      },
+      "click_reasons": [
+       "Discount price grabbed, wanted cheap gift",
+       "Gamer knows Holy, loves advent deal",
+       "Fitness deal hunter loves 86€ for 49€",
+       "5 Euro discount grabs student, tries calendar",
+       "Discount hooked, calendar novelty tempted click"
+      ],
+      "score": 0.304
+     },
+     "1574667787673966": {
+      "seen": 1000,
+      "stop_rate": 0.091,
+      "click_rate": 0.017,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.067,
+       "18-24 · instagram": 0.179,
+       "25-34 · facebook": 0.104,
+       "25-34 · instagram": 0.096,
+       "35-44 · facebook": 0.103,
+       "35-44 · instagram": 0.101,
+       "45-54 · facebook": 0.141,
+       "45-54 · instagram": 0.016,
+       "55-64 · facebook": 0.011,
+       "55-64 · instagram": 0.0,
+       "65+ · facebook": 0.015,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Gamer dad hooked by Adventskalender video",
+       "Gamer knows HOLY, new drop hooks",
+       "Fun video vibe, wanted to see more",
+       "Gamer dad sees gift idea, discount helps",
+       "Gamer knows HOLY, video hooks, price irrelevant"
+      ],
+      "score": 0.108
+     },
+     "1586079623267462": {
+      "seen": 1000,
+      "stop_rate": 0.136,
+      "click_rate": 0.025,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.2,
+       "18-24 · instagram": 0.269,
+       "25-34 · facebook": 0.169,
+       "25-34 · instagram": 0.239,
+       "35-44 · facebook": 0.075,
+       "35-44 · instagram": 0.124,
+       "45-54 · facebook": 0.043,
+       "45-54 · instagram": 0.049,
+       "55-64 · facebook": 0.034,
+       "55-64 · instagram": 0.0,
+       "65+ · facebook": 0.015,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Pretty bottles nails match beauty fashion",
+       "Bottles eye-catching, tech gadget curiosity clicks",
+       "Striking bottles stop scroll, tech hooks",
+       "Discount hooks, healthy drink interests her",
+       "Fitness syrup bottle fits, discount grabs her"
+      ],
+      "score": 0.161
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      1,
+      2,
+      0
+     ],
+     [
+      2,
+      0,
+      1
+     ],
+     [
+      2,
+      1,
+      0
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "1586079623267462",
+     "1112281047936122",
+     "1574667787673966"
+    ],
+    "incomplete": false,
+    "reason": "C is caffeine/energy-free Syrup, no restriction. A discloses 'keine Energy Drinks' with only small caffeine amount, partially restricted. B pushes 160 Portionen with possible Energy content and no disclaimer, most likely to trigger age/compliance limited delivery, so lowest reach."
+   },
+   "population_score": {
+    "pairwise": 0.0,
+    "top1": 0.0,
+    "spearman": -1.0
+   }
+  },
+  {
+   "batch_id": "1140541859324910-2026W39",
+   "population": {
+    "ranking": [
+     "1124817456779357",
+     "2297746341049074",
+     "1843995106981171"
+    ],
+    "stats": {
+     "1124817456779357": {
+      "seen": 1000,
+      "stop_rate": 0.244,
+      "click_rate": 0.065,
+      "stop_rate_by_segment": {
+       "25-34 · facebook": 0.185,
+       "25-34 · instagram": 0.288,
+       "35-44 · facebook": 0.27,
+       "35-44 · instagram": 0.27,
+       "45-54 · facebook": 0.248,
+       "45-54 · instagram": 0.2,
+       "55-64 · facebook": 0.232,
+       "55-64 · instagram": 0.227,
+       "65+ · facebook": 0.224,
+       "65+ · instagram": 0.148
+      },
+      "click_reasons": [
+       "Eye-catching fleece, fashion relevant",
+       "Fashion sports, Merino wool appeals",
+       "Sustainable French wool appeals, explored more.",
+       "Trendy fleece, wanted exclusive colour details.",
+       "Sporty fleece looked premium, wanted exclusive colour."
+      ],
+      "score": 0.309
+     },
+     "1843995106981171": {
+      "seen": 1000,
+      "stop_rate": 0.0,
+      "click_rate": 0.0,
+      "stop_rate_by_segment": {
+       "25-34 · facebook": 0.0,
+       "25-34 · instagram": 0.0,
+       "35-44 · facebook": 0.0,
+       "35-44 · instagram": 0.0,
+       "45-54 · facebook": 0.0,
+       "45-54 · instagram": 0.0,
+       "55-64 · facebook": 0.0,
+       "55-64 · instagram": 0.0,
+       "65+ · facebook": 0.0,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [],
+      "score": 0.0
+     },
+     "2297746341049074": {
+      "seen": 1000,
+      "stop_rate": 0.152,
+      "click_rate": 0.004,
+      "stop_rate_by_segment": {
+       "25-34 · facebook": 0.118,
+       "25-34 · instagram": 0.212,
+       "35-44 · facebook": 0.183,
+       "35-44 · instagram": 0.165,
+       "45-54 · facebook": 0.14,
+       "45-54 · instagram": 0.114,
+       "55-64 · facebook": 0.098,
+       "55-64 · instagram": 0.159,
+       "65+ · facebook": 0.138,
+       "65+ · instagram": 0.037
+      },
+      "click_reasons": [
+       "Fashion lover, striking fleece images invite click",
+       "Loves cozy look, low price worry clicks.",
+       "Cosy fleece looks great for family outdoors",
+       "Cozy fleece photos stood out scrolling."
+      ],
+      "score": 0.156
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      1,
+      2,
+      0
+     ],
+     [
+      2,
+      0,
+      1
+     ],
+     [
+      2,
+      1,
+      0
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "1124817456779357",
+     "2297746341049074",
+     "1843995106981171"
+    ],
+    "incomplete": false,
+    "reason": "Targeting is Men 25-65+ in DK, IE, NL, SE - all non-French speaking. Ad A is the only one with English copy and shows the product on a man, so highest CTR/relevance and lowest CPM = most reach. Ad C shows the product but copy is in French and creative shows a woman despite Men-only targeting, so poor relevance = middle. Ad B has French copy and blank/grey creative with no product or person, so lowest CTR, delivery penalized = fewest reach."
+   },
+   "population_score": {
+    "pairwise": 0.0,
+    "top1": 0.0,
+    "spearman": -1.0
+   }
+  },
+  {
+   "batch_id": "1545577295743703-2026W43",
+   "population": {
+    "ranking": [
+     "1873424350679462",
+     "1714318993639978",
+     "1156884146756188"
+    ],
+    "stats": {
+     "1156884146756188": {
+      "seen": 1000,
+      "stop_rate": 0.009,
+      "click_rate": 0.0,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.0,
+       "18-24 · instagram": 0.0,
+       "25-34 · facebook": 0.019,
+       "25-34 · instagram": 0.006,
+       "35-44 · facebook": 0.016,
+       "35-44 · instagram": 0.011,
+       "45-54 · facebook": 0.012,
+       "45-54 · instagram": 0.021,
+       "55-64 · facebook": 0.0,
+       "55-64 · instagram": 0.0,
+       "65+ · facebook": 0.015,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [],
+      "score": 0.009
+     },
+     "1714318993639978": {
+      "seen": 1000,
+      "stop_rate": 0.183,
+      "click_rate": 0.038,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.319,
+       "18-24 · instagram": 0.291,
+       "25-34 · facebook": 0.179,
+       "25-34 · instagram": 0.21,
+       "35-44 · facebook": 0.197,
+       "35-44 · instagram": 0.215,
+       "45-54 · facebook": 0.176,
+       "45-54 · instagram": 0.229,
+       "55-64 · facebook": 0.061,
+       "55-64 · instagram": 0.036,
+       "65+ · facebook": 0.0,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Grooming tech appeals, bold visuals catch eye",
+       "Funny guy face stops scroll, curious enough",
+       "Guy talking hooks, fitness guy curious",
+       "Tech guy hooked by demo video",
+       "Beauty interest, precision headline grabs him"
+      ],
+      "score": 0.221
+     },
+     "1873424350679462": {
+      "seen": 1000,
+      "stop_rate": 0.215,
+      "click_rate": 0.039,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.17,
+       "18-24 · instagram": 0.248,
+       "25-34 · facebook": 0.189,
+       "25-34 · instagram": 0.309,
+       "35-44 · facebook": 0.291,
+       "35-44 · instagram": 0.226,
+       "45-54 · facebook": 0.188,
+       "45-54 · instagram": 0.188,
+       "55-64 · facebook": 0.146,
+       "55-64 · instagram": 0.179,
+       "65+ · facebook": 0.015,
+       "65+ · instagram": 0.056
+      },
+      "click_reasons": [
+       "Beauty interest, premium gold kit stands out",
+       "Cool kit photo, fitness guy wants trimmer",
+       "Young man needs grooming kit, video hooks him",
+       "Into beauty fitness, kit appeals strongly",
+       "Guy and kit stood out, can afford"
+      ],
+      "score": 0.254
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      1,
+      2,
+      0
+     ],
+     [
+      2,
+      0,
+      1
+     ],
+     [
+      2,
+      1,
+      0
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "1714318993639978",
+     "1156884146756188",
+     "1873424350679462"
+    ],
+    "incomplete": false,
+    "reason": "Same targeting/budget, delivery follows creative engagement: B human-face UGC demo drives highest CTR/retention, A product-only macro video has weaker hook, C static text-heavy bundle graphic with Ball labels gets lowest engagement and most friction."
+   },
+   "population_score": {
+    "pairwise": 0.6666666666666666,
+    "top1": 1.0,
+    "spearman": 0.5
+   }
+  },
+  {
+   "batch_id": "163357535087-2026W38",
+   "population": {
+    "ranking": [
+     "1392924766152885",
+     "1092075290337422",
+     "1079089088426588",
+     "1711623353276848",
+     "1974831719877635",
+     "1728825668817175",
+     "1611136140670122"
+    ],
+    "stats": {
+     "1079089088426588": {
+      "seen": 1000,
+      "stop_rate": 0.124,
+      "click_rate": 0.02,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.114,
+       "18-24 · instagram": 0.143,
+       "25-34 · facebook": 0.105,
+       "25-34 · instagram": 0.153,
+       "35-44 · facebook": 0.146,
+       "35-44 · instagram": 0.128,
+       "45-54 · facebook": 0.139,
+       "45-54 · instagram": 0.172,
+       "55-64 · facebook": 0.108,
+       "55-64 · instagram": 0.038,
+       "65+ · facebook": 0.028,
+       "65+ · instagram": 0.043
+      },
+      "click_reasons": [
+       "Male style relevant, wants details",
+       "Sporty guy likes men's athleisure looks",
+       "Fitness fashion man likes quarter-zip style",
+       "Fashion interest, menswear catches his eye",
+       "Sporty guy liked quarter-zip look"
+      ],
+      "score": 0.144
+     },
+     "1092075290337422": {
+      "seen": 1000,
+      "stop_rate": 0.14,
+      "click_rate": 0.01,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.386,
+       "18-24 · instagram": 0.246,
+       "25-34 · facebook": 0.186,
+       "25-34 · instagram": 0.14,
+       "35-44 · facebook": 0.125,
+       "35-44 · instagram": 0.092,
+       "45-54 · facebook": 0.078,
+       "45-54 · instagram": 0.109,
+       "55-64 · facebook": 0.072,
+       "55-64 · instagram": 0.154,
+       "65+ · facebook": 0.07,
+       "65+ · instagram": 0.043
+      },
+      "click_reasons": [
+       "Loves trendy beauty lifestyle looks",
+       "Eye-catching blue set and car stopped scroll",
+       "Fashion lover likes blue summer set",
+       "Eye-catching blue sets match sporty fashion taste",
+       "Beauty lover likes blue matching set"
+      ],
+      "score": 0.15
+     },
+     "1392924766152885": {
+      "seen": 1000,
+      "stop_rate": 0.188,
+      "click_rate": 0.041,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.295,
+       "18-24 · instagram": 0.286,
+       "25-34 · facebook": 0.233,
+       "25-34 · instagram": 0.217,
+       "35-44 · facebook": 0.177,
+       "35-44 · instagram": 0.239,
+       "45-54 · facebook": 0.13,
+       "45-54 · instagram": 0.203,
+       "55-64 · facebook": 0.084,
+       "55-64 · instagram": 0.077,
+       "65+ · facebook": 0.056,
+       "65+ · instagram": 0.043
+      },
+      "click_reasons": [
+       "Fashion lover stops for off-duty versatile looks",
+       "Fitness girl loves eye-catching gym sets",
+       "Fitness student trusts creator-tagged uniform looks",
+       "Fashionable athleisure fits her sporty style",
+       "Fitness lifestyle match, can afford it"
+      ],
+      "score": 0.229
+     },
+     "1611136140670122": {
+      "seen": 1000,
+      "stop_rate": 0.023,
+      "click_rate": 0.002,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.023,
+       "18-24 · instagram": 0.048,
+       "25-34 · facebook": 0.0,
+       "25-34 · instagram": 0.025,
+       "35-44 · facebook": 0.031,
+       "35-44 · instagram": 0.028,
+       "45-54 · facebook": 0.017,
+       "45-54 · instagram": 0.031,
+       "55-64 · facebook": 0.012,
+       "55-64 · instagram": 0.0,
+       "65+ · facebook": 0.014,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Fashion fan likes trouser inseam news",
+       "Loves Alo gym style, wants more"
+      ],
+      "score": 0.025
+     },
+     "1711623353276848": {
+      "seen": 1000,
+      "stop_rate": 0.118,
+      "click_rate": 0.008,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.205,
+       "18-24 · instagram": 0.19,
+       "25-34 · facebook": 0.163,
+       "25-34 · instagram": 0.115,
+       "35-44 · facebook": 0.094,
+       "35-44 · instagram": 0.092,
+       "45-54 · facebook": 0.061,
+       "45-54 · instagram": 0.141,
+       "55-64 · facebook": 0.072,
+       "55-64 · instagram": 0.115,
+       "65+ · facebook": 0.113,
+       "65+ · instagram": 0.043
+      },
+      "click_reasons": [
+       "Loves fashion color, price no issue",
+       "Travel aesthetic catches eye while scrolling",
+       "Fashion travel lover, blue airport look pops.",
+       "Bright blue outfit eye-catching, loves fashion",
+       "Fashion lover wants trendy cozy loungewear now"
+      ],
+      "score": 0.126
+     },
+     "1728825668817175": {
+      "seen": 1000,
+      "stop_rate": 0.027,
+      "click_rate": 0.001,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.0,
+       "18-24 · instagram": 0.056,
+       "25-34 · facebook": 0.023,
+       "25-34 · instagram": 0.038,
+       "35-44 · facebook": 0.021,
+       "35-44 · instagram": 0.028,
+       "45-54 · facebook": 0.009,
+       "45-54 · instagram": 0.047,
+       "55-64 · facebook": 0.024,
+       "55-64 · instagram": 0.0,
+       "65+ · facebook": 0.014,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Loves men's streetwear fashion new drops daily"
+      ],
+      "score": 0.028
+     },
+     "1974831719877635": {
+      "seen": 1000,
+      "stop_rate": 0.046,
+      "click_rate": 0.012,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.068,
+       "18-24 · instagram": 0.032,
+       "25-34 · facebook": 0.081,
+       "25-34 · instagram": 0.045,
+       "35-44 · facebook": 0.042,
+       "35-44 · instagram": 0.018,
+       "45-54 · facebook": 0.043,
+       "45-54 · instagram": 0.031,
+       "55-64 · facebook": 0.096,
+       "55-64 · instagram": 0.077,
+       "65+ · facebook": 0.014,
+       "65+ · instagram": 0.043
+      },
+      "click_reasons": [
+       "Fitness lifestyle matches Alo sets perfectly",
+       "Fashion lover, cozy fall sets look eye-catching",
+       "Fitness mom, likes cozy fall set idea",
+       "Loves fashion, fall sets feel perfect for her",
+       "Sporty fashion fan, can afford restock set"
+      ],
+      "score": 0.058
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     [
+      2,
+      3,
+      4,
+      5,
+      6,
+      0,
+      1
+     ],
+     [
+      4,
+      5,
+      6,
+      0,
+      1,
+      2,
+      3
+     ],
+     [
+      5,
+      6,
+      0,
+      1,
+      2,
+      3,
+      4
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "1092075290337422",
+     "1711623353276848",
+     "1392924766152885",
+     "1974831719877635",
+     "1079089088426588",
+     "1611136140670122",
+     "1728825668817175"
+    ],
+    "incomplete": false,
+    "reason": "With identical targeting and week, delivery follows engagement prediction: bright female-led lifestyle in California Blue and full-outfit product visibility wins, UGC off-duty set next, while dark male and cropped face-obscured creatives with low product clarity get least distribution."
+   },
+   "population_score": {
+    "pairwise": 0.47619047619047616,
+    "top1": 0.0,
+    "spearman": -0.1428571428571428
+   }
+  },
+  {
+   "batch_id": "163357535087-2026W44",
+   "population": {
+    "ranking": [
+     "1112160055122333",
+     "3067682340068863",
+     "1783035209588277",
+     "1601401932015887",
+     "1679141706903128",
+     "1885003882515223"
+    ],
+    "stats": {
+     "1112160055122333": {
+      "seen": 1000,
+      "stop_rate": 0.182,
+      "click_rate": 0.075,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.341,
+       "18-24 · instagram": 0.268,
+       "25-34 · facebook": 0.228,
+       "25-34 · instagram": 0.212,
+       "35-44 · facebook": 0.225,
+       "35-44 · instagram": 0.175,
+       "45-54 · facebook": 0.098,
+       "45-54 · instagram": 0.175,
+       "55-64 · facebook": 0.035,
+       "55-64 · instagram": 0.167,
+       "65+ · facebook": 0.0,
+       "65+ · instagram": 0.1
+      },
+      "click_reasons": [
+       "Fitness fan loves Alo models and sale",
+       "Fashion lover stops for big 30% discount",
+       "Fitness lover, 30% off haul tempts",
+       "Sporty, eye-catching looks plus sale",
+       "Sporty fashion 30% off too good ignore"
+      ],
+      "score": 0.257
+     },
+     "1601401932015887": {
+      "seen": 1000,
+      "stop_rate": 0.134,
+      "click_rate": 0.0,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.098,
+       "18-24 · instagram": 0.168,
+       "25-34 · facebook": 0.174,
+       "25-34 · instagram": 0.194,
+       "35-44 · facebook": 0.144,
+       "35-44 · instagram": 0.142,
+       "45-54 · facebook": 0.054,
+       "45-54 · instagram": 0.123,
+       "55-64 · facebook": 0.07,
+       "55-64 · instagram": 0.125,
+       "65+ · facebook": 0.052,
+       "65+ · instagram": 0.1
+      },
+      "click_reasons": [],
+      "score": 0.134
+     },
+     "1679141706903128": {
+      "seen": 1000,
+      "stop_rate": 0.057,
+      "click_rate": 0.0,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.024,
+       "18-24 · instagram": 0.074,
+       "25-34 · facebook": 0.087,
+       "25-34 · instagram": 0.069,
+       "35-44 · facebook": 0.072,
+       "35-44 · instagram": 0.058,
+       "45-54 · facebook": 0.022,
+       "45-54 · instagram": 0.035,
+       "55-64 · facebook": 0.058,
+       "55-64 · instagram": 0.042,
+       "65+ · facebook": 0.017,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [],
+      "score": 0.057
+     },
+     "1783035209588277": {
+      "seen": 1000,
+      "stop_rate": 0.171,
+      "click_rate": 0.023,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.244,
+       "18-24 · instagram": 0.221,
+       "25-34 · facebook": 0.196,
+       "25-34 · instagram": 0.206,
+       "35-44 · facebook": 0.171,
+       "35-44 · instagram": 0.175,
+       "45-54 · facebook": 0.163,
+       "45-54 · instagram": 0.175,
+       "55-64 · facebook": 0.093,
+       "55-64 · instagram": 0.042,
+       "65+ · facebook": 0.052,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "30% off haul fits budget health cooking interests",
+       "Fashion lover hunts 30% off haul deals",
+       "Haul feels like social proof.",
+       "30% off haul is convincing social proof",
+       "Sports guy, 30% off line grabbed attention"
+      ],
+      "score": 0.194
+     },
+     "1885003882515223": {
+      "seen": 1000,
+      "stop_rate": 0.003,
+      "click_rate": 0.0,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.0,
+       "18-24 · instagram": 0.007,
+       "25-34 · facebook": 0.0,
+       "25-34 · instagram": 0.0,
+       "35-44 · facebook": 0.009,
+       "35-44 · instagram": 0.0,
+       "45-54 · facebook": 0.011,
+       "45-54 · instagram": 0.0,
+       "55-64 · facebook": 0.0,
+       "55-64 · instagram": 0.0,
+       "65+ · facebook": 0.0,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [],
+      "score": 0.003
+     },
+     "3067682340068863": {
+      "seen": 1000,
+      "stop_rate": 0.153,
+      "click_rate": 0.044,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.195,
+       "18-24 · instagram": 0.248,
+       "25-34 · facebook": 0.185,
+       "25-34 · instagram": 0.212,
+       "35-44 · facebook": 0.081,
+       "35-44 · instagram": 0.158,
+       "45-54 · facebook": 0.152,
+       "45-54 · instagram": 0.088,
+       "55-64 · facebook": 0.058,
+       "55-64 · instagram": 0.083,
+       "65+ · facebook": 0.052,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Fashion student hooked by haul video savings",
+       "Unboxing video plus member discount hooks saver",
+       "Claw clip haul video hooked beauty interest",
+       "Fitness haul video hooked, tapped",
+       "Fashion lover hunts 30% off haul deals"
+      ],
+      "score": 0.197
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     [
+      2,
+      3,
+      4,
+      5,
+      0,
+      1
+     ],
+     [
+      3,
+      4,
+      5,
+      0,
+      1,
+      2
+     ],
+     [
+      4,
+      5,
+      0,
+      1,
+      2,
+      3
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "1783035209588277",
+     "3067682340068863",
+     "1112160055122333",
+     "1885003882515223",
+     "1601401932015887",
+     "1679141706903128"
+    ],
+    "incomplete": false,
+    "reason": "With identical targeting, delivery follows expected CTR: UGC haul showing product/bag with explicit 30% off in primary text wins, with D beating F due to F's headline typo 'Accees', on-video text clutter, and added 'exclusively for members' friction. Model + 30% Off in-image A beats text-only graphic E with no model/product. Vague Alo Yoga headlines with no discount in creative B/C deliver least despite same beach creative, with B's urgency 'finally here' beating C's generic perks line."
+   },
+   "population_score": {
+    "pairwise": 0.4,
+    "top1": 0.0,
+    "spearman": -0.4285714285714286
+   }
+  },
+  {
+   "batch_id": "285997508201659-2026W40",
+   "population": {
+    "ranking": [
+     "4594591840797357",
+     "1090150910403964",
+     "1628724561995904",
+     "1405862334324573"
+    ],
+    "stats": {
+     "1090150910403964": {
+      "seen": 1000,
+      "stop_rate": 0.128,
+      "click_rate": 0.021,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.031,
+       "18-24 · instagram": 0.128,
+       "25-34 · facebook": 0.096,
+       "25-34 · instagram": 0.122,
+       "35-44 · facebook": 0.095,
+       "35-44 · instagram": 0.179,
+       "45-54 · facebook": 0.139,
+       "45-54 · instagram": 0.133,
+       "55-64 · facebook": 0.139,
+       "55-64 · instagram": 0.148,
+       "65+ · facebook": 0.153,
+       "65+ · instagram": 0.2
+      },
+      "click_reasons": [
+       "Sharp layered look fit his style taste",
+       "Italian style text caught elegant look",
+       "Fashion fan loves striking menswear model shots",
+       "Fashion and decor eye-catchy visuals stop him",
+       "Fashion interest, handsome styling caught eye"
+      ],
+      "score": 0.149
+     },
+     "1405862334324573": {
+      "seen": 1000,
+      "stop_rate": 0.052,
+      "click_rate": 0.013,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.031,
+       "18-24 · instagram": 0.038,
+       "25-34 · facebook": 0.035,
+       "25-34 · instagram": 0.044,
+       "35-44 · facebook": 0.105,
+       "35-44 · instagram": 0.043,
+       "45-54 · facebook": 0.069,
+       "45-54 · instagram": 0.044,
+       "55-64 · facebook": 0.028,
+       "55-64 · instagram": 0.148,
+       "65+ · facebook": 0.017,
+       "65+ · instagram": 0.133
+      },
+      "click_reasons": [
+       "Fashion lover, Italian handcrafted loafers intrigue",
+       "Handcrafted heritage fits values, can afford",
+       "Classic Italian loafers suit his age",
+       "Into fashion, handmade Italian loafers intrigue him",
+       "Fashion lover, Italian craft hooks instantly"
+      ],
+      "score": 0.065
+     },
+     "1628724561995904": {
+      "seen": 1000,
+      "stop_rate": 0.097,
+      "click_rate": 0.003,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.125,
+       "18-24 · instagram": 0.068,
+       "25-34 · facebook": 0.149,
+       "25-34 · instagram": 0.094,
+       "35-44 · facebook": 0.095,
+       "35-44 · instagram": 0.068,
+       "45-54 · facebook": 0.04,
+       "45-54 · instagram": 0.089,
+       "55-64 · facebook": 0.194,
+       "55-64 · instagram": 0.037,
+       "65+ · facebook": 0.136,
+       "65+ · instagram": 0.067
+      },
+      "click_reasons": [
+       "Home decor fireplace interior appeals, can afford",
+       "Cozy fireplace chair suits home decor taste",
+       "Maremma Podere travel hook, browses Style Edit"
+      ],
+      "score": 0.1
+     },
+     "4594591840797357": {
+      "seen": 1000,
+      "stop_rate": 0.254,
+      "click_rate": 0.038,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.25,
+       "18-24 · instagram": 0.256,
+       "25-34 · facebook": 0.246,
+       "25-34 · instagram": 0.289,
+       "35-44 · facebook": 0.21,
+       "35-44 · instagram": 0.308,
+       "45-54 · facebook": 0.267,
+       "45-54 · instagram": 0.244,
+       "55-64 · facebook": 0.264,
+       "55-64 · instagram": 0.148,
+       "65+ · facebook": 0.169,
+       "65+ · instagram": 0.2
+      },
+      "click_reasons": [
+       "Fashion fan, beach coat look impressed",
+       "Cinematic seaside coat fits travel taste",
+       "Fashion lover, elegant seaside coat catches eye",
+       "Striking coat beach image stopped fast scroll.",
+       "Winter sea Italy story felt stylish aspirational"
+      ],
+      "score": 0.292
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2,
+      3
+     ],
+     [
+      1,
+      2,
+      3,
+      0
+     ],
+     [
+      2,
+      3,
+      0,
+      1
+     ],
+     [
+      3,
+      0,
+      1,
+      2
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "4594591840797357",
+     "1090150910403964",
+     "1405862334324573",
+     "1628724561995904"
+    ],
+    "incomplete": false,
+    "reason": "With same week and same targeting, reach differences come from creative engagement and budget priority. D and A both have a male model face, Italian Maremma storytelling and clear FW26/Winter 2026 collection hook, driving highest CTR and largest hero spend. D wins over A with brighter outdoor sea thumb-stop vs dark indoor. B is English-language product box with no shoe or face shown, lower stop-power. C is English-language empty chair with no person and no product, lowest predicted CTR and smallest support spend, so fewest people reached."
+   },
+   "population_score": {
+    "pairwise": 0.5,
+    "top1": 0.0,
+    "spearman": 0.0
+   }
+  },
+  {
+   "batch_id": "324761664079-2026W39",
+   "population": {
+    "ranking": [
+     "2880989812285877",
+     "1966612194022920",
+     "1711356609921175",
+     "1441360917878713"
+    ],
+    "stats": {
+     "1441360917878713": {
+      "seen": 1000,
+      "stop_rate": 0.027,
+      "click_rate": 0.006,
+      "stop_rate_by_segment": {
+       "25-34 · facebook": 0.027,
+       "25-34 · instagram": 0.047,
+       "35-44 · facebook": 0.02,
+       "35-44 · instagram": 0.039,
+       "45-54 · facebook": 0.034,
+       "45-54 · instagram": 0.0,
+       "55-64 · facebook": 0.01,
+       "55-64 · instagram": 0.0,
+       "65+ · facebook": 0.015,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Binaural beats appeals to music interest",
+       "Binaural beats first line grabbed tech curiosity",
+       "Music lover curious about sounds, price no issue",
+       "Sounds headline appeals to music fan",
+       "Tech curiosity hooks on binaural beats, taps to explore"
+      ],
+      "score": 0.033
+     },
+     "1711356609921175": {
+      "seen": 1000,
+      "stop_rate": 0.117,
+      "click_rate": 0.045,
+      "stop_rate_by_segment": {
+       "25-34 · facebook": 0.088,
+       "25-34 · instagram": 0.126,
+       "35-44 · facebook": 0.2,
+       "35-44 · instagram": 0.148,
+       "45-54 · facebook": 0.081,
+       "45-54 · instagram": 0.044,
+       "55-64 · facebook": 0.133,
+       "55-64 · instagram": 0.1,
+       "65+ · facebook": 0.119,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Health focused, sleep and focus appeal",
+       "Sleepless parent grabs better nights promise",
+       "Young kids, sleepless, headline grabs him",
+       "New parent desperate for better sleep",
+       "Health matters, sleep headline grabbed attention"
+      ],
+      "score": 0.162
+     },
+     "1966612194022920": {
+      "seen": 1000,
+      "stop_rate": 0.305,
+      "click_rate": 0.023,
+      "stop_rate_by_segment": {
+       "25-34 · facebook": 0.292,
+       "25-34 · instagram": 0.293,
+       "35-44 · facebook": 0.38,
+       "35-44 · instagram": 0.43,
+       "45-54 · facebook": 0.315,
+       "45-54 · instagram": 0.324,
+       "55-64 · facebook": 0.21,
+       "55-64 · instagram": 0.15,
+       "65+ · facebook": 0.239,
+       "65+ · instagram": 0.2
+      },
+      "click_reasons": [
+       "Bright smiley stops fast scroll, health fits",
+       "Health focused, stress relief resonates strongly",
+       "Bright image stops, health interest clicks",
+       "Eye-catching pink, health stress relevant",
+       "Bright wellness vibe matched fitness mindset."
+      ],
+      "score": 0.328
+     },
+     "2880989812285877": {
+      "seen": 1000,
+      "stop_rate": 0.444,
+      "click_rate": 0.048,
+      "stop_rate_by_segment": {
+       "25-34 · facebook": 0.469,
+       "25-34 · instagram": 0.479,
+       "35-44 · facebook": 0.41,
+       "35-44 · instagram": 0.445,
+       "45-54 · facebook": 0.497,
+       "45-54 · instagram": 0.5,
+       "55-64 · facebook": 0.343,
+       "55-64 · instagram": 0.45,
+       "65+ · facebook": 0.343,
+       "65+ · instagram": 0.333
+      },
+      "click_reasons": [
+       "Face and bright colors popped, curiosity clicked",
+       "Hooky video, tired mom wants sleep help",
+       "Face and colors pop, curious clickbait",
+       "Hooked by video, fitness recovery curious to try",
+       "Exhausted mom needs stress sleep support"
+      ],
+      "score": 0.492
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2,
+      3
+     ],
+     [
+      1,
+      2,
+      3,
+      0
+     ],
+     [
+      2,
+      3,
+      0,
+      1
+     ],
+     [
+      3,
+      0,
+      1,
+      2
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "2880989812285877",
+     "1711356609921175",
+     "1966612194022920",
+     "1441360917878713"
+    ],
+    "incomplete": false,
+    "reason": "UGC-style broad benefit creative scales widest, followed by universal sleep need, then general stress relief, with niche binaural beats feature narrowest."
+   },
+   "population_score": {
+    "pairwise": 1.0,
+    "top1": 1.0,
+    "spearman": 1.0
+   }
+  },
+  {
+   "batch_id": "363763177038997-2026W37",
+   "population": {
+    "ranking": [
+     "1093519636348864",
+     "1950394985613237",
+     "28900506092867203",
+     "2589139351607427",
+     "2880103299022674"
+    ],
+    "stats": {
+     "1093519636348864": {
+      "seen": 1000,
+      "stop_rate": 0.253,
+      "click_rate": 0.073,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.324,
+       "18-24 · instagram": 0.372,
+       "25-34 · facebook": 0.284,
+       "25-34 · instagram": 0.25,
+       "35-44 · facebook": 0.223,
+       "35-44 · instagram": 0.313,
+       "45-54 · facebook": 0.279,
+       "45-54 · instagram": 0.267,
+       "55-64 · facebook": 0.171,
+       "55-64 · instagram": 0.107,
+       "65+ · facebook": 0.076,
+       "65+ · instagram": 0.167
+      },
+      "click_reasons": [
+       "Fitness fan, French starter set invites testing",
+       "Fitness student likes cheap protein trial",
+       "Fitness fan, eye images stopped him",
+       "Sporty, French text hooked trial idea",
+       "Health interest, colorful French set stands out"
+      ],
+      "score": 0.326
+     },
+     "1950394985613237": {
+      "seen": 1000,
+      "stop_rate": 0.036,
+      "click_rate": 0.0,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.059,
+       "18-24 · instagram": 0.044,
+       "25-34 · facebook": 0.045,
+       "25-34 · instagram": 0.052,
+       "35-44 · facebook": 0.058,
+       "35-44 · instagram": 0.035,
+       "45-54 · facebook": 0.01,
+       "45-54 · instagram": 0.0,
+       "55-64 · facebook": 0.019,
+       "55-64 · instagram": 0.036,
+       "65+ · facebook": 0.03,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [],
+      "score": 0.036
+     },
+     "2589139351607427": {
+      "seen": 1000,
+      "stop_rate": 0.008,
+      "click_rate": 0.0,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.0,
+       "18-24 · instagram": 0.0,
+       "25-34 · facebook": 0.011,
+       "25-34 · instagram": 0.0,
+       "35-44 · facebook": 0.019,
+       "35-44 · instagram": 0.0,
+       "45-54 · facebook": 0.01,
+       "45-54 · instagram": 0.017,
+       "55-64 · facebook": 0.01,
+       "55-64 · instagram": 0.071,
+       "65+ · facebook": 0.0,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [],
+      "score": 0.008
+     },
+     "2880103299022674": {
+      "seen": 1000,
+      "stop_rate": 0.0,
+      "click_rate": 0.0,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.0,
+       "18-24 · instagram": 0.0,
+       "25-34 · facebook": 0.0,
+       "25-34 · instagram": 0.0,
+       "35-44 · facebook": 0.0,
+       "35-44 · instagram": 0.0,
+       "45-54 · facebook": 0.0,
+       "45-54 · instagram": 0.0,
+       "55-64 · facebook": 0.0,
+       "55-64 · instagram": 0.0,
+       "65+ · facebook": 0.0,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [],
+      "score": 0.0
+     },
+     "28900506092867203": {
+      "seen": 1000,
+      "stop_rate": 0.021,
+      "click_rate": 0.0,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.029,
+       "18-24 · instagram": 0.035,
+       "25-34 · facebook": 0.045,
+       "25-34 · instagram": 0.035,
+       "35-44 · facebook": 0.01,
+       "35-44 · instagram": 0.026,
+       "45-54 · facebook": 0.0,
+       "45-54 · instagram": 0.017,
+       "55-64 · facebook": 0.01,
+       "55-64 · instagram": 0.0,
+       "65+ · facebook": 0.0,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [],
+      "score": 0.021
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     [
+      1,
+      2,
+      3,
+      4,
+      0
+     ],
+     [
+      2,
+      3,
+      4,
+      0,
+      1
+     ],
+     [
+      4,
+      0,
+      1,
+      2,
+      3
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "1093519636348864",
+     "2589139351607427",
+     "2880103299022674",
+     "1950394985613237",
+     "28900506092867203"
+    ],
+    "incomplete": false,
+    "reason": "Targeting is FR, so language-match drives delivery. Ad A is the only French ad, so it will get by far the most relevance, engagement and reach. The others are language-mismatched: German Ads C and D can still reach border/expats/second-language speakers in France, Italian Ad B has a smaller overlap, Dutch Ad E has the smallest. Between C and D, C has broader everyday-use angle plus -20% universal hook vs D niche starter angle."
+   },
+   "population_score": {
+    "pairwise": 0.2,
+    "top1": 0.0,
+    "spearman": -0.7
+   }
+  },
+  {
+   "batch_id": "363763177038997-2026W39",
+   "population": {
+    "ranking": [
+     "1065731586087763",
+     "1416658047082304",
+     "1082774357689214"
+    ],
+    "stats": {
+     "1065731586087763": {
+      "seen": 1000,
+      "stop_rate": 0.346,
+      "click_rate": 0.059,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.455,
+       "18-24 · instagram": 0.472,
+       "25-34 · facebook": 0.29,
+       "25-34 · instagram": 0.414,
+       "35-44 · facebook": 0.324,
+       "35-44 · instagram": 0.333,
+       "45-54 · facebook": 0.346,
+       "45-54 · instagram": 0.268,
+       "55-64 · facebook": 0.231,
+       "55-64 · instagram": 0.214,
+       "65+ · facebook": 0.263,
+       "65+ · instagram": 0.158
+      },
+      "click_reasons": [
+       "Salute interessa, consistenza cremosa attrae molto",
+       "Health interest, Italian text grabs",
+       "Eye-catching shake, fitness cooking sports match",
+       "Sporty, loves shakes, price insensitive so explores.",
+       "Fitness fan, Italian protein ad matches perfectly"
+      ],
+      "score": 0.405
+     },
+     "1082774357689214": {
+      "seen": 1000,
+      "stop_rate": 0.011,
+      "click_rate": 0.003,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.0,
+       "18-24 · instagram": 0.021,
+       "25-34 · facebook": 0.011,
+       "25-34 · instagram": 0.029,
+       "35-44 · facebook": 0.0,
+       "35-44 · instagram": 0.0,
+       "45-54 · facebook": 0.019,
+       "45-54 · instagram": 0.0,
+       "55-64 · facebook": 0.0,
+       "55-64 · instagram": 0.0,
+       "65+ · facebook": 0.0,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Gym student, visuals pop, starter set intrigues",
+       "Fitness fan loves Italian copy plus trial set",
+       "Fitness fan, colorful images stop fast scroll"
+      ],
+      "score": 0.014
+     },
+     "1416658047082304": {
+      "seen": 1000,
+      "stop_rate": 0.022,
+      "click_rate": 0.001,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.045,
+       "18-24 · instagram": 0.035,
+       "25-34 · facebook": 0.032,
+       "25-34 · instagram": 0.023,
+       "35-44 · facebook": 0.036,
+       "35-44 · instagram": 0.011,
+       "45-54 · facebook": 0.0,
+       "45-54 · instagram": 0.024,
+       "55-64 · facebook": 0.026,
+       "55-64 · instagram": 0.0,
+       "65+ · facebook": 0.0,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Fitness student recognises creatine and protein benefits"
+      ],
+      "score": 0.023
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      1,
+      2,
+      0
+     ],
+     [
+      2,
+      0,
+      1
+     ],
+     [
+      2,
+      1,
+      0
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "1065731586087763",
+     "1082774357689214",
+     "1416658047082304"
+    ],
+    "incomplete": false,
+    "reason": "Ad A is the only ad in Italian matching the IT targeting, so it gets normal delivery and widest reach. Ad B and Ad C are both in French for Italy, causing language mismatch, low relevance and very limited delivery. Between them, B starter set for beginners is broader than C niche creatine gummies."
+   },
+   "population_score": {
+    "pairwise": 0.6666666666666666,
+    "top1": 0.0,
+    "spearman": 0.5
+   }
+  },
+  {
+   "batch_id": "363763177038997-2026W43",
+   "population": {
+    "ranking": [
+     "1482739347062206",
+     "3062375504117162",
+     "2328582821275015"
+    ],
+    "stats": {
+     "1482739347062206": {
+      "seen": 1000,
+      "stop_rate": 0.265,
+      "click_rate": 0.074,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.281,
+       "18-24 · instagram": 0.311,
+       "25-34 · facebook": 0.308,
+       "25-34 · instagram": 0.324,
+       "35-44 · facebook": 0.264,
+       "35-44 · instagram": 0.33,
+       "45-54 · facebook": 0.267,
+       "45-54 · instagram": 0.215,
+       "55-64 · facebook": 0.188,
+       "55-64 · instagram": 0.161,
+       "65+ · facebook": 0.132,
+       "65+ · instagram": 0.05
+      },
+      "click_reasons": [
+       "Fitness guy, sale alerts grab attention",
+       "Fitness enthusiast, video 25% hooks instantly",
+       "Sporty dad wants cheap protein stock",
+       "Health cooking, sale video convinced",
+       "Fitness fan, video hooks, sale appeals"
+      ],
+      "score": 0.339
+     },
+     "2328582821275015": {
+      "seen": 1000,
+      "stop_rate": 0.031,
+      "click_rate": 0.0,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.0,
+       "18-24 · instagram": 0.023,
+       "25-34 · facebook": 0.022,
+       "25-34 · instagram": 0.023,
+       "35-44 · facebook": 0.069,
+       "35-44 · instagram": 0.02,
+       "45-54 · facebook": 0.019,
+       "45-54 · instagram": 0.046,
+       "55-64 · facebook": 0.042,
+       "55-64 · instagram": 0.129,
+       "65+ · facebook": 0.015,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [],
+      "score": 0.031
+     },
+     "3062375504117162": {
+      "seen": 1000,
+      "stop_rate": 0.213,
+      "click_rate": 0.06,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.281,
+       "18-24 · instagram": 0.288,
+       "25-34 · facebook": 0.198,
+       "25-34 · instagram": 0.243,
+       "35-44 · facebook": 0.241,
+       "35-44 · instagram": 0.24,
+       "45-54 · facebook": 0.21,
+       "45-54 · instagram": 0.2,
+       "55-64 · facebook": 0.177,
+       "55-64 · instagram": 0.161,
+       "65+ · facebook": 0.044,
+       "65+ · instagram": 0.05
+      },
+      "click_reasons": [
+       "Colorful bars catch eye, loves discount",
+       "Fitness, eye-catching deals, wants biggest discount",
+       "Fitness, bold images stop, seeks cheapest",
+       "Fitness gamer loves protein bar restock",
+       "Health interest, discounts grabbed attention strongly"
+      ],
+      "score": 0.273
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      1,
+      2,
+      0
+     ],
+     [
+      2,
+      0,
+      1
+     ],
+     [
+      2,
+      1,
+      0
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "1482739347062206",
+     "3062375504117162",
+     "2328582821275015"
+    ],
+    "incomplete": false,
+    "reason": "Ad A and C both use German for DE targeting, while Ad B uses Dutch for DE causing language mismatch and lowest delivery. Between the German ads, Ad A's broad 25% storewide offer with UGC creative reaches broader audience than Ad C's niche Designer Bar restock."
+   },
+   "population_score": {
+    "pairwise": 1.0,
+    "top1": 1.0,
+    "spearman": 1.0
+   }
+  },
+  {
+   "batch_id": "407418646112155-2026W38",
+   "population": {
+    "ranking": [
+     "1736722844223226",
+     "2537113693397905",
+     "2186242575286150"
+    ],
+    "stats": {
+     "1736722844223226": {
+      "seen": 1000,
+      "stop_rate": 0.337,
+      "click_rate": 0.075,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.265,
+       "18-24 · instagram": 0.367,
+       "25-34 · facebook": 0.383,
+       "25-34 · instagram": 0.308
+      },
+      "click_reasons": [
+       "Beauty lover, detangling bestseller solves problem",
+       "Loves beauty, hair hook, bestseller tempts low budget",
+       "Bestseller equals proof, hair care relevant enough",
+       "Bestseller gives social proof, health natural fit",
+       "Fashion lover wants nice hair, bestseller tempts click"
+      ],
+      "score": 0.412
+     },
+     "2186242575286150": {
+      "seen": 1000,
+      "stop_rate": 0.114,
+      "click_rate": 0.004,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.069,
+       "18-24 · instagram": 0.137,
+       "25-34 · facebook": 0.086,
+       "25-34 · instagram": 0.123
+      },
+      "click_reasons": [
+       "Loves beauty, stunning hair wants results",
+       "Long shiny hair very fashion goals",
+       "Beauty lover, hair videos hook instantly",
+       "Beauty mom wants easy hair results"
+      ],
+      "score": 0.118
+     },
+     "2537113693397905": {
+      "seen": 1000,
+      "stop_rate": 0.174,
+      "click_rate": 0.038,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.059,
+       "18-24 · instagram": 0.053,
+       "25-34 · facebook": 0.273,
+       "25-34 · instagram": 0.244
+      },
+      "click_reasons": [
+       "Natural grabs sustainability, age spots worry at 33",
+       "Eye-catching green, age relevant, price no issue",
+       "Natural anti-age fits health interest, clicked to explore",
+       "Wrinkles relevant at 34, curious",
+       "Natural fits sustainability, age spots concern"
+      ],
+      "score": 0.212
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      1,
+      2,
+      0
+     ],
+     [
+      2,
+      0,
+      1
+     ],
+     [
+      2,
+      1,
+      0
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "2186242575286150",
+     "1736722844223226",
+     "2537113693397905"
+    ],
+    "incomplete": false,
+    "reason": "Same budget/targeting, delivery is driven by policy compliance and relevance. B is neutral product benefit copy with back-view hair proof, no second-person, so gets full delivery. A uses direct second-person question '¿Quieres proteger tu pelo...' implying user's hair problem, risks Personal Attributes flag/limited delivery. C is worst: anti-age wrinkle/flacidez angle is irrelevant to Women 18-34 causing low CTR/relevance plus age/appearance implication, so gets least reach."
+   },
+   "population_score": {
+    "pairwise": 0.6666666666666666,
+    "top1": 0.0,
+    "spearman": 0.5
+   }
+  },
+  {
+   "batch_id": "421190631265578-2026W37",
+   "population": {
+    "ranking": [
+     "1007011165729403",
+     "1736298714298017",
+     "1015226054904346"
+    ],
+    "stats": {
+     "1007011165729403": {
+      "seen": 1000,
+      "stop_rate": 0.457,
+      "click_rate": 0.15,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.42,
+       "18-24 · instagram": 0.531,
+       "25-34 · facebook": 0.391,
+       "25-34 · instagram": 0.429,
+       "35-44 · facebook": 0.496,
+       "35-44 · instagram": 0.46,
+       "45-54 · facebook": 0.447,
+       "45-54 · instagram": 0.47
+      },
+      "click_reasons": [
+       "Bright burgers caught eye, teens love discount",
+       "Big discount, family saves on kids meals",
+       "Baby scene relatable, colorful fast food for kids.",
+       "-30% first line grabbed, likes deal.",
+       "Edullisesti and -30% hook high sensitivity dad."
+      ],
+      "score": 0.607
+     },
+     "1015226054904346": {
+      "seen": 1000,
+      "stop_rate": 0.157,
+      "click_rate": 0.008,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.14,
+       "18-24 · instagram": 0.063,
+       "25-34 · facebook": 0.261,
+       "25-34 · instagram": 0.251,
+       "35-44 · facebook": 0.113,
+       "35-44 · instagram": 0.165,
+       "45-54 · facebook": 0.097,
+       "45-54 · instagram": 0.06
+      },
+      "click_reasons": [
+       "Entrepreneur curious about local business platform story",
+       "Entrepreneur cares about local business visibility",
+       "New parent relates to baby delivery image",
+       "Entrepreneur cares about local business visibility",
+       "Baby delivery moment mirrored his new parent life"
+      ],
+      "score": 0.165
+     },
+     "1736298714298017": {
+      "seen": 1000,
+      "stop_rate": 0.145,
+      "click_rate": 0.05,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.16,
+       "18-24 · instagram": 0.154,
+       "25-34 · facebook": 0.145,
+       "25-34 · instagram": 0.123,
+       "35-44 · facebook": 0.184,
+       "35-44 · instagram": 0.173,
+       "45-54 · facebook": 0.117,
+       "45-54 · instagram": 0.096
+      },
+      "click_reasons": [
+       "Edullisesti and -30% hook high sensitivity dad.",
+       "Entrepreneur hook plus baby, needs free delivery.",
+       "Student on budget loves edullisesti and -30%.",
+       "Zero delivery fee grabbed finance saver",
+       "Cooks and hunts bargains, cheap delivery grabs him"
+      ],
+      "score": 0.195
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      1,
+      2,
+      0
+     ],
+     [
+      2,
+      0,
+      1
+     ],
+     [
+      2,
+      1,
+      0
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "1007011165729403",
+     "1736298714298017",
+     "1015226054904346"
+    ],
+    "incomplete": false,
+    "reason": "A and C are pure commercial performance offers with full delivery eligibility, with A having congruent high-engagement food creative and -30% McDonald's/Hesburger/Burger King offer vs C's mismatched shampoo bottle image for grocery copy reducing relevance. B is issue-advocacy about platform work/local economy, classified as social/political issue in FI/EU and subject to disclaimer, targeting limits and TTPA restrictions, so it delivers least."
+   },
+   "population_score": {
+    "pairwise": 0.6666666666666666,
+    "top1": 1.0,
+    "spearman": 0.5
+   }
+  },
+  {
+   "batch_id": "421190631265578-2026W42",
+   "population": {
+    "ranking": [
+     "4162838284008159",
+     "1134701612458211",
+     "973609019132494"
+    ],
+    "stats": {
+     "1134701612458211": {
+      "seen": 1000,
+      "stop_rate": 0.128,
+      "click_rate": 0.015,
+      "stop_rate_by_segment": {
+       "25-34 · facebook": 0.143,
+       "25-34 · instagram": 0.156,
+       "35-44 · facebook": 0.073,
+       "35-44 · instagram": 0.158,
+       "45-54 · facebook": 0.099,
+       "45-54 · instagram": 0.135
+      },
+      "click_reasons": [
+       "Busy parent, home delivery sounds convenient",
+       "Busy parent wants easy dinner home",
+       "Cooking interest, wants browse lunch options",
+       "Kids would love burgers, pizza easier",
+       "Tired parent, home delivery sounded easy"
+      ],
+      "score": 0.143
+     },
+     "4162838284008159": {
+      "seen": 1000,
+      "stop_rate": 0.321,
+      "click_rate": 0.107,
+      "stop_rate_by_segment": {
+       "25-34 · facebook": 0.306,
+       "25-34 · instagram": 0.308,
+       "35-44 · facebook": 0.36,
+       "35-44 · instagram": 0.322,
+       "45-54 · facebook": 0.31,
+       "45-54 · instagram": 0.326
+      },
+      "click_reasons": [
+       "Bright burgers caught eye, discount appeals",
+       "-40% burgers fits tight budget",
+       "Big discount catches price-sensitive eye",
+       "Bright food photos popped, -40% matters on budget",
+       "Huge orange ad, -40% too good"
+      ],
+      "score": 0.428
+     },
+     "973609019132494": {
+      "seen": 1000,
+      "stop_rate": 0.036,
+      "click_rate": 0.003,
+      "stop_rate_by_segment": {
+       "25-34 · facebook": 0.061,
+       "25-34 · instagram": 0.027,
+       "35-44 · facebook": 0.039,
+       "35-44 · instagram": 0.026,
+       "45-54 · facebook": 0.035,
+       "45-54 · instagram": 0.034
+      },
+      "click_reasons": [
+       "Good combo grabbed me, 20% discount interested",
+       "Cook loves food, discounts appeal strongly",
+       "Cooks and loves 20% meal discount"
+      ],
+      "score": 0.039
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      1,
+      2,
+      0
+     ],
+     [
+      2,
+      0,
+      1
+     ],
+     [
+      2,
+      1,
+      0
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "1134701612458211",
+     "4162838284008159",
+     "973609019132494"
+    ],
+    "incomplete": false,
+    "reason": "Ad A is generic Wolt service creative with broad lunch/dinner appeal, so it gets the largest always-on budget and scale. Ad B is limited to Burger King fans with -40% on 3 named burgers, narrower but still mass QSR. Ad C is narrowest, requiring Pepsi combo purchase for only 20% off."
+   },
+   "population_score": {
+    "pairwise": 0.6666666666666666,
+    "top1": 0.0,
+    "spearman": 0.5
+   }
+  },
+  {
+   "batch_id": "548810551843785-2026W41",
+   "population": {
+    "ranking": [
+     "2679554355832140",
+     "1650318370129047",
+     "1768233284446682"
+    ],
+    "stats": {
+     "1650318370129047": {
+      "seen": 1000,
+      "stop_rate": 0.183,
+      "click_rate": 0.002,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.127,
+       "18-24 · instagram": 0.037,
+       "25-34 · facebook": 0.161,
+       "25-34 · instagram": 0.064,
+       "35-44 · facebook": 0.123,
+       "35-44 · instagram": 0.124,
+       "45-54 · facebook": 0.193,
+       "45-54 · instagram": 0.159,
+       "55-64 · facebook": 0.467,
+       "55-64 · instagram": 0.238,
+       "65+ · facebook": 0.661,
+       "65+ · instagram": 0.579
+      },
+      "click_reasons": [
+       "Funny funeral hook, sustainability fits secondhand",
+       "Emotional hook, secondhand saves money"
+      ],
+      "score": 0.185
+     },
+     "1768233284446682": {
+      "seen": 1000,
+      "stop_rate": 0.021,
+      "click_rate": 0.002,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.055,
+       "18-24 · instagram": 0.037,
+       "25-34 · facebook": 0.0,
+       "25-34 · instagram": 0.029,
+       "35-44 · facebook": 0.009,
+       "35-44 · instagram": 0.029,
+       "45-54 · facebook": 0.028,
+       "45-54 · instagram": 0.0,
+       "55-64 · facebook": 0.013,
+       "55-64 · instagram": 0.0,
+       "65+ · facebook": 0.0,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "sell your way grabbed entrepreneur mindset",
+       "Selling style idea useful for side business"
+      ],
+      "score": 0.023
+     },
+     "2679554355832140": {
+      "seen": 1000,
+      "stop_rate": 0.452,
+      "click_rate": 0.113,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.418,
+       "18-24 · instagram": 0.585,
+       "25-34 · facebook": 0.527,
+       "25-34 · instagram": 0.538,
+       "35-44 · facebook": 0.518,
+       "35-44 · instagram": 0.419,
+       "45-54 · facebook": 0.431,
+       "45-54 · instagram": 0.386,
+       "55-64 · facebook": 0.253,
+       "55-64 · instagram": 0.286,
+       "65+ · facebook": 0.237,
+       "65+ · instagram": 0.158
+      },
+      "click_reasons": [
+       "Striking visual, second-hand fits sustainability values",
+       "Bright teal floating stuff caught fast scroll",
+       "Secondhand fits sustainability, bags interested me",
+       "Bright image and tech items caught fast scroll",
+       "Trendy bright image, cheap secondhand appeals student"
+      ],
+      "score": 0.565
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      1,
+      2,
+      0
+     ],
+     [
+      2,
+      0,
+      1
+     ],
+     [
+      2,
+      1,
+      0
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "2679554355832140",
+     "1768233284446682",
+     "1650318370129047"
+    ],
+    "incomplete": false,
+    "reason": "Same targeting/week so delivery driven by creative. C is bright, clear, product-led and on-message for segunda mano = highest engagement and delivery. B is dark blurry close-up with same farmaceutico copy but low clarity = mid. A uses funeral/coffin imagery with large text overlay 'Las abuelas deberian ser eternas...' = sensitive death theme + text-overlay penalty + negative feedback = lowest reach."
+   },
+   "population_score": {
+    "pairwise": 0.6666666666666666,
+    "top1": 1.0,
+    "spearman": 0.5
+   }
+  },
+  {
+   "batch_id": "590355197771891-2026W40",
+   "population": {
+    "ranking": [
+     "1130992302926417",
+     "1621803632856669",
+     "2317748965727298",
+     "1092550136844006"
+    ],
+    "stats": {
+     "1092550136844006": {
+      "seen": 1000,
+      "stop_rate": 0.035,
+      "click_rate": 0.002,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.0,
+       "18-24 · instagram": 0.008,
+       "25-34 · facebook": 0.011,
+       "25-34 · instagram": 0.035,
+       "35-44 · facebook": 0.08,
+       "35-44 · instagram": 0.02,
+       "45-54 · facebook": 0.019,
+       "45-54 · instagram": 0.015,
+       "55-64 · facebook": 0.052,
+       "55-64 · instagram": 0.065,
+       "65+ · facebook": 0.088,
+       "65+ · instagram": 0.1
+      },
+      "click_reasons": [
+       "Rücken und Schlaf wichtig, erste Zeile weckt Interesse",
+       "Sleep quality headline matches health interest"
+      ],
+      "score": 0.037
+     },
+     "1130992302926417": {
+      "seen": 1000,
+      "stop_rate": 0.209,
+      "click_rate": 0.036,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.156,
+       "18-24 · instagram": 0.152,
+       "25-34 · facebook": 0.209,
+       "25-34 · instagram": 0.231,
+       "35-44 · facebook": 0.218,
+       "35-44 · instagram": 0.28,
+       "45-54 · facebook": 0.19,
+       "45-54 · instagram": 0.185,
+       "55-64 · facebook": 0.208,
+       "55-64 · instagram": 0.29,
+       "65+ · facebook": 0.176,
+       "65+ · instagram": 0.25
+      },
+      "click_reasons": [
+       "Kids ruin sleep, big sale caught eye fast",
+       "Exhausted mom needs sleep, sale tempts click",
+       "Huge 50% eye-catching, loves discount",
+       "Young kids, tired, tapped sale mattress",
+       "New parent needs sleep, home decor interest"
+      ],
+      "score": 0.245
+     },
+     "1621803632856669": {
+      "seen": 1000,
+      "stop_rate": 0.15,
+      "click_rate": 0.056,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.156,
+       "18-24 · instagram": 0.182,
+       "25-34 · facebook": 0.165,
+       "25-34 · instagram": 0.15,
+       "35-44 · facebook": 0.149,
+       "35-44 · instagram": 0.15,
+       "45-54 · facebook": 0.143,
+       "45-54 · instagram": 0.2,
+       "55-64 · facebook": 0.135,
+       "55-64 · instagram": 0.065,
+       "65+ · facebook": 0.074,
+       "65+ · instagram": 0.2
+      },
+      "click_reasons": [
+       "Huge 55% pillow deal stands out",
+       "Discount headline grabbed price sensitive attention",
+       "Highest discount text demanded a look",
+       "Home decor fan spots sale, biggest discount wins",
+       "55% Rabatt grabbed me, need pillow"
+      ],
+      "score": 0.206
+     },
+     "2317748965727298": {
+      "seen": 1000,
+      "stop_rate": 0.094,
+      "click_rate": 0.014,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.062,
+       "18-24 · instagram": 0.023,
+       "25-34 · facebook": 0.066,
+       "25-34 · instagram": 0.139,
+       "35-44 · facebook": 0.115,
+       "35-44 · instagram": 0.12,
+       "45-54 · facebook": 0.133,
+       "45-54 · instagram": 0.108,
+       "55-64 · facebook": 0.094,
+       "55-64 · instagram": 0.065,
+       "65+ · facebook": 0.029,
+       "65+ · instagram": 0.15
+      },
+      "click_reasons": [
+       "New parent desperate for better sleep quality",
+       "Home decor interest, autumn bedroom hook caught attention",
+       "Home decor lover hooked by bedroom question",
+       "Schlafzimmer-Deko passt perfekt zu Interessen",
+       "Schlafzimmer bereit trifft Deko Interesse"
+      ],
+      "score": 0.108
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2,
+      3
+     ],
+     [
+      1,
+      2,
+      3,
+      0
+     ],
+     [
+      2,
+      3,
+      0,
+      1
+     ],
+     [
+      3,
+      0,
+      1,
+      2
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "1130992302926417",
+     "2317748965727298",
+     "1621803632856669",
+     "1092550136844006"
+    ],
+    "incomplete": false,
+    "reason": "B and D both push the core mattress Herbst Sale with 50% off and seasonal hook, so get the most budget and broadest appeal, with B slightly stronger urgency. C pushes the same sale but for a pillow accessory with 55%, narrower demand. A is non-promotional evergreen Lattenrost with no sale or season, so lowest spend and reach."
+   },
+   "population_score": {
+    "pairwise": 0.16666666666666666,
+    "top1": 0.0,
+    "spearman": -0.8
+   }
+  },
+  {
+   "batch_id": "614021922043782-2026W39",
+   "population": {
+    "ranking": [
+     "1819538352559724",
+     "1058294683662587",
+     "2193167634565674",
+     "1660260638900842"
+    ],
+    "stats": {
+     "1058294683662587": {
+      "seen": 1000,
+      "stop_rate": 0.191,
+      "click_rate": 0.037,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.17,
+       "18-24 · instagram": 0.219,
+       "25-34 · facebook": 0.158,
+       "25-34 · instagram": 0.231,
+       "35-44 · facebook": 0.127,
+       "35-44 · instagram": 0.176,
+       "45-54 · facebook": 0.263,
+       "45-54 · instagram": 0.294,
+       "55-64 · facebook": 0.144,
+       "55-64 · instagram": 0.208,
+       "65+ · facebook": 0.116,
+       "65+ · instagram": 0.333
+      },
+      "click_reasons": [
+       "Beauty lover, pink pack instantly eye-catching",
+       "Beauty lover, festive gift sets appeal",
+       "Fashion lover wants beauty gift set",
+       "Beauty lover, eye-catching pink gift set",
+       "Fashion first lines grabbed her attention"
+      ],
+      "score": 0.228
+     },
+     "1660260638900842": {
+      "seen": 1000,
+      "stop_rate": 0.144,
+      "click_rate": 0.042,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.075,
+       "18-24 · instagram": 0.143,
+       "25-34 · facebook": 0.158,
+       "25-34 · instagram": 0.178,
+       "35-44 · facebook": 0.153,
+       "35-44 · instagram": 0.167,
+       "45-54 · facebook": 0.101,
+       "45-54 · instagram": 0.118,
+       "55-64 · facebook": 0.155,
+       "55-64 · instagram": 0.083,
+       "65+ · facebook": 0.145,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Dog smell headline grabs pet owner",
+       "Home decor, fresh house appeals",
+       "Pet owner, dog smell headline grabbed instantly",
+       "Pet owner, gold dog bottle stood out",
+       "Pet lover hooked by dog headlines immediately"
+      ],
+      "score": 0.186
+     },
+     "1819538352559724": {
+      "seen": 1000,
+      "stop_rate": 0.196,
+      "click_rate": 0.054,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.245,
+       "18-24 · instagram": 0.219,
+       "25-34 · facebook": 0.198,
+       "25-34 · instagram": 0.219,
+       "35-44 · facebook": 0.203,
+       "35-44 · instagram": 0.25,
+       "45-54 · facebook": 0.172,
+       "45-54 · instagram": 0.059,
+       "55-64 · facebook": 0.186,
+       "55-64 · instagram": 0.083,
+       "65+ · facebook": 0.159,
+       "65+ · instagram": 0.167
+      },
+      "click_reasons": [
+       "Dog owner, real user review feels trustworthy",
+       "Pet owner, dog smell and spa relevant",
+       "Pet lover, dog spa unboxing hooks",
+       "Pet lover hooked by dog headlines immediately",
+       "Pet mom trusts real dog mom post"
+      ],
+      "score": 0.25
+     },
+     "2193167634565674": {
+      "seen": 1000,
+      "stop_rate": 0.163,
+      "click_rate": 0.031,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.132,
+       "18-24 · instagram": 0.133,
+       "25-34 · facebook": 0.168,
+       "25-34 · instagram": 0.154,
+       "35-44 · facebook": 0.203,
+       "35-44 · instagram": 0.213,
+       "45-54 · facebook": 0.152,
+       "45-54 · instagram": 0.196,
+       "55-64 · facebook": 0.113,
+       "55-64 · instagram": 0.167,
+       "65+ · facebook": 0.145,
+       "65+ · instagram": 0.333
+      },
+      "click_reasons": [
+       "Eye-catching pack, good advent deal shown",
+       "Cute festive gifts, eye-catching visuals",
+       "Loves beauty festive surprises for home",
+       "Festive home and fresh house appeal",
+       "Loves festive gifts, wants advent calendar"
+      ],
+      "score": 0.194
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2,
+      3
+     ],
+     [
+      1,
+      2,
+      3,
+      0
+     ],
+     [
+      2,
+      3,
+      0,
+      1
+     ],
+     [
+      3,
+      0,
+      1,
+      2
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "2193167634565674",
+     "1058294683662587",
+     "1660260638900842",
+     "1819538352559724"
+    ],
+    "incomplete": false,
+    "reason": "D is mass seasonal hero with broad gifting appeal and value pricing for highest delivery, A is second gifting hero but narrower than Advent, B is niche pet-owner angle for home fragrance, C is narrowest UGC Dog Spa event sign with no product shown."
+   },
+   "population_score": {
+    "pairwise": 0.0,
+    "top1": 0.0,
+    "spearman": -1.0
+   }
+  },
+  {
+   "batch_id": "614021922043782-2026W40",
+   "population": {
+    "ranking": [
+     "1108272131700163",
+     "2152527292143179",
+     "1107425148335786"
+    ],
+    "stats": {
+     "1107425148335786": {
+      "seen": 1000,
+      "stop_rate": 0.062,
+      "click_rate": 0.008,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.038,
+       "18-24 · instagram": 0.095,
+       "25-34 · facebook": 0.04,
+       "25-34 · instagram": 0.071,
+       "35-44 · facebook": 0.085,
+       "35-44 · instagram": 0.056,
+       "45-54 · facebook": 0.02,
+       "45-54 · instagram": 0.098,
+       "55-64 · facebook": 0.072,
+       "55-64 · instagram": 0.083,
+       "65+ · facebook": 0.029,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Boost body and soul appealed healthwise",
+       "Body soul health hook, likes beauty",
+       "Energy boost line fits fitness interest",
+       "Body and soul energy appealed health",
+       "Health headline grabs, wants energizing shower"
+      ],
+      "score": 0.07
+     },
+     "1108272131700163": {
+      "seen": 1000,
+      "stop_rate": 0.257,
+      "click_rate": 0.042,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.189,
+       "18-24 · instagram": 0.181,
+       "25-34 · facebook": 0.257,
+       "25-34 · instagram": 0.195,
+       "35-44 · facebook": 0.356,
+       "35-44 · instagram": 0.278,
+       "45-54 · facebook": 0.313,
+       "45-54 · instagram": 0.275,
+       "55-64 · facebook": 0.289,
+       "55-64 · instagram": 0.292,
+       "65+ · facebook": 0.203,
+       "65+ · instagram": 0.5
+      },
+      "click_reasons": [
+       "Beauty lover, advent calendar great gift for teenagers",
+       "Advent calendar perfect Christmas gift for grandchildren",
+       "Christmassy train caught my eye",
+       "Advent calendar perfect gift for grandchildren",
+       "Loves selfcare, advent gifts excite her"
+      ],
+      "score": 0.299
+     },
+     "2152527292143179": {
+      "seen": 1000,
+      "stop_rate": 0.163,
+      "click_rate": 0.04,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.189,
+       "18-24 · instagram": 0.248,
+       "25-34 · facebook": 0.109,
+       "25-34 · instagram": 0.249,
+       "35-44 · facebook": 0.076,
+       "35-44 · instagram": 0.167,
+       "45-54 · facebook": 0.192,
+       "45-54 · instagram": 0.157,
+       "55-64 · facebook": 0.093,
+       "55-64 · instagram": 0.167,
+       "65+ · facebook": 0.087,
+       "65+ · instagram": 0.167
+      },
+      "click_reasons": [
+       "Beauty lover, pink limited edition catches eye",
+       "Pretty selfcare colors, loves trying scents",
+       "Loves beauty, new limited scent intrigues her",
+       "Fashion lover, limited edition feels exclusive",
+       "Loves beauty, pink bottles pop"
+      ],
+      "score": 0.203
+     }
+    },
+    "calls": 50,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2
+     ],
+     [
+      1,
+      2,
+      0
+     ],
+     [
+      2,
+      0,
+      1
+     ],
+     [
+      2,
+      1,
+      0
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "1108272131700163",
+     "1107425148335786",
+     "2152527292143179"
+    ],
+    "incomplete": false,
+    "reason": "Ad B Adventskalenders has broad seasonal gift appeal and full Dutch copy for NL, driving highest spend/reach, followed by evergreen hero Mehr, with niche limited-edition Uukumwe lowest."
+   },
+   "population_score": {
+    "pairwise": 0.6666666666666666,
+    "top1": 0.0,
+    "spearman": 0.5
+   }
+  }
+ ],
+ "summary": {
+  "population": {
+   "batches": 19,
+   "pairwise": {
+    "mean": 0.453,
+    "ci95": [
+     0.302,
+     0.59
+    ],
+    "n": 19
+   },
+   "top1": {
+    "mean": 0.263,
+    "ci95": [
+     0.105,
+     0.474
+    ],
+    "n": 19
+   },
+   "spearman": {
+    "mean": -0.067,
+    "ci95": [
+     -0.391,
+     0.238
+    ],
+    "n": 19
+   }
+  },
+  "random": {
+   "batches": 19,
+   "pairwise": {
+    "mean": 0.522,
+    "ci95": [
+     0.491,
+     0.55
+    ],
+    "n": 19
+   },
+   "top1": {
+    "mean": 0.316,
+    "ci95": [
+     0.253,
+     0.376
+    ],
+    "n": 19
+   },
+   "spearman": {
+    "mean": 0.052,
+    "ci95": [
+     -0.006,
+     0.108
+    ],
+    "n": 19
+   }
+  },
+  "single_call": {
+   "batches": 19,
+   "pairwise": {
+    "mean": 0.487,
+    "ci95": [
+     0.339,
+     0.631
+    ],
+    "n": 19
+   },
+   "top1": {
+    "mean": 0.368,
+    "ci95": [
+     0.158,
+     0.579
+    ],
+    "n": 19
+   },
+   "spearman": {
+    "mean": -0.019,
+    "ci95": [
+     -0.332,
+     0.284
+    ],
+    "n": 19
+   }
+  }
+ }
+}

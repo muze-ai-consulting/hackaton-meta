@@ -25,6 +25,10 @@ log = logging.getLogger(__name__)
 BASE = "https://api.meta.ai/v1"
 RETRY_STATUS = {429, 500, 502, 503, 504}
 ATTEMPTS = 5
+# Spark 1.3 razona antes de responder y esos tokens cuentan dentro de max_tokens (sonda del 2-nov: con 200 tokens
+# y el esfuerzo por defecto, la respuesta salía vacía). Se fija el esfuerzo y se suma un margen para razonar.
+DEFAULT_EFFORT = "low"
+REASONING_ALLOWANCE = {"minimal": 400, "low": 2000, "medium": 6000, "high": 12000}
 
 
 @dataclass
@@ -63,7 +67,9 @@ class ModelClient:
         transport: httpx.AsyncBaseTransport | None = None,
         concurrency: int = 8,
         timeout: float = 120.0,
+        effort: str = DEFAULT_EFFORT,
     ) -> None:
+        self.effort = effort
         headers = {"Content-Type": "application/json"}
         if key:
             headers["Authorization"] = f"Bearer {key}"
@@ -78,9 +84,9 @@ class ModelClient:
 
             return cls(mock_ledger(), base="https://mock.local/v1", transport=transport(), concurrency=concurrency)
         load_dotenv(ROOT / ".env")
-        key = os.environ.get("MODEL_API_KEY")
+        key = os.environ.get("MODEL_API_KEY") or os.environ.get("META_API_KEY")
         if not key:
-            raise SystemExit("Falta MODEL_API_KEY en .env (ver .env.example). Para probar sin gastar: --mock")
+            raise SystemExit("Falta MODEL_API_KEY (o META_API_KEY) en .env (ver .env.example). Para probar sin gastar: --mock")
         return cls(Ledger(), base=os.environ.get("MODEL_API_BASE", BASE), key=key, concurrency=concurrency)
 
     async def chat(
@@ -94,7 +100,13 @@ class ModelClient:
         note: str = "",
     ) -> ChatResult:
         self.ledger.check(phase, upcoming_usd)
-        payload = {"model": model, "messages": messages, "max_tokens": max_tokens}
+        # max_tokens es lo que necesita la respuesta; se le suma el margen para razonar del esfuerzo elegido.
+        payload = {
+            "model": model,
+            "messages": messages,
+            "max_tokens": max_tokens + REASONING_ALLOWANCE[self.effort],
+            "reasoning_effort": self.effort,
+        }
         async with self._sem:
             body = await self._post("/chat/completions", payload)
         usage = body.get("usage") or {}

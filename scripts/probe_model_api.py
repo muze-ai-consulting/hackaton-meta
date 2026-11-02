@@ -106,9 +106,9 @@ def summarize(res: dict[str, Any]) -> dict[str, Any]:
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     load_dotenv(ROOT / ".env")
-    key = os.environ.get("MODEL_API_KEY")
+    key = os.environ.get("MODEL_API_KEY") or os.environ.get("META_API_KEY")
     if not key:
-        raise SystemExit("Falta MODEL_API_KEY en .env (ver .env.example).")
+        raise SystemExit("Falta MODEL_API_KEY (o META_API_KEY) en .env (ver .env.example).")
 
     headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
     out: dict[str, Any] = {"base": BASE, "ran_at": time.strftime("%Y-%m-%dT%H:%M:%S%z")}

@@ -1,0 +1,298 @@
+{
+ "source": "dev",
+ "mock": false,
+ "config": {
+  "source": "dev",
+  "mock": false,
+  "model": "muse-spark-1.3-contributor",
+  "phase": "calibracion",
+  "personas": 200,
+  "per_call": 20,
+  "orders": 4,
+  "seed": 7,
+  "limit": 1,
+  "concurrency": 8,
+  "no_single": false,
+  "score": false,
+  "tag": "piloto",
+  "effort": "low"
+ },
+ "ran_at": "2026-11-02T11:08:24-0300",
+ "secs": 57.2,
+ "usd": 0.0089,
+ "usd_note": "gasto real",
+ "batches": [
+  {
+   "batch_id": "103091995688814-2026W40",
+   "population": {
+    "ranking": [
+     "1638439194660195",
+     "1867188381310229",
+     "1159096303251080",
+     "1128553949595539",
+     "1665495248377193"
+    ],
+    "stats": {
+     "1128553949595539": {
+      "seen": 200,
+      "stop_rate": 0.135,
+      "click_rate": 0.01,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 1.0,
+       "18-24 · instagram": 0.333,
+       "25-34 · facebook": 0.2,
+       "25-34 · instagram": 0.154,
+       "35-44 · facebook": 0.095,
+       "35-44 · instagram": 0.0,
+       "45-54 · facebook": 0.143,
+       "45-54 · instagram": 0.222,
+       "55-64 · facebook": 0.111,
+       "55-64 · instagram": 0.0,
+       "65+ · facebook": 0.0,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Provocative opener felt fun and cheap enough",
+       "Bold loud visuals stopped fast scroll"
+      ],
+      "score": 0.145
+     },
+     "1159096303251080": {
+      "seen": 200,
+      "stop_rate": 0.22,
+      "click_rate": 0.025,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.0,
+       "18-24 · instagram": 0.0,
+       "25-34 · facebook": 0.45,
+       "25-34 · instagram": 0.385,
+       "35-44 · facebook": 0.143,
+       "35-44 · instagram": 0.409,
+       "45-54 · facebook": 0.086,
+       "45-54 · instagram": 0.0,
+       "55-64 · facebook": 0.167,
+       "55-64 · instagram": 0.2,
+       "65+ · facebook": 0.1,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Fitness fan curious about 5am life change",
+       "Morning routine promises fitness health boost",
+       "Pretty pink covers stopped fast scroll.",
+       "Pink morning routine fits fitness mom life",
+       "Health and learning angle fits, wanted more"
+      ],
+      "score": 0.245
+     },
+     "1638439194660195": {
+      "seen": 200,
+      "stop_rate": 0.36,
+      "click_rate": 0.035,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.0,
+       "18-24 · instagram": 0.111,
+       "25-34 · facebook": 0.15,
+       "25-34 · instagram": 0.462,
+       "35-44 · facebook": 0.381,
+       "35-44 · instagram": 0.182,
+       "45-54 · facebook": 0.514,
+       "45-54 · instagram": 0.556,
+       "55-64 · facebook": 0.333,
+       "55-64 · instagram": 0.4,
+       "65+ · facebook": 0.2,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Apple award caught my tech interest",
+       "Apple App of Day grabs tech fan",
+       "Apple 40M and Harvard feel trustworthy proof.",
+       "Apple award and millions provide trusted social proof",
+       "Tech fan drawn to pink and Apple visuals"
+      ],
+      "score": 0.395
+     },
+     "1665495248377193": {
+      "seen": 200,
+      "stop_rate": 0.005,
+      "click_rate": 0.0,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.0,
+       "18-24 · instagram": 0.0,
+       "25-34 · facebook": 0.05,
+       "25-34 · instagram": 0.0,
+       "35-44 · facebook": 0.0,
+       "35-44 · instagram": 0.0,
+       "45-54 · facebook": 0.0,
+       "45-54 · instagram": 0.0,
+       "55-64 · facebook": 0.0,
+       "55-64 · instagram": 0.0,
+       "65+ · facebook": 0.0,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [],
+      "score": 0.005
+     },
+     "1867188381310229": {
+      "seen": 200,
+      "stop_rate": 0.2,
+      "click_rate": 0.05,
+      "stop_rate_by_segment": {
+       "18-24 · facebook": 0.0,
+       "18-24 · instagram": 0.111,
+       "25-34 · facebook": 0.1,
+       "25-34 · instagram": 0.179,
+       "35-44 · facebook": 0.286,
+       "35-44 · instagram": 0.091,
+       "45-54 · facebook": 0.229,
+       "45-54 · instagram": 0.222,
+       "55-64 · facebook": 0.389,
+       "55-64 · instagram": 0.2,
+       "65+ · facebook": 0.2,
+       "65+ · instagram": 0.0
+      },
+      "click_reasons": [
+       "Needs proof, Apple and Harvard convince him",
+       "Entrepreneur likes Harvard book recommendations",
+       "Harvard finance books match her interests exactly",
+       "Harvard book picks fit investing business curiosity",
+       "Morning story and Harvard lists promise useful knowledge"
+      ],
+      "score": 0.25
+     }
+    },
+    "calls": 10,
+    "failed_calls": 0,
+    "orders": [
+     [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     [
+      1,
+      2,
+      3,
+      4,
+      0
+     ],
+     [
+      2,
+      3,
+      4,
+      0,
+      1
+     ],
+     [
+      4,
+      0,
+      1,
+      2,
+      3
+     ]
+    ],
+    "sample_reactions": []
+   },
+   "single_call": {
+    "ranking": [
+     "1638439194660195",
+     "1159096303251080",
+     "1867188381310229",
+     "1128553949595539",
+     "1665495248377193"
+    ],
+    "incomplete": false,
+    "reason": "Same targeting/budget, reach = compliance + broad appeal + text-overlay. C is clean, broad social proof with Apple App of the Day and 40M users for all 23-65+ in DE/AT. B is clean curiosity story about 5 AM Club but more niche productivity. E is Harvard authority but niche academic and heavy image text with 5 book covers limits delivery. A and D both use HÖR AUF, SO VERF*CKT LANGWEILIG ZU SEIN with personal-attribute insult and censored profanity plus extreme image text density, severely limiting distribution. A beats D because A has explanatory headline bringing 15-Minuten benefit, D has no headline."
+   },
+   "population_score": {
+    "pairwise": 0.2,
+    "top1": 0.0,
+    "spearman": -0.7
+   }
+  }
+ ],
+ "summary": {
+  "population": {
+   "batches": 1,
+   "pairwise": {
+    "mean": 0.2,
+    "ci95": [
+     0.2,
+     0.2
+    ],
+    "n": 1
+   },
+   "top1": {
+    "mean": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ],
+    "n": 1
+   },
+   "spearman": {
+    "mean": -0.7,
+    "ci95": [
+     -0.7,
+     -0.7
+    ],
+    "n": 1
+   }
+  },
+  "random": {
+   "batches": 1,
+   "pairwise": {
+    "mean": 0.51,
+    "ci95": [
+     0.51,
+     0.51
+    ],
+    "n": 1
+   },
+   "top1": {
+    "mean": 0.15,
+    "ci95": [
+     0.15,
+     0.15
+    ],
+    "n": 1
+   },
+   "spearman": {
+    "mean": 0.05,
+    "ci95": [
+     0.05,
+     0.05
+    ],
+    "n": 1
+   }
+  },
+  "single_call": {
+   "batches": 1,
+   "pairwise": {
+    "mean": 0.1,
+    "ci95": [
+     0.1,
+     0.1
+    ],
+    "n": 1
+   },
+   "top1": {
+    "mean": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ],
+    "n": 1
+   },
+   "spearman": {
+    "mean": -0.9,
+    "ci95": [
+     -0.9,
+     -0.9
+    ],
+    "n": 1
+   }
+  }
+ }
+}

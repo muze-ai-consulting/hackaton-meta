@@ -80,6 +80,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--score", action="store_true", help="sealed: leer las etiquetas selladas y puntuar")
     p.add_argument("--yes", action="store_true", help="confirmar el gasto real")
     p.add_argument("--tag", default="")
+    p.add_argument("--effort", choices=["minimal", "low", "medium", "high"], default="low", help="reasoning_effort de Spark 1.3")
     return p.parse_args()
 
 
@@ -108,6 +109,7 @@ async def run(args: argparse.Namespace) -> None:
         return
 
     client = ModelClient.from_env(mock=args.mock, concurrency=args.concurrency)
+    client.effort = args.effort
     spent_before = client.ledger.spent()
     t0 = time.monotonic()
     per_batch = []
