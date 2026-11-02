@@ -59,6 +59,7 @@ Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el pla
 - Se prueban solo dos configuraciones nuevas en dev: `--view feed --effort low` y `--view feed --effort medium` (el anuncio como lo muestra el feed: primera línea cortada, imagen, título debajo). La llamada única ve lo mismo.
 - Rival nuevo sin modelo: "gana el texto más corto" (`short_text`). Va también al sellado y su ranking entra en el hash.
 - Regla: al sellado va la configuración con mayor promedio de pares bien ordenados de la población en dev, entre las tres (`full/low`, `feed/low`, `feed/medium`). No se prueba nada más. Se corre el sellado aunque no gane; se informa lo que salga.
+- Resultado en dev (pares bien ordenados de la población / llamada única / texto corto / azar): `full/low` 0,453 / 0,487 / 0,64 / 0,522; `feed/low` **0,493** / 0,498 / 0,64 / 0,522 (US$ 0,64); `feed/medium` 0,484 / 0,484 / 0,64 / 0,522 (US$ 0,95). Por la regla, al sellado va `feed/low`. Ninguna configuración de modelo le gana al azar; la regla del texto corto sí (IC95 0,51–0,77).
 
 ## Fechas
 Entrega interna: miércoles 4-nov 18:00 Chile (cierre oficial 23:00 Chile). Hash de la prueba en vivo: antes del 3-nov 23:59.
