@@ -33,7 +33,10 @@ Capas previstas: ingesta (Ad Library) → variantes (Muse Image) → población 
   - `batches.py`: lotes por página y semana con anuncios de una versión. Separa el sellado por hash del lote y escribe el SHA-256 de las etiquetas en `results/sealed_labels.sha256`.
   - `metrics.py`: pares bien ordenados, top-1, Spearman, bootstrap y rival al azar.
   - `costs.py`: precios, medidor con topes por fase y estimación de costo por lote.
-- Scripts: `scripts/probe_model_api.py` (día 0) y `scripts/eu_advertisers.py` (descarga a `data/raw/ad_library/`, que alimenta `python -m ensayo.batches`).
+  - `llm.py`: cliente async de la Model API; toda llamada pasa por el `Ledger`. `--mock` usa `mock.py` (sin red; el costo hipotético va a `results/costs_mock.jsonl`).
+  - `simulate.py`: feed simulado (20 personas por llamada, 4 órdenes repartidos entre llamadas, solo letras en el prompt) y el rival de llamada única. Puntaje = frenado + clic (supuesto a calibrar en dev).
+  - `fixtures.py`: lotes inventados para desarrollar sin Ad Library.
+- Scripts: `scripts/run_backtest.py` (población vs llamada única vs azar; sin `--mock` muestra el costo y solo gasta con `--yes`), `scripts/probe_model_api.py` (día 0) y `scripts/eu_advertisers.py` (descarga a `data/raw/ad_library/`, que alimenta `python -m ensayo.batches`).
 
 ## Deployment
 - **Web del plan (equipo):** https://labs.muze.cl/hackaton-meta/ — estática y pública por decisión de Mark (solo `noindex`). Fuente en `site/`; el avance vive en `site/roadmap.json` (estados: `pendiente`, `en-curso`, `hecho`, `bloqueado`; riesgos `abierto`/`resuelto`). Informes HTML: `uv run --python 3.12 --with markdown scripts/build_site.py` → `site/informes/`. Publicar: `rsync -az site/ root@185.205.244.85:/var/www/hackaton-meta/` (sin `--delete`). Ruta nginx en `/etc/nginx/sites-enabled/labs.muze.cl` (bloque `location /hackaton-meta/`); respaldos en `/root/nginx-backups/`.
