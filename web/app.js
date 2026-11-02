@@ -221,18 +221,19 @@ function renderResult(req, data) {
       <tbody>${segments.map((seg) => `
         <tr><th scope="row">${esc(seg.replace("instagram", "Instagram").replace("facebook", "Facebook"))}</th>${pop.ranking.map((id) => {
           const x = pop.stats[id].stop_rate_by_segment[seg] || 0;
-          return `<td class="heat" style="background: rgba(59,130,246,${(0.08 + 0.5 * x / heatMax).toFixed(2)})">${pct(x)}</td>`;
+          return `<td class="heat" style="background: rgba(168,85,247,${(0.06 + 0.4 * x / heatMax).toFixed(2)})">${pct(x)}</td>`;
         }).join("")}</tr>`).join("")}
       </tbody>
     </table>`;
 
   const order = (ranking) => `<ol class="order">${ranking.map((id, i) => `<li class="${i === 0 ? "top" : ""}">${label[id]}</li>`).join("")}</ol>`;
 
-  const people = pop.sample_reactions.map((p) => `
+  const people = pop.sample_reactions.map((p, i) => `
     <div class="person">
       <div class="who">${esc(p.persona)}</div>
       <div class="what">${p.stopped.length ? `Se detiene en ${p.stopped.map((id) => label[id]).join(", ")}` : "Pasa de largo todos los anuncios"}${p.clicked.length ? ` · clic en ${p.clicked.map((id) => label[id]).join(", ")}` : ""}</div>
       ${p.reason ? `<div class="why">${esc(p.reason)}</div>` : ""}
+      <button type="button" class="btn-secondary talk" data-person="${i}">Conversar</button>
     </div>`).join("");
 
   $("#results").innerHTML = `
@@ -253,7 +254,67 @@ function renderResult(req, data) {
       <p class="hint">${agree ? "Las dos coinciden en la ganadora." : "No coinciden en la ganadora: la audiencia ve algo que la llamada única no ve, o al revés. El backtest dice cuál acierta más."}</p>
     </section>
     <section class="panel"><h2>Quién se detiene, por segmento</h2><div class="table-wrap">${table}</div></section>
-    <section class="panel"><h2>Algunas personas de la audiencia</h2><div class="people">${people}</div></section>`;
+    <section class="panel"><h2>Algunas personas de la audiencia</h2><p class="hint">Pregúntale a cualquiera por qué se detuvo, hizo clic o pasó de largo.</p><div class="people">${people}</div></section>
+    <section class="panel chat" id="chat" hidden></section>`;
+  document.querySelectorAll("#results .talk").forEach((b) => b.addEventListener("click", () => openChat(req, data, pop.sample_reactions[Number(b.dataset.person)], label)));
+}
+
+// Conversar con una persona
+const SUGGESTED = ["¿Por qué te detuviste en ese anuncio?", "¿Qué tendría que decir el anuncio para que hicieras clic?", "¿Cuánto pagarías por esto?"];
+
+function openChat(req, data, person, label) {
+  const box = $("#chat");
+  const history = [];
+  const reaction = person.stopped.length ? `Se detuvo en ${person.stopped.map((id) => label[id]).join(", ")}` : "Pasó de largo todos los anuncios";
+  box.hidden = false;
+  box.innerHTML = `
+    <div class="chat-head">
+      <div><h2>Conversación</h2><p class="hint">${esc(person.persona)}</p><p class="chip">${esc(reaction)}</p></div>
+      <button type="button" class="link chat-close">Cerrar</button>
+    </div>
+    ${data.mode === "mock" ? `<p class="notice warn">Modo prueba: las respuestas salen del servidor falso.</p>` : ""}
+    <div class="messages" aria-live="polite"></div>
+    <div class="suggested">${SUGGESTED.map((q) => `<button type="button" class="chip-btn">${esc(q)}</button>`).join("")}</div>
+    <form class="chat-form">
+      <input type="text" maxlength="500" placeholder="Escribe una pregunta…" aria-label="Pregunta para la persona" required>
+      <button type="submit" class="btn-primary">Enviar</button>
+    </form>`;
+  const list = $(".messages", box);
+  const input = $(".chat-form input", box);
+  const send = async (question) => {
+    question = question.trim();
+    if (!question) return;
+    list.insertAdjacentHTML("beforeend", `<div class="msg user">${esc(question)}</div><div class="msg persona typing">…</div>`);
+    list.scrollTop = list.scrollHeight;
+    input.value = "";
+    const pending = list.lastElementChild;
+    try {
+      const res = await fetch("api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          brand: req.brand, persona: person.persona, variants: req.variants,
+          stopped: person.stopped, clicked: person.clicked, reason: person.reason,
+          history, question, mode: data.mode,
+        }),
+      });
+      const out = await res.json();
+      if (!res.ok) throw new Error(typeof out.detail === "string" ? out.detail : "Error");
+      pending.classList.remove("typing");
+      pending.textContent = out.answer;
+      history.push({ role: "user", text: question }, { role: "persona", text: out.answer });
+    } catch (err) {
+      pending.classList.remove("typing");
+      pending.classList.add("error");
+      pending.textContent = `No respondió: ${err.message}`;
+    }
+    list.scrollTop = list.scrollHeight;
+  };
+  $(".chat-form", box).addEventListener("submit", (ev) => { ev.preventDefault(); send(input.value); });
+  box.querySelectorAll(".chip-btn").forEach((b) => b.addEventListener("click", () => send(b.textContent)));
+  $(".chat-close", box).addEventListener("click", () => { box.hidden = true; });
+  box.scrollIntoView({ behavior: "smooth", block: "start" });
+  input.focus();
 }
 
 // Prueba del modelo

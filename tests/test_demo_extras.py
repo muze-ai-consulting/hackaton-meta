@@ -1,4 +1,4 @@
-"""Pruebas de las variantes con Muse Image, siempre con el servidor falso."""
+"""Pruebas de las variantes con Muse Image y del chat con una persona, siempre con el servidor falso."""
 
 import asyncio
 import base64
@@ -76,3 +76,36 @@ def test_generated_variants_feed_the_simulation(tmp_path, monkeypatch) -> None:
     body = {"variants": [{k: v[k] for k in ("title", "body", "image_url")} for v in variants], "personas": 40}
     res = c.post("/api/simulate", json=body)
     assert res.status_code == 200 and sorted(res.json()["population"]["ranking"]) == ["v1", "v2", "v3"]
+
+
+def test_chat_with_persona(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr(llm, "RESULTS", tmp_path)
+    monkeypatch.delenv("ENSAYO_REAL", raising=False)
+    c = TestClient(api.app)
+    body = {
+        "brand": "Café",
+        "persona": "Mujer de 31 años en GB.",
+        "variants": [{"title": "Uno", "body": "a"}, {"title": "Dos", "body": "b", "image_url": PIXEL}],
+        "stopped": ["v2"],
+        "clicked": [],
+        "reason": "me gustó la foto",
+        "history": [{"role": "user", "text": "hola"}, {"role": "persona", "text": "hola"}],
+        "question": "¿Por qué no hiciste clic?",
+    }
+    res = c.post("/api/chat", json=body)
+    assert res.status_code == 200 and "¿Por qué no hiciste clic?" in res.json()["answer"]
+    assert res.json()["usd"] > 0
+    assert c.post("/api/chat", json={**body, "question": ""}).status_code == 422
+    assert c.post("/api/chat", json={**body, "mode": "real"}).status_code == 403
+
+
+def test_persona_messages_use_demo_letters() -> None:
+    from ensayo.chat import persona_messages
+
+    variants = [{"ad_id": "v1", "title": "Uno"}, {"ad_id": "v2", "title": "Dos"}]
+    msgs = persona_messages(
+        brand="X", persona="P", variants=variants, stopped=["v2"], clicked=[], reason="",
+        history=[{"role": "persona", "text": "antes"}], question="¿y?",
+    )
+    assert "Anuncio B: título: Dos" in msgs[1]["content"] and "detuviste a mirar: B" in msgs[1]["content"]
+    assert msgs[-2] == {"role": "assistant", "content": "antes"} and msgs[-1]["content"] == "¿y?"

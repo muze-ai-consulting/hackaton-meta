@@ -102,13 +102,22 @@ def respond_image(payload: dict[str, Any]) -> dict[str, Any]:
     return {"created": 0, "data": [{"b64_json": base64.b64encode(png).decode()}]}
 
 
+def _conversation(messages: list[dict[str, Any]]) -> str:
+    question = str(messages[-1].get("content") or "")[:80]
+    return f"(Respuesta de prueba del servidor falso.) Me preguntas «{question}». Lo que recuerdo es mi reacción en el feed."
+
+
 def respond(payload: dict[str, Any]) -> dict[str, Any]:
-    prompt, images = _flatten(payload.get("messages") or [])
-    if "variantes_creativas" in prompt:
-        body = _creative(prompt)
+    messages = payload.get("messages") or []
+    prompt, images = _flatten(messages)
+    if "Tarea: conversar" in prompt:
+        text = _conversation(messages)
     else:
-        body = _simulation(prompt) if "reacciones" in prompt else _ranking(prompt)
-    text = json.dumps(body, ensure_ascii=False)
+        if "variantes_creativas" in prompt:
+            body = _creative(prompt)
+        else:
+            body = _simulation(prompt) if "reacciones" in prompt else _ranking(prompt)
+        text = json.dumps(body, ensure_ascii=False)
     usage = {
         "prompt_tokens": len(prompt) // 4 + images * IMAGE_TOKENS,
         "completion_tokens": len(text) // 4,

@@ -7,7 +7,7 @@
   <title>Ensayo para anuncios</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="static/app.css">
 </head>
 <body>
@@ -59,7 +59,7 @@
           </label>
         </fieldset>
 
-        <fieldset class="field-group">
+        <fieldset class="field-group featured">
           <legend>Generar variantes con Muse Image <span class="hint">(opcional)</span></legend>
           <label class="field">
             <span>Producto o idea del anuncio</span>
@@ -81,7 +81,7 @@
                 <option value="4">4</option>
               </select>
             </label>
-            <button type="button" id="gen-variants" class="btn-secondary">Generar variantes</button>
+            <button type="button" id="gen-variants" class="btn-primary btn-accent">Generar variantes</button>
           </div>
           <p id="gen-status" class="hint" aria-live="polite"></p>
         </fieldset>
@@ -104,9 +104,15 @@
 
       <div id="results" class="results" aria-live="polite">
         <div class="panel empty">
-          <h2>Qué hace Ensayo</h2>
-          <p>Arma una audiencia sintética con la segmentación del anuncio. Cada persona ve tus variantes en su feed, en cuatro órdenes distintos, y decide si se detiene a mirar y si haría clic.</p>
-          <p>El resultado es un ranking con explicación, comparado con lo que diría Muse Spark 1.3 en una sola llamada.</p>
+          <span class="eyebrow">Muse Spark 1.3 · Muse Image</span>
+          <h1>Ensaya tu anuncio antes de pagar por él</h1>
+          <p class="lead">Una audiencia sintética de Instagram y Facebook ve tus variantes en su feed y te dice cuál la hace detenerse y cuál la hace hacer clic.</p>
+          <ol class="flow">
+            <li><span class="n">1</span><strong>Describe tu producto</strong><span>Escribe las variantes o genéralas con Muse Image.</span></li>
+            <li><span class="n">2</span><strong>Arma la audiencia</strong><span>Personas con la segmentación del anuncio: edad, género, países.</span></li>
+            <li><span class="n">3</span><strong>Simula el feed</strong><span>Cada persona ve las variantes en cuatro órdenes y decide.</span></li>
+            <li><span class="n">4</span><strong>Conversa y decide</strong><span>Ranking con explicación, contra una sola llamada a Spark, y chat con cada persona.</span></li>
+          </ol>
         </div>
       </div>
     </section>

@@ -1,6 +1,7 @@
 """API y página del demo de Ensayo.
 
 - POST /api/simulate: ensaya las variantes de un anuncio con una población sintética y el rival de llamada única.
+- POST /api/chat: una pregunta a una persona de la audiencia sobre su reacción a las variantes.
 - POST /api/variants: propone variantes (título, texto e imagen de Muse Image) desde una descripción y una foto.
 - GET /api/backtest: el último resultado de scripts/run_backtest.py (prefiere corridas reales a las de prueba).
 - GET /: la página (web/).
@@ -23,6 +24,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from ensayo import RESULTS, ROOT
+from ensayo.chat import ask_persona
 from ensayo.costs import BudgetExceeded
 from ensayo.images import MAX_VARIANTS, generate_variants
 from ensayo.llm import ModelClient
@@ -69,6 +71,23 @@ class VariantsIn(BaseModel):
     brief: str = Field("", max_length=2000)
     photo_url: str | None = Field(None, max_length=MAX_IMAGE_CHARS)
     n: int = Field(3, ge=2, le=MAX_VARIANTS)
+    mode: Literal["mock", "real"] = "mock"
+
+
+class TurnIn(BaseModel):
+    role: Literal["user", "persona"]
+    text: str = Field(max_length=2000)
+
+
+class ChatIn(BaseModel):
+    brand: str = Field("", max_length=120)
+    persona: str = Field(min_length=1, max_length=1000)
+    variants: list[VariantIn] = Field(min_length=1, max_length=6)
+    stopped: list[str] = Field(default_factory=list, max_length=6)
+    clicked: list[str] = Field(default_factory=list, max_length=6)
+    reason: str = Field("", max_length=500)
+    history: list[TurnIn] = Field(default_factory=list, max_length=40)
+    question: str = Field(min_length=1, max_length=500)
     mode: Literal["mock", "real"] = "mock"
 
 
@@ -131,6 +150,41 @@ async def simulate(req: SimulateIn) -> dict[str, Any]:
         "population": sim,
         "single_call": single,
     }
+
+
+@app.post("/api/chat")
+async def chat(req: ChatIn) -> dict[str, Any]:
+    mock = req.mode == "mock"
+    if not mock and not real_allowed():
+        raise HTTPException(403, "El modo real está desactivado en este servidor.")
+    variants = [
+        {"ad_id": f"v{i + 1}", "title": v.title, "body": v.body, "image_url": v.image_url or None}
+        for i, v in enumerate(req.variants)
+    ]
+    client = ModelClient.from_env(mock=mock)
+    spent_before = client.ledger.spent()
+    try:
+        answer = await ask_persona(
+            client,
+            model=REAL_MODEL,
+            phase="demo",
+            brand=req.brand,
+            persona=req.persona,
+            variants=variants,
+            stopped=req.stopped,
+            clicked=req.clicked,
+            reason=req.reason,
+            history=[t.model_dump() for t in req.history],
+            question=req.question,
+        )
+    except BudgetExceeded as exc:
+        raise HTTPException(402, f"Se alcanzó el tope de gasto del demo: {exc}") from exc
+    except RuntimeError as exc:
+        log.exception("Fallo de la Model API")
+        raise HTTPException(502, f"La Model API respondió con error: {exc}") from exc
+    finally:
+        await client.aclose()
+    return {"mode": req.mode, "usd": round(client.ledger.spent() - spent_before, 4), "answer": answer}
 
 
 @app.post("/api/variants")
