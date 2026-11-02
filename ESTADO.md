@@ -20,21 +20,22 @@ Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el pla
 - `ensayo/images.py` + `POST /api/variants`: variantes con Muse Image. Una llamada a Spark escribe un ángulo por variante (título, texto, prompt de imagen; ve la foto del producto si la hay) y `muse-image-1.0` genera una imagen por variante (`ModelClient.image`, US$0,01 cada una, pasa por el `Ledger`). En el demo, el bloque "Generar variantes con Muse Image" llena el formulario. Modo falso: degradado PNG de relleno sin red, costo hipotético en `results/costs_mock.jsonl` (~US$0,03 por 3 variantes). Supuestos sin verificar hasta la sonda: que `/images/generations` acepte `size` y devuelva `b64_json` o `url` (se manejan los dos), y que no haya edición desde foto (por eso la foto pasa por Spark y no por Muse Image).
 - `ensayo/chat.py` + `POST /api/chat`: conversar con una persona de la audiencia. Cada tarjeta de "Algunas personas" tiene "Conversar": la persona responde en primera persona con su descripción, los anuncios (mismas letras del demo, con imagen) y su reacción como contexto, y puede discutir. Una llamada a Spark por pregunta (fase `demo`); el historial lo manda el navegador (máx. 10 mensajes). Modo falso con respuesta de relleno.
 - Diseño del demo basado en zenith.chat: fondo `#ebedf1`, Inter, tarjetas blancas translúcidas con sombra, botón primario `#353536`, acento cian → violeta → verde, portada con los cuatro pasos. Verificado en escritorio y a 375 px.
+- `ensayo/apify.py` + `scripts/eu_advertisers.py --apify`: Ad Library vía el actor de Apify `memo23/facebook-ads-library-scraper-cheerio`. Convierte cada anuncio a los campos de `ads_archive` (alcance UE, edad, género, países con código ISO desde el desglose de alcance, textos, plataformas) y además trae la URL de la imagen, que pasa a las variantes de los lotes. Respuestas cacheadas en `data/raw/apify/`; sin `--yes` solo muestra el costo. Probado con la salida documentada del actor, todavía no contra Apify real.
 - `scripts/probe_model_api.py` (sonda del día 0) y `scripts/eu_advertisers.py` (descarga y ranking de anunciantes), ambos sin correr: faltan credenciales.
-- 31 pruebas: `uv run --group dev pytest -q`.
+- 35 pruebas: `uv run --group dev pytest -q`.
 
 ## Bloqueado en Mark
-1. Verificación de identidad en facebook.com/ID, app de desarrollador y token de la Ad Library (`META_ACCESS_TOKEN` en `.env`).
+1. ~~Token de la Ad Library~~ Mark no alcanzó a obtenerlo (1-nov). Reemplazo: Apify (ver abajo). Falta que Mark cree la cuenta en apify.com y ponga `APIFY_TOKEN` en `.env`. El plan gratis limita cada corrida a 30 anuncios y a un objetivo: sirve para validar; para el set completo conviene un plan pagado (máx. ~US$14 por los 79 anunciantes con 300 anuncios cada uno).
 2. Key de la Model API (`MODEL_API_KEY` en `.env`) y confirmar que los 150 créditos son US$ y valen en el contributor.
 3. Leer las Official Rules y preguntar en el Discord: herramientas de IA para programar, modelos que no son de Meta, código previo (no hay; el repo parte el 27-oct).
 4. ~~OK para desplegar el demo~~ dado y desplegado el 1-nov: https://labs.muze.cl/ensayo/ (solo modo prueba). Falta el OK para encender el modo real en el VPS cuando haya key.
-5. Ruta sin datos: si el token no llega el lunes 2-nov al mediodía, se entrega como protocolo preregistrado + motor reproducible + demo, sin métrica de precisión.
+5. Ruta sin datos: si tampoco hay datos de Apify el lunes 2-nov al mediodía, se entrega como protocolo preregistrado + motor reproducible + demo, sin métrica de precisión.
 
 ## Pendiente (en orden sugerido)
 1. ~~Variantes con Muse Image~~ hecho (1-nov). Con la key: probarlo una vez en real con `ENSAYO_REAL=1`.
 2. ~~Despliegue del demo~~ hecho (1-nov): https://labs.muze.cl/ensayo/. Detalles y comando de redespliegue en `CLAUDE.md` § Deployment.
 3. **Con la key:** `probe_model_api.py` → actualizar `IMAGE_TOKENS` en `simulate.py` y precios/caché medidos → piloto de 1 lote con 200 personas.
-4. **Con el token:** `eu_advertisers.py` → `python -m ensayo.batches` → commit de `results/sealed_labels.sha256` → calibración en dev (pesos de edad, puntaje) → corrida sellada → hash de rankings en commit antes del 3-nov 23:59.
+4. **Con `APIFY_TOKEN`:** `uv run python scripts/eu_advertisers.py --apify --limit 2 --yes` (validar campos) → corrida completa → `python -m ensayo.batches` → commit de `results/sealed_labels.sha256` → calibración en dev (pesos de edad, puntaje) → corrida sellada → hash de rankings en commit antes del 3-nov 23:59.
 5. **README** con la declaración de Claude Code, el protocolo y cómo correr todo. Video y formulario de entrega (Mark los envía).
 6. Actualizar `site/roadmap.json` (editar con reemplazo de texto, no con `json.dump`) y publicar con el rsync del CLAUDE.md.
 
