@@ -1,4 +1,4 @@
-# Estado del proyecto: traspaso al 1-nov-2026 (actualizado: variantes con Muse Image, chat con personas y diseño estilo Zenith)
+# Estado del proyecto: traspaso al 1-nov-2026 (actualizado: Muse Image, chat con personas, diseño estilo Zenith y demo desplegado)
 
 Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el plan, en `PLAN.md`; la investigación, en `reports/` (la última es `reports/Hackatón de Meta apuesta final.md`).
 
@@ -27,12 +27,12 @@ Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el pla
 1. Verificación de identidad en facebook.com/ID, app de desarrollador y token de la Ad Library (`META_ACCESS_TOKEN` en `.env`).
 2. Key de la Model API (`MODEL_API_KEY` en `.env`) y confirmar que los 150 créditos son US$ y valen en el contributor.
 3. Leer las Official Rules y preguntar en el Discord: herramientas de IA para programar, modelos que no son de Meta, código previo (no hay; el repo parte el 27-oct).
-4. OK para desplegar el demo en `labs.muze.cl/ensayo` (Docker Compose, `restart: unless-stopped`, health check en `/health`).
+4. ~~OK para desplegar el demo~~ dado y desplegado el 1-nov: https://labs.muze.cl/ensayo/ (solo modo prueba). Falta el OK para encender el modo real en el VPS cuando haya key.
 5. Ruta sin datos: si el token no llega el lunes 2-nov al mediodía, se entrega como protocolo preregistrado + motor reproducible + demo, sin métrica de precisión.
 
 ## Pendiente (en orden sugerido)
 1. ~~Variantes con Muse Image~~ hecho (1-nov). Con la key: probarlo una vez en real con `ENSAYO_REAL=1`.
-2. **Despliegue del demo** en el VPS (con OK de Mark): Dockerfile multi-stage, compose, nginx `location /ensayo/`. La página usa rutas relativas, funciona bajo prefijo.
+2. ~~Despliegue del demo~~ hecho (1-nov): https://labs.muze.cl/ensayo/. Detalles y comando de redespliegue en `CLAUDE.md` § Deployment.
 3. **Con la key:** `probe_model_api.py` → actualizar `IMAGE_TOKENS` en `simulate.py` y precios/caché medidos → piloto de 1 lote con 200 personas.
 4. **Con el token:** `eu_advertisers.py` → `python -m ensayo.batches` → commit de `results/sealed_labels.sha256` → calibración en dev (pesos de edad, puntaje) → corrida sellada → hash de rankings en commit antes del 3-nov 23:59.
 5. **README** con la declaración de Claude Code, el protocolo y cómo correr todo. Video y formulario de entrega (Mark los envía).

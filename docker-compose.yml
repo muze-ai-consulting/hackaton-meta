@@ -1,0 +1,20 @@
+# Demo en labs.muze.cl/ensayo (nginx → 127.0.0.1:8040). Modo real apagado: para encenderlo, ENSAYO_REAL=1 y
+# MODEL_API_KEY en .env junto a este archivo (env_file), solo con OK de Mark.
+services:
+  ensayo:
+    build: .
+    container_name: ensayo
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8040:8040"
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - ./results:/app/results
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8040/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
