@@ -14,16 +14,20 @@ META_ACCESS_TOKEN. Las respuestas del actor quedan en data/raw/apify/ y los anun
 data/raw/ad_library/apify_<page_id>.json, que es lo que lee `python -m ensayo.batches`. Sin --yes solo muestra
 el costo estimado.
 
+Con varias cuentas de Apify (APIFY_TOKEN, APIFY_TOKEN_2, _3…) pasa a la siguiente cuando una se queda sin crédito.
+
 Uso: uv run python scripts/eu_advertisers.py [--limit N]
      uv run python scripts/eu_advertisers.py --apify [--limit N] [--max-ads 300] [--yes]
 """
 
 import argparse
+import contextlib
 import csv
 import hashlib
 import json
 import logging
 import os
+import re
 import time
 from collections import Counter, defaultdict
 from datetime import date, datetime
@@ -180,6 +184,32 @@ def official_page(client: httpx.Client, token: str, c: dict[str, str]) -> tuple[
     return page, ads
 
 
+def apify_tokens() -> list[str]:
+    """APIFY_TOKEN y luego APIFY_TOKEN_2, _3…, en orden."""
+    numbered = sorted(
+        (int(m.group(1)), v) for k, v in os.environ.items() if (m := re.fullmatch(r"APIFY_TOKEN_(\d+)", k)) and v
+    )
+    first = [os.environ["APIFY_TOKEN"]] if os.environ.get("APIFY_TOKEN") else []
+    return first + [v for _, v in numbered]
+
+
+def rotating_fetch(clients: list[httpx.Client], max_ads: int):  # noqa: ANN201
+    """Baja un candidato con la cuenta actual y pasa a la siguiente cuando se queda sin crédito."""
+    state = {"i": 0}
+
+    def fetch(c: dict[str, str]) -> tuple[tuple[str, str] | None, list[dict[str, Any]]]:
+        while True:
+            try:
+                return apify_page(clients[state["i"]], c, max_ads)
+            except apify.OutOfCredit as exc:
+                log.warning(f"Cuenta {state['i'] + 1} sin crédito ({exc}); paso a la siguiente")
+                state["i"] += 1
+                if state["i"] >= len(clients):
+                    raise RuntimeError("Todas las cuentas de Apify sin crédito") from exc
+
+    return fetch
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--limit", type=int, default=0, help="procesar solo los primeros N candidatos")
@@ -197,8 +227,8 @@ def main() -> None:
         candidates = candidates[: args.limit]
 
     if args.apify:
-        token = os.environ.get("APIFY_TOKEN")
-        if not token:
+        tokens = apify_tokens()
+        if not tokens:
             raise SystemExit("Falta APIFY_TOKEN en .env (ver .env.example).")
         RAW_APIFY.mkdir(parents=True, exist_ok=True)
         estimate = len(candidates) * (2 * apify.USD_PER_RUN + (50 + args.max_ads) * apify.USD_PER_AD)
@@ -206,17 +236,21 @@ def main() -> None:
         if not args.yes:
             log.info("No se corrió nada. Para correrlo: agrega --yes")
             return
-        client = apify.client_from_token(token)
-        fetch = lambda c: apify_page(client, c, args.max_ads)  # noqa: E731
+        clients = [apify.client_from_token(t) for t in tokens]
+        log.info(f"{len(clients)} cuenta(s) de Apify")
+        fetch = rotating_fetch(clients, args.max_ads)
     else:
         token = os.environ.get("META_ACCESS_TOKEN")
         if not token:
             raise SystemExit("Falta META_ACCESS_TOKEN en .env (ver .env.example). Sin token: --apify")
         client = httpx.Client(timeout=60)
+        clients = [client]
         fetch = lambda c: official_page(client, token, c)  # noqa: E731
 
     out: list[dict[str, Any]] = []
-    with client:
+    with contextlib.ExitStack() as stack:
+        for cl in clients:
+            stack.enter_context(cl)
         for c in candidates:
             try:
                 page, ads = fetch(c)
