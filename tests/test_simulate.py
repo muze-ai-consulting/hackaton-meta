@@ -43,7 +43,7 @@ def test_prompt_hides_ids_and_labels() -> None:
     text = json.dumps(simulation_messages(batch, list(range(len(batch["variants"]))), people), ensure_ascii=False)
     assert all(v["ad_id"] not in text for v in batch["variants"])
     assert "reach" not in text and "alcance" not in text
-    assert "P3:" in text and "Anuncio A:" in text
+    assert "P3:" in text and "Ad A:" in text
 
 
 def test_simulate_batch_with_mock(tmp_path) -> None:
@@ -95,7 +95,7 @@ def test_client_retries_rate_limit_and_respects_budget(tmp_path, monkeypatch) ->
 
     ledger = Ledger(path=tmp_path / "c.jsonl", total_budget=1.0, caps={"pruebas": 0.5})
     client = ModelClient(ledger, base="https://mock.local/v1", transport=httpx.MockTransport(handler))
-    messages = [{"role": "user", "content": "Anuncio A: x\nAnuncio B: y\nranking"}]
+    messages = [{"role": "user", "content": "Ad A: x\nAd B: y\nranking"}]
 
     async def go():
         try:

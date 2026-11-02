@@ -18,11 +18,11 @@ from typing import Any
 import httpx
 
 IMAGE_TOKENS = 1200
-AD_LINE = re.compile(r"^Anuncio ([A-H]):(.*)$", re.MULTILINE)
+AD_LINE = re.compile(r"^Ad ([A-H]):(.*)$", re.MULTILINE)
 PERSONA_LINE = re.compile(r"^P(\d+):(.*)$", re.MULTILINE)
-COUNT_LINE = re.compile(r"^Cantidad: (\d+)$", re.MULTILINE)
-BRIEF_LINE = re.compile(r"^Producto o idea: (.*)$", re.MULTILINE)
-ANGLES = ["beneficio", "prueba social", "precio", "curiosidad"]
+COUNT_LINE = re.compile(r"^Count: (\d+)$", re.MULTILINE)
+BRIEF_LINE = re.compile(r"^Product or idea: (.*)$", re.MULTILINE)
+ANGLES = ["benefit", "social proof", "price", "curiosity"]
 PLACEHOLDER_SIDE = 256
 
 
@@ -52,26 +52,26 @@ def _simulation(prompt: str) -> dict[str, Any]:
     for num, persona in PERSONA_LINE.findall(prompt):
         stops = [letter for letter, ad in ads if _unit(persona, ad, "frena") < 0.35]
         clicks = [letter for letter, ad in ads if letter in stops and _unit(persona, ad, "clic") < 0.3]
-        out.append({"p": int(num), "frena": stops, "clic": clicks, "motivo": "respuesta de prueba del servidor falso"})
-    return {"reacciones": out}
+        out.append({"p": int(num), "stop": stops, "click": clicks, "reason": "placeholder answer from the mock server"})
+    return {"reactions": out}
 
 
 def _ranking(prompt: str) -> dict[str, Any]:
     letters = [letter for letter, _ in AD_LINE.findall(prompt)]
-    return {"ranking": sorted(letters, key=lambda x: _unit(prompt, x)), "motivo": "orden de prueba del servidor falso"}
+    return {"ranking": sorted(letters, key=lambda x: _unit(prompt, x)), "reason": "placeholder order from the mock server"}
 
 
 def _creative(prompt: str) -> dict[str, Any]:
     n = int(COUNT_LINE.search(prompt).group(1)) if COUNT_LINE.search(prompt) else 3
-    brief = (BRIEF_LINE.search(prompt).group(1) if BRIEF_LINE.search(prompt) else "el producto").strip()
+    brief = (BRIEF_LINE.search(prompt).group(1) if BRIEF_LINE.search(prompt) else "the product").strip()
     short = brief[:60]
     return {
-        "variantes": [
+        "variants": [
             {
-                "angulo": ANGLES[i % len(ANGLES)],
-                "titulo": f"Prueba {i + 1}: {ANGLES[i % len(ANGLES)]}",
-                "texto": f"Texto de relleno del servidor falso sobre {short}.",
-                "prompt_imagen": f"Advertising photo, angle {ANGLES[i % len(ANGLES)]}: {short}",
+                "angle": ANGLES[i % len(ANGLES)],
+                "headline": f"Test {i + 1}: {ANGLES[i % len(ANGLES)]}",
+                "text": f"Placeholder copy from the mock server about {short}.",
+                "image_prompt": f"Advertising photo, angle {ANGLES[i % len(ANGLES)]}: {short}",
             }
             for i in range(n)
         ]
@@ -104,19 +104,19 @@ def respond_image(payload: dict[str, Any]) -> dict[str, Any]:
 
 def _conversation(messages: list[dict[str, Any]]) -> str:
     question = str(messages[-1].get("content") or "")[:80]
-    return f"(Respuesta de prueba del servidor falso.) Me preguntas «{question}». Lo que recuerdo es mi reacción en el feed."
+    return f"(Placeholder answer from the mock server.) You're asking me \"{question}\". What I remember is how I reacted in the feed."
 
 
 def respond(payload: dict[str, Any]) -> dict[str, Any]:
     messages = payload.get("messages") or []
     prompt, images = _flatten(messages)
-    if "Tarea: conversar" in prompt:
+    if "Task: conversation" in prompt:
         text = _conversation(messages)
     else:
-        if "variantes_creativas" in prompt:
+        if "Task: creative_variants" in prompt:
             body = _creative(prompt)
         else:
-            body = _simulation(prompt) if "reacciones" in prompt else _ranking(prompt)
+            body = _simulation(prompt) if '"reactions"' in prompt else _ranking(prompt)
         text = json.dumps(body, ensure_ascii=False)
     usage = {
         "prompt_tokens": len(prompt) // 4 + images * IMAGE_TOKENS,

@@ -107,5 +107,5 @@ def test_persona_messages_use_demo_letters() -> None:
         brand="X", persona="P", variants=variants, stopped=["v2"], clicked=[], reason="",
         history=[{"role": "persona", "text": "antes"}], question="¿y?",
     )
-    assert "Anuncio B: título: Dos" in msgs[1]["content"] and "detuviste a mirar: B" in msgs[1]["content"]
+    assert "Ad B: headline: Dos" in msgs[1]["content"] and "stopped to look at: B" in msgs[1]["content"]
     assert msgs[-2] == {"role": "assistant", "content": "antes"} and msgs[-1]["content"] == "¿y?"

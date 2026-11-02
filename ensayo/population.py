@@ -26,25 +26,26 @@ DEFAULT_AGE_WEIGHTS = {"18-24": 0.17, "25-34": 0.27, "35-44": 0.21, "45-54": 0.1
 # Supuesto: probabilidad de ver el anuncio en Instagram (y no en Facebook) según edad.
 INSTAGRAM_SHARE = {"18-24": 0.75, "25-34": 0.65, "35-44": 0.5, "45-54": 0.35, "55-64": 0.25, "65+": 0.2}
 
+# En inglés desde el 2-nov, como todo el producto. Mismo orden que antes: la semilla da las mismas personas.
 INTERESTS = [
-    "moda", "deporte", "fitness", "cocina", "viajes", "tecnología", "videojuegos", "belleza", "maternidad",
-    "finanzas personales", "música", "cine y series", "mascotas", "decoración", "jardinería", "autos",
-    "sustentabilidad", "salud", "humor", "emprendimiento",
+    "fashion", "sports", "fitness", "cooking", "travel", "tech", "video games", "beauty", "parenting",
+    "personal finance", "music", "movies and TV", "pets", "home decor", "gardening", "cars",
+    "sustainability", "health", "comedy", "entrepreneurship",
 ]
 ATTENTION = [
-    "pasa rápido y solo frena con imágenes llamativas",
-    "lee el texto si la primera línea le interesa",
-    "mira los videos si enganchan en los primeros segundos",
-    "desconfía de la publicidad y busca pruebas sociales",
+    "scrolls fast and only stops for eye-catching images",
+    "reads the text if the first line grabs them",
+    "watches videos if the first seconds hook them",
+    "distrusts ads and looks for social proof",
 ]
-PRICE_SENSITIVITY = ["baja", "media", "alta"]
+PRICE_SENSITIVITY = ["low", "medium", "high"]
 LIFE_STAGE = {
-    "18-24": ["estudiante", "primer trabajo"],
-    "25-34": ["joven profesional", "pareja sin hijos", "padres primerizos"],
-    "35-44": ["familia con hijos chicos", "profesional consolidado"],
-    "45-54": ["familia con adolescentes", "profesional senior"],
-    "55-64": ["hijos independientes", "preparando el retiro"],
-    "65+": ["jubilado", "abuelo o abuela"],
+    "18-24": ["student", "first job"],
+    "25-34": ["young professional", "couple without kids", "first-time parent"],
+    "35-44": ["family with young kids", "established professional"],
+    "45-54": ["family with teenagers", "senior professional"],
+    "55-64": ["empty nester", "preparing for retirement"],
+    "65+": ["retired", "grandparent"],
 }
 
 
@@ -77,13 +78,13 @@ class Persona:
     price_sensitivity: str
 
     def describe(self) -> str:
-        """Descripción breve en español para el prompt de simulación."""
-        genero = {"female": "mujer", "male": "hombre"}.get(self.gender, "persona")
-        plataforma = "Instagram" if self.platform == "instagram" else "Facebook"
+        """Descripción breve en inglés para el prompt de simulación."""
+        who = {"female": "Woman", "male": "Man"}.get(self.gender, "Person")
+        platform = "Instagram" if self.platform == "instagram" else "Facebook"
         return (
-            f"{genero.capitalize()} de {self.age} años en {self.country}, {self.life_stage}. "
-            f"Le interesa: {', '.join(self.interests)}. En {plataforma} {self.attention}. "
-            f"Sensibilidad al precio: {self.price_sensitivity}."
+            f"{who}, {self.age}, in {self.country}, {self.life_stage}. "
+            f"Interests: {', '.join(self.interests)}. On {platform}, {self.attention}. "
+            f"Price sensitivity: {self.price_sensitivity}."
         )
 
 
@@ -151,7 +152,7 @@ def build_population(spec: TargetSpec, n: int = 1000, seed: int = 7, age_weights
 
 def load_or_build(spec: TargetSpec, n: int = 1000, seed: int = 7) -> list[Persona]:
     """Caché en data/populations/: evita recalcular y deja registro de qué población vio cada lote."""
-    path = DATA / "populations" / f"{spec.key()}-{seed}-{n}.json"
+    path = DATA / "populations" / f"{spec.key()}-{seed}-{n}-en.json"  # -en: textos en inglés desde el 2-nov
     if path.exists():
         rows = json.loads(path.read_text(encoding="utf-8"))
         return [Persona(**{**r, "interests": tuple(r["interests"])}) for r in rows]

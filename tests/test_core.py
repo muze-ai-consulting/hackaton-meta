@@ -39,7 +39,7 @@ def test_population_is_deterministic_and_respects_target() -> None:
 def test_population_65_plus_and_describe() -> None:
     people = population.build_population(population.TargetSpec(age_min=60, age_max=65), n=200)
     assert any(p.age >= 65 for p in people) and all(p.age >= 60 for p in people)
-    assert "años" in people[0].describe()
+    assert "Price sensitivity" in people[0].describe()
 
 
 def test_spec_from_ad_reads_targeting() -> None:

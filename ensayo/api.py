@@ -40,6 +40,7 @@ log = logging.getLogger(__name__)
 
 WEB = ROOT / "web"  # build de frontend/ (npm run build)
 DEV_BATCHES = DATA / "batches" / "dev.json"
+AD_IMAGES = DATA / "images"  # scripts/download_images.py: copia local porque las URLs de fbcdn vencen
 MAX_EXAMPLES = 20
 # Pedidos en modo real por visitante (IP) y por día. El gasto total lo limita la fase "demo" del Ledger.
 REAL_DAILY_LIMITS = {"simulate": 5, "variants": 3, "chat": 30}
@@ -276,6 +277,21 @@ def dev_predictions() -> dict[str, dict[str, Any]]:
     return out
 
 
+def ad_image_url(ad_id: str, remote: str | None) -> str | None:
+    """La copia local si existe (ruta relativa: funciona bajo /ensayo/); si no, la URL original."""
+    return f"api/ad-image/{ad_id}" if (AD_IMAGES / f"{ad_id}.jpg").exists() else remote
+
+
+@app.get("/api/ad-image/{ad_id}")
+def ad_image(ad_id: str) -> FileResponse:
+    if not ad_id.isdigit():
+        raise HTTPException(404, "Unknown ad.")
+    path = AD_IMAGES / f"{ad_id}.jpg"
+    if not path.exists():
+        raise HTTPException(404, "Unknown ad.")
+    return FileResponse(path, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=604800"})
+
+
 @app.get("/api/examples")
 def examples() -> list[dict[str, Any]]:
     """Lotes reales del set de desarrollo con su alcance real. El set sellado nunca sale por aquí."""
@@ -297,7 +313,7 @@ def examples() -> list[dict[str, Any]]:
                 "week": b.get("week"),
                 "target": example_target(b.get("target") or {}),
                 "variants": [
-                    {"ad_id": v["ad_id"], "title": v.get("title") or "", "body": v.get("body") or "", "image_url": v.get("image_url")}
+                    {"ad_id": v["ad_id"], "title": v.get("title") or "", "body": v.get("body") or "", "image_url": ad_image_url(v["ad_id"], v.get("image_url"))}
                     for v in variants
                 ],
                 "reach": {v["ad_id"]: (b.get("labels") or {}).get(v["ad_id"], {}).get("reach") for v in variants},
@@ -329,7 +345,8 @@ def backtest() -> dict[str, Any]:
 
 @app.get("/")
 def index() -> FileResponse:
-    return FileResponse(WEB / "index.html")
+    # Sin caché: el index apunta a los bundles con hash, así cada despliegue se ve al recargar.
+    return FileResponse(WEB / "index.html", headers={"Cache-Control": "no-cache"})
 
 
 app.mount("/static", StaticFiles(directory=WEB / "static", check_dir=False), name="static")

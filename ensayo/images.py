@@ -22,28 +22,27 @@ IMAGE_SIZE = "1024x1024"
 MAX_VARIANTS = 4
 
 SYSTEM_CREATIVE = (
-    "Eres director creativo de anuncios para Facebook e Instagram. Propones variantes que se diferencian de verdad "
-    "en el ángulo (beneficio, prueba social, precio, emoción, curiosidad), no solo en las palabras. "
-    "Responde solo con JSON válido."
+    "You are a creative director for Facebook and Instagram ads. You propose versions that truly differ in angle "
+    "(benefit, social proof, price, emotion, curiosity), not just in wording. Reply with valid JSON only."
 )
 
 
 def creative_prompt(brand: str, brief: str, n: int, has_photo: bool) -> str:
     photo = (
-        "La imagen adjunta es la foto del producto: descríbelo tal como se ve en cada prompt de imagen.\n"
+        "The attached image is the product photo: describe the product exactly as it looks in every image prompt.\n"
         if has_photo
         else ""
     )
     return (
-        "Tarea: variantes_creativas\n"
-        f"Marca: {brand or '(sin marca)'}\n"
-        f"Producto o idea: {' '.join(brief.split()) or '(sin descripción)'}\n"
-        f"Cantidad: {n}\n"
+        "Task: creative_variants\n"
+        f"Brand: {brand or '(no brand)'}\n"
+        f"Product or idea: {' '.join(brief.split()) or '(no description)'}\n"
+        f"Count: {n}\n"
         f"{photo}"
-        f"Propón {n} variantes de anuncio, cada una con un ángulo distinto. Para cada una: un título de hasta 40 "
-        "caracteres, un texto de hasta 125 caracteres en el mismo idioma de la descripción, y un prompt de imagen "
-        "en inglés para un generador de imágenes (foto publicitaria cuadrada, sin texto escrito en la imagen).\n"
-        'Formato: {"variantes": [{"angulo": "...", "titulo": "...", "texto": "...", "prompt_imagen": "..."}]}'
+        f"Propose {n} ad versions, each with a different angle. For each one: a headline of up to 40 characters, "
+        "primary text of up to 125 characters in the same language as the description, and an image prompt in "
+        "English for an image generator (square advertising photo, no written text in the image).\n"
+        'Format: {"variants": [{"angle": "...", "headline": "...", "text": "...", "image_prompt": "..."}]}'
     )
 
 
@@ -81,19 +80,20 @@ async def generate_variants(
     messages = [{"role": "system", "content": SYSTEM_CREATIVE}, {"role": "user", "content": content}]
     upcoming = estimate_call_usd(model, len(str(messages)), 250 * n, 1200 if photo_url else 0)
     res = await client.chat(model, messages, phase=phase, max_tokens=300 * n, upcoming_usd=upcoming, note="variantes")
-    ideas = (extract_json(res.text).get("variantes") or [])[:n]
+    body = extract_json(res.text)
+    ideas = (body.get("variants") or body.get("variantes") or [])[:n]
     if len(ideas) < 2:
         raise ValueError(f"El modelo propuso {len(ideas)} variantes; se necesitan al menos 2")
 
     images = await asyncio.gather(
-        *(generate_image(client, idea.get("prompt_imagen") or brief, phase=phase, note="variantes") for idea in ideas)
+        *(generate_image(client, idea.get("image_prompt") or idea.get("prompt_imagen") or brief, phase=phase, note="variantes") for idea in ideas)
     )
     return [
         {
-            "angle": str(idea.get("angulo") or ""),
-            "title": str(idea.get("titulo") or "")[:200],
-            "body": str(idea.get("texto") or "")[:2000],
-            "image_prompt": str(idea.get("prompt_imagen") or ""),
+            "angle": str(idea.get("angle") or idea.get("angulo") or ""),
+            "title": str(idea.get("headline") or idea.get("titulo") or "")[:200],
+            "body": str(idea.get("text") or idea.get("texto") or "")[:2000],
+            "image_prompt": str(idea.get("image_prompt") or idea.get("prompt_imagen") or ""),
             "image_url": src,
         }
         for idea, src in zip(ideas, images)

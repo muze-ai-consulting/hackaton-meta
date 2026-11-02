@@ -44,9 +44,9 @@ Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el pla
 
 ## Críticos para el jurado (2-nov)
 - **Hecho:** interfaz en inglés; `/api/examples` adjunta la predicción del último backtest real de dev (`results/backtest_dev*.json` sin `_mock`), así la pantalla del anuncio real muestra predicciones reales sin gastar por visita; cupo diario por IP en modo real (`REAL_DAILY_LIMITS`: 5 ensayos, 3 generaciones, 30 preguntas) además del tope de la fase `demo`; la línea de confianza se oculta mientras el backtest sea de prueba; si una imagen de fbcdn falla, enlace permanente al anuncio en la Biblioteca.
-- **Imágenes:** las 72 URLs de fbcdn de dev vencen el **6-nov ~10:00 UTC** (en plena evaluación). Falta que Mark decida: volver a bajarlas el 5-nov, guardar miniaturas solo para el demo o quedarse con el enlace de respaldo. El set sellado debe correrse antes del 6-nov (el modelo ve las imágenes).
-- **Hash público:** el repo `muze-ai-consulting/hackaton-meta` es **privado**. Para que el hash de los rankings sellados pruebe algo, publicarlo donde un tercero registre la hora (repo público o gist, y el Discord). Decisión de Mark.
-- **Idioma de los motivos:** el prompt de simulación (`simulate.py`) está en español, así que los motivos salen en español en una interfaz en inglés. Cambiarlo a inglés solo se puede antes del backtest de dev; después ya no se toca.
+- **Imágenes:** ~~vencen el 6-nov~~ resuelto (2-nov, decisión de Mark): las 128 (dev y sellado) están en `data/images/`; el demo las sirve en `/api/ad-image/<ad_id>` y `run_backtest.py` las manda como data URI.
+- **Hash público:** el repo se hace público el **5-nov** (decisión de Mark). Como el plazo del hash es el 3-nov 23:59 y la fecha de un commit se puede editar, conviene publicar también el hash el 3-nov en el Discord (o un gist público) para que haya un registro de terceros.
+- **Idioma:** ~~motivos en español~~ resuelto (2-nov): prompts de simulación, rival, chat y variantes, descripciones de personas y servidor falso en inglés, antes del backtest de dev. Caché de poblaciones nueva (`*-en.json`).
 - **Para encender el modo real en el VPS:** con la key, correr `scripts/run_backtest.py --source dev --personas 200 --yes`, subir el JSON a `/opt/ensayo/results/` y poner `ENSAYO_REAL=1` (con OK de Mark).
 
 ## Fechas

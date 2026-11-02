@@ -16,6 +16,7 @@ Uso:
 
 import argparse
 import asyncio
+import base64
 import hashlib
 import json
 import logging
@@ -34,13 +35,27 @@ from ensayo.simulate import IMAGE_TOKENS, simulate_batch, single_call_ranking
 log = logging.getLogger("backtest")
 
 
+def use_local_images(batches: list[dict[str, Any]], images: Path = DATA / "images") -> int:
+    """Cambia las URLs de fbcdn (vencen) por la copia local en data URI, igual en dev y en sellado."""
+    swapped = 0
+    for b in batches:
+        for v in b["variants"]:
+            path = images / f"{v['ad_id']}.jpg"
+            if v.get("image_url") and path.exists():
+                v["image_url"] = "data:image/jpeg;base64," + base64.b64encode(path.read_bytes()).decode()
+                swapped += 1
+    return swapped
+
+
 def load_batches(source: str) -> list[dict[str, Any]]:
     if source == "fixtures":
         return demo_batches()
     path = DATA / "batches" / ("dev.json" if source == "dev" else "sealed_inputs.json")
     if not path.exists():
         raise SystemExit(f"Falta {path}. Corre antes: uv run python -m ensayo.batches")
-    return json.loads(path.read_text(encoding="utf-8"))
+    batches = json.loads(path.read_text(encoding="utf-8"))
+    log.info(f"{use_local_images(batches)} imágenes desde data/images (scripts/download_images.py)")
+    return batches
 
 
 def attach_labels(batches: list[dict[str, Any]], path: Path = DATA / "sealed" / "labels.json") -> None:

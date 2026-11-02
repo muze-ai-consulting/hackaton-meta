@@ -17,17 +17,18 @@ MAX_TURNS = 10  # mensajes previos que se reenvían
 MAX_REPLY_TOKENS = 300
 
 SYSTEM_PERSONA = (
-    "Eres una persona real que navega su feed de Facebook o Instagram, no un asistente ni un experto en marketing. "
-    "Respondes en primera persona, en el idioma de la pregunta, con 80 palabras como máximo, con tu forma de "
-    "hablar y tus prioridades. Si un anuncio no te interesó, lo dices sin rodeos y explicas por qué; no intentas "
-    "agradar a quien pregunta ni cambias de opinión solo porque te insistan. No menciones que eres simulada."
+    "You are a real person scrolling your Facebook or Instagram feed, not an assistant or a marketing expert. "
+    "You answer in the first person, in the language of the question, in 80 words at most, with your own way of "
+    "talking and your own priorities. If an ad didn't interest you, you say so plainly and explain why; you don't "
+    "try to please whoever is asking, and you don't change your mind just because they insist. Never mention that "
+    "you are simulated."
 )
 
 
 def _letters(ids: list[str], variants: list[dict[str, Any]]) -> str:
     pos = {v["ad_id"]: LETTERS[i] for i, v in enumerate(variants)}
     picked = [pos[i] for i in ids if i in pos]
-    return ", ".join(picked) or "ninguno"
+    return ", ".join(picked) or "none"
 
 
 def persona_messages(
@@ -43,19 +44,19 @@ def persona_messages(
 ) -> list[dict[str, Any]]:
     ads = [(LETTERS[i], v) for i, v in enumerate(variants)]
     header = (
-        "Tarea: conversar\n"
-        f"Quién eres: {persona}\n"
-        f"Hace un rato viste estos anuncios de {brand or 'una marca'} en tu feed:"
+        "Task: conversation\n"
+        f"Who you are: {persona}\n"
+        f"A while ago you saw these ads from {brand or 'a brand'} in your feed:"
     )
     footer = (
-        f"\nTe detuviste a mirar: {_letters(stopped, variants)}. Hiciste clic en: {_letters(clicked, variants)}."
-        + (f" Lo que pensaste en el momento: «{reason}»." if reason else "")
-        + "\nAhora alguien de la marca te hace preguntas sobre esos anuncios."
+        f"\nYou stopped to look at: {_letters(stopped, variants)}. You clicked: {_letters(clicked, variants)}."
+        + (f' What you thought at the time: "{reason}".' if reason else "")
+        + "\nNow someone from the brand is asking you questions about those ads."
     )
     messages: list[dict[str, Any]] = [
         {"role": "system", "content": SYSTEM_PERSONA},
         {"role": "user", "content": _content(header, ads, footer)},
-        {"role": "assistant", "content": "Dale, pregúntame."},
+        {"role": "assistant", "content": "Sure, go ahead."},
     ]
     for turn in history[-MAX_TURNS:]:
         role = "assistant" if turn.get("role") == "persona" else "user"

@@ -22,14 +22,15 @@ log = logging.getLogger(__name__)
 LETTERS = "ABCDEFGH"
 IMAGE_TOKENS = 1200  # se reemplaza por lo que mida scripts/probe_model_api.py
 
+# Prompts en inglés desde el 2-nov (decisión de Mark: todo el producto en inglés). Se cambió antes del backtest
+# de dev y del sellado; después de abrir el sellado no se tocan.
 SYSTEM_SIM = (
-    "Simulas a personas reales que navegan su feed de Facebook o Instagram. Los anuncios aparecen intercalados "
-    "con publicaciones de amigos y cada persona reacciona como lo haría de verdad: la mayoría de los anuncios se "
-    "pasan de largo sin mirarlos. No eres un experto en marketing; eres cada una de estas personas. "
-    "Responde solo con JSON válido."
+    "You simulate real people scrolling their Facebook or Instagram feed. Ads appear between posts from friends "
+    "and each person reacts the way they really would: most ads get scrolled past without a look. You are not a "
+    "marketing expert; you are each of these people. Reply with valid JSON only."
 )
 SYSTEM_RANK = (
-    "Eres un estratega de publicidad en Facebook e Instagram. Responde solo con JSON válido."
+    "You are a Facebook and Instagram advertising strategist. Reply with valid JSON only."
 )
 
 
@@ -53,7 +54,7 @@ def feed_orders(n: int, orders: int = 4) -> list[list[int]]:
 def _ad_line(letter: str, v: dict[str, Any]) -> str:
     title = (v.get("title") or "").strip()
     body = " ".join((v.get("body") or "").split())
-    return f"Anuncio {letter}: título: {title or '(sin título)'} · texto: {body or '(sin texto)'}"
+    return f"Ad {letter}: headline: {title or '(no headline)'} · text: {body or '(no text)'}"
 
 
 def _content(header: str, ads: list[tuple[str, dict[str, Any]]], footer: str) -> str | list[dict[str, Any]]:
@@ -73,14 +74,14 @@ def _content(header: str, ads: list[tuple[str, dict[str, Any]]], footer: str) ->
 def simulation_messages(batch: dict[str, Any], order: list[int], people: list[Persona]) -> list[dict[str, Any]]:
     variants = batch["variants"]
     ads = [(LETTERS[pos], variants[idx]) for pos, idx in enumerate(order)]
-    header = f"Anunciante: {batch.get('page_name') or 'una marca'}.\nFeed, en este orden:"
+    header = f"Advertiser: {batch.get('page_name') or 'a brand'}.\nFeed, in this order:"
     personas = "\n".join(f"P{i + 1}: {p.describe()}" for i, p in enumerate(people))
     footer = (
-        f"\nPersonas:\n{personas}\n\n"
-        "Para cada persona, indica en qué anuncios se detendría a mirar (\"frena\") y en cuáles haría clic "
-        "(\"clic\", solo si también frena). Usa las letras. Una lista vacía es una respuesta válida y frecuente. "
-        "Agrega un motivo de 12 palabras como máximo.\n"
-        'Formato: {"reacciones": [{"p": 1, "frena": ["A"], "clic": [], "motivo": "..."}]}'
+        f"\nPeople:\n{personas}\n\n"
+        "For each person, list the ads they would stop to look at (\"stop\") and the ones they would click "
+        "(\"click\", only if they also stopped). Use the letters. An empty list is a valid and common answer. "
+        "Add a reason of 12 words at most.\n"
+        'Format: {"reactions": [{"p": 1, "stop": ["A"], "click": [], "reason": "..."}]}'
     )
     return [{"role": "system", "content": SYSTEM_SIM}, {"role": "user", "content": _content(header, ads, footer)}]
 
@@ -89,18 +90,18 @@ def _target_text(batch: dict[str, Any]) -> str:
     t = batch.get("target") or {}
     ages = t.get("target_ages") or ["18", "65+"]
     countries = [loc.get("name") for loc in t.get("target_locations") or [] if not loc.get("excluded")]
-    return f"edad {ages[0]} a {ages[-1]}, género {t.get('target_gender') or 'todos'}, países {', '.join(countries) or 'GB'}"
+    return f"age {ages[0]} to {ages[-1]}, gender {t.get('target_gender') or 'All'}, countries {', '.join(countries) or 'GB'}"
 
 
 def ranking_messages(batch: dict[str, Any]) -> list[dict[str, Any]]:
     ads = [(LETTERS[i], v) for i, v in enumerate(batch["variants"])]
     header = (
-        f"Anunciante: {batch.get('page_name') or 'una marca'}. Segmentación: {_target_text(batch)}.\n"
-        "Estos anuncios salieron la misma semana con la misma segmentación:"
+        f"Advertiser: {batch.get('page_name') or 'a brand'}. Targeting: {_target_text(batch)}.\n"
+        "These ads ran the same week with the same targeting:"
     )
     footer = (
-        "\nOrdénalos del que llegará a más personas al que llegará a menos. Usa todas las letras.\n"
-        'Formato: {"ranking": ["B", "A", "C"], "motivo": "..."}'
+        "\nRank them from the one that will reach the most people to the one that will reach the fewest. Use every letter.\n"
+        'Format: {"ranking": ["B", "A", "C"], "reason": "..."}'
     )
     return [{"role": "system", "content": SYSTEM_RANK}, {"role": "user", "content": _content(header, ads, footer)}]
 
@@ -155,15 +156,16 @@ async def simulate_batch(
             failed += 1
             continue
         letter_to_idx = {LETTERS[pos]: idx for pos, idx in enumerate(order)}
-        for r in body.get("reacciones") or []:
+        for r in body.get("reactions") or body.get("reacciones") or []:
             try:
                 person = people[int(r.get("p")) - 1]
             except (TypeError, ValueError, IndexError):
                 continue
             segment = f"{person.age_bucket} · {person.platform}"
             seen_by_segment[segment] += 1
-            stopped = {letter_to_idx[x] for x in r.get("frena") or [] if x in letter_to_idx}
-            clicked = {letter_to_idx[x] for x in r.get("clic") or [] if x in letter_to_idx} & stopped
+            stopped = {letter_to_idx[x] for x in r.get("stop") or r.get("frena") or [] if x in letter_to_idx}
+            clicked = {letter_to_idx[x] for x in r.get("click") or r.get("clic") or [] if x in letter_to_idx} & stopped
+            why = str(r.get("reason") or r.get("motivo") or "")
             for idx in range(len(variants)):
                 seen[idx] += 1
             for idx in stopped:
@@ -171,8 +173,8 @@ async def simulate_batch(
                 stops_by_segment[idx][segment] += 1
             for idx in clicked:
                 clicks[idx] += 1
-                if len(reasons[idx]) < 5 and r.get("motivo"):
-                    reasons[idx].append(str(r["motivo"]))
+                if len(reasons[idx]) < 5 and why:
+                    reasons[idx].append(why)
             if len(sample) < sample_size:
                 sample.append(
                     {
@@ -180,7 +182,7 @@ async def simulate_batch(
                         "segment": segment,
                         "stopped": [variants[i]["ad_id"] for i in sorted(stopped)],
                         "clicked": [variants[i]["ad_id"] for i in sorted(clicked)],
-                        "reason": str(r.get("motivo") or ""),
+                        "reason": why,
                     }
                 )
 
@@ -225,4 +227,4 @@ async def single_call_ranking(client: ModelClient, batch: dict[str, Any], *, mod
         if 0 <= idx < len(ids) and ids[idx] not in ranking:
             ranking.append(ids[idx])
     missing = [ad for ad in ids if ad not in ranking]
-    return {"ranking": ranking + missing, "incomplete": bool(missing), "reason": body.get("motivo")}
+    return {"ranking": ranking + missing, "incomplete": bool(missing), "reason": body.get("reason") or body.get("motivo")}

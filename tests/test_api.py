@@ -114,3 +114,16 @@ def test_examples_carry_real_dev_prediction(tmp_path, monkeypatch) -> None:
     pred = client(tmp_path, monkeypatch).get("/api/examples").json()[0]["prediction"]
     assert pred["ranking"] == ["2", "1"] and pred["single_call"] == ["1", "2"] and pred["personas"] == 1000
     assert pred["stats"]["2"] == {"stop_rate": 0.4, "click_rate": 0.1}
+
+
+def test_local_ad_images(tmp_path, monkeypatch) -> None:
+    images = tmp_path / "images"
+    images.mkdir()
+    (images / "123.jpg").write_bytes(b"\xff\xd8jpeg")
+    monkeypatch.setattr(api, "AD_IMAGES", images)
+    c = client(tmp_path, monkeypatch)
+    assert c.get("/api/ad-image/123").status_code == 200
+    assert c.get("/api/ad-image/999").status_code == 404
+    assert c.get("/api/ad-image/..%2F..%2Fetc").status_code == 404
+    assert api.ad_image_url("123", "https://x") == "api/ad-image/123"
+    assert api.ad_image_url("999", "https://x") == "https://x"
