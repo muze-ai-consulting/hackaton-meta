@@ -4,8 +4,12 @@ El actor lee la Biblioteca de anuncios pública (incluido el panel de transparen
 anuncio, el alcance en la UE y la segmentación. `to_ads_archive` lo deja con los mismos campos que pide
 scripts/eu_advertisers.py a ads_archive, así ensayo.batches y el resto no cambian. Diferencias con la API oficial:
 
-- Los países de la segmentación vienen con el nombre en el idioma del proxy del actor ("Njemačka"): se usan los
-  códigos ISO del desglose de alcance y, si no hay desglose, el nombre tal cual.
+- La transparencia UE viene en data_reach.ad_library_main.ad_details.transparency_by_location.eu_transparency
+  (no donde dice el README del actor) y con los números como texto.
+- Los países de la segmentación pueden venir con el nombre en el idioma del proxy del actor ("Njemačka"): se usan
+  los códigos ISO del desglose de alcance y, si no hay desglose, el nombre tal cual.
+- En el modo por página el actor no respeta startDateMin: trae anuncios anteriores al corte. ensayo.batches los
+  descarta (regla de contaminación), pero gastan parte del tope de anuncios.
 - El género viene traducido ("Svi" = todos): se reconocen mujeres y hombres en varios idiomas; lo demás es All.
 - Trae la URL de la imagen (`image_url`). Es de fbcdn y vence en días: sirve para simular al poco tiempo de bajarla.
   No se descargan las imágenes (términos de almacenamiento de Meta).
@@ -26,11 +30,55 @@ log = logging.getLogger(__name__)
 API = "https://api.apify.com/v2"
 ACTOR = "memo23~facebook-ads-library-scraper-cheerio"
 USD_PER_AD = 0.0005  # techo del precio por anuncio, para estimar antes de correr
+USD_PER_RUN = 0.06  # medido el 1-nov: cada corrida cuesta ~US$0,06 aunque traiga solo 30 anuncios
 POLL_SECONDS = 10
 RUN_TIMEOUT = 3600
 
 WOMEN = {"women", "female", "žene", "zene", "frauen", "femmes", "mujeres", "donne", "vrouwen", "kobiety", "mulheres", "kvinder", "kvinnor"}
 MEN = {"men", "male", "muškarci", "muskarci", "männer", "maenner", "hommes", "hombres", "uomini", "mannen", "mężczyźni", "homens", "mænd", "män"}
+
+
+def _num(value: Any) -> int | None:
+    """El actor entrega muchos números como texto ("567391"); None si no es un número."""
+    try:
+        return int(value) if value is not None and str(value) != "None" else None
+    except (TypeError, ValueError):
+        return None
+
+
+def _true(value: Any) -> bool:
+    return value is True or str(value).lower() == "true"
+
+
+def _eu_info(item: dict[str, Any]) -> dict[str, Any]:
+    """El bloque de transparencia UE. Las corridas reales lo traen en
+    data_reach.ad_library_main.ad_details.transparency_by_location.eu_transparency; el ejemplo del README,
+    en data_reach.aaa_info."""
+    reach = item.get("data_reach") or {}
+    details = (reach.get("ad_library_main") or {}).get("ad_details") or {}
+    candidates = [
+        ((details.get("transparency_by_location") or {}).get("eu_transparency")),
+        details.get("aaa_info"),
+        reach.get("aaa_info"),
+    ]
+    for block in candidates:
+        if isinstance(block, dict) and ("eu_total_reach" in block or "age_audience" in block):
+            return block
+    return {}
+
+
+def _breakdown(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [
+        {
+            "country": str(c.get("country") or "").upper(),
+            "age_gender_breakdowns": [
+                {"age_range": r.get("age_range"), **{k: _num(r.get(k)) for k in ("male", "female", "unknown")}}
+                for r in c.get("age_gender_breakdowns") or []
+            ],
+        }
+        for c in rows or []
+        if c.get("country")
+    ]
 
 
 def _iso_date(ts: Any) -> str | None:
@@ -84,12 +132,12 @@ def to_ads_archive(item: dict[str, Any]) -> dict[str, Any] | None:
     if not ad_id or not start:
         return None
     snapshot = item.get("snapshot") or {}
-    aaa = (item.get("data_reach") or {}).get("aaa_info") or {}
-    breakdown = aaa.get("age_country_gender_reach_breakdown") or []
+    aaa = _eu_info(item)
+    breakdown = _breakdown(aaa.get("age_country_gender_reach_breakdown") or [])
     ages = aaa.get("age_audience") or {}
-    age_min, age_max = ages.get("min"), ages.get("max")
-    codes = sorted({str(c["country"]).upper() for c in breakdown if c.get("country")})
-    included = [loc for loc in aaa.get("location_audience") or [] if not loc.get("excluded")]
+    age_min, age_max = _num(ages.get("min")), _num(ages.get("max"))
+    codes = sorted({c["country"] for c in breakdown})
+    included = [loc for loc in aaa.get("location_audience") or [] if not _true(loc.get("excluded"))]
     locations = (
         [{"name": c, "type": "countries", "excluded": False} for c in codes]
         if codes
@@ -102,18 +150,18 @@ def to_ads_archive(item: dict[str, Any]) -> dict[str, Any] | None:
         "page_name": item.get("page_name") or snapshot.get("page_name"),
         "ad_delivery_start_time": start,
         # Para un anuncio activo, end_date es la fecha planeada: no es una fecha de término.
-        "ad_delivery_stop_time": None if item.get("is_active") else _iso_date(item.get("end_date")),
+        "ad_delivery_stop_time": None if _true(item.get("is_active")) else _iso_date(item.get("end_date")),
         "ad_creative_bodies": bodies,
         "ad_creative_link_titles": titles,
         "publisher_platforms": [str(p).lower() for p in item.get("publisher_platform") or []],
-        "eu_total_reach": aaa.get("eu_total_reach"),
+        "eu_total_reach": _num(aaa.get("eu_total_reach")),
         "target_ages": [str(age_min), "65+" if (age_max or 0) >= 65 else str(age_max)] if age_min and age_max else [],
         "target_gender": _gender(aaa.get("gender_audience")),
         "target_locations": locations,
         "target_locations_raw": [loc.get("name") for loc in included],
         "age_country_gender_reach_breakdown": breakdown,
         "ad_snapshot_url": item.get("FB AD Link") or f"https://www.facebook.com/ads/library/?id={ad_id}",
-        "image_url": _image(snapshot),
+        "image_url": _image(snapshot) or next(iter(item.get("imageUrls") or []), None),
         "source": "apify",
     }
 

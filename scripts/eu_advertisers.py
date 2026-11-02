@@ -201,7 +201,7 @@ def main() -> None:
         if not token:
             raise SystemExit("Falta APIFY_TOKEN en .env (ver .env.example).")
         RAW_APIFY.mkdir(parents=True, exist_ok=True)
-        estimate = len(candidates) * (50 + args.max_ads) * apify.USD_PER_AD
+        estimate = len(candidates) * (2 * apify.USD_PER_RUN + (50 + args.max_ads) * apify.USD_PER_AD)
         log.info(f"{len(candidates)} anunciantes, hasta {args.max_ads} anuncios cada uno: como máximo US$ {estimate:.2f} en Apify")
         if not args.yes:
             log.info("No se corrió nada. Para correrlo: agrega --yes")

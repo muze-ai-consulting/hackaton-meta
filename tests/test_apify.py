@@ -113,3 +113,28 @@ def test_run_actor_polls_and_reads_dataset(monkeypatch) -> None:
         "GET /v2/actor-runs/r1",
         "GET /v2/datasets/d1/items",
     ]
+
+
+def test_real_run_shape() -> None:
+    """Forma de las corridas reales (1-nov): transparencia en ad_library_main y números como texto."""
+    raw = item()
+    eu = raw.pop("data_reach")["aaa_info"]
+    eu = {
+        **eu,
+        "eu_total_reach": "567391",
+        "gender_audience": "Women",
+        "age_audience": {"min": "18", "max": "65"},
+        "location_audience": [{"name": "Austria", "num_obfuscated": "0", "type": "countries", "excluded": "False"}],
+        "age_country_gender_reach_breakdown": [
+            {"country": "AT", "age_gender_breakdowns": [{"age_range": "25-34", "male": "None", "female": "1200", "unknown": "3"}]}
+        ],
+    }
+    raw["data_reach"] = {"ad_library_main": {"ad_details": {"transparency_by_location": {"eu_transparency": eu, "uk_transparency": None}}}}
+    raw["is_active"] = "False"
+    ad = apify.to_ads_archive(raw)
+    assert ad["eu_total_reach"] == 567391 and ad["target_gender"] == "Women"
+    assert ad["target_ages"] == ["18", "65+"] and [loc["name"] for loc in ad["target_locations"]] == ["AT"]
+    assert ad["target_locations_raw"] == ["Austria"] and ad["ad_delivery_stop_time"] is not None
+    assert ad["age_country_gender_reach_breakdown"][0]["age_gender_breakdowns"][0] == {
+        "age_range": "25-34", "male": None, "female": 1200, "unknown": 3,
+    }
