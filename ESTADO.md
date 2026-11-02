@@ -54,5 +54,11 @@ Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el pla
 - **Backtest de dev (19 lotes, 1.000 personas, contributor, low): US$ 0,63, 0 fallas. La audiencia NO le gana al azar ni a la llamada única.** Pares bien ordenados: audiencia 0,453 [0,30–0,59], llamada única 0,487, azar 0,522. Ganadora: 26 % vs 37 % vs 32 %. Puntuar solo frenado o solo clic no cambia nada. Las etiquetas son débiles: en la mayoría de los lotes la ganadora llega a 1,0–1,5 veces lo que llega la segunda.
 - Decisión pendiente de Mark: qué contamos (ver mensaje del 2-nov). El sellado se corre igual antes del 3-nov 23:59.
 
+## Rediseño acotado (2-nov, regla fijada antes de correr)
+- Diagnóstico en dev, sin gastar: el texto más corto gana el 63 % de los pares, y la población prefiere el texto largo (lo lee completo; el feed real lo corta tras ~125 caracteres).
+- Se prueban solo dos configuraciones nuevas en dev: `--view feed --effort low` y `--view feed --effort medium` (el anuncio como lo muestra el feed: primera línea cortada, imagen, título debajo). La llamada única ve lo mismo.
+- Rival nuevo sin modelo: "gana el texto más corto" (`short_text`). Va también al sellado y su ranking entra en el hash.
+- Regla: al sellado va la configuración con mayor promedio de pares bien ordenados de la población en dev, entre las tres (`full/low`, `feed/low`, `feed/medium`). No se prueba nada más. Se corre el sellado aunque no gane; se informa lo que salga.
+
 ## Fechas
 Entrega interna: miércoles 4-nov 18:00 Chile (cierre oficial 23:00 Chile). Hash de la prueba en vivo: antes del 3-nov 23:59.

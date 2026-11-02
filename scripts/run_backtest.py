@@ -30,7 +30,7 @@ from ensayo.fixtures import demo_batches
 from ensayo.llm import ModelClient
 from ensayo.metrics import random_baseline, score_batch, summarize
 from ensayo.population import load_or_build, spec_from_ad
-from ensayo.simulate import IMAGE_TOKENS, simulate_batch, single_call_ranking
+from ensayo.simulate import IMAGE_TOKENS, VIEWS, short_text_ranking, simulate_batch, single_call_ranking
 
 log = logging.getLogger("backtest")
 
@@ -80,6 +80,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--score", action="store_true", help="sealed: leer las etiquetas selladas y puntuar")
     p.add_argument("--yes", action="store_true", help="confirmar el gasto real")
     p.add_argument("--tag", default="")
+    p.add_argument("--view", choices=VIEWS, default="full", help="feed: el anuncio como lo muestra el feed (texto cortado)")
     p.add_argument("--effort", choices=["minimal", "low", "medium", "high"], default="low", help="reasoning_effort de Spark 1.3")
     return p.parse_args()
 
@@ -117,10 +118,16 @@ async def run(args: argparse.Namespace) -> None:
         for b in batches:
             people = load_or_build(spec_from_ad(b.get("target") or {}), n=args.personas, seed=args.seed)
             sim = await simulate_batch(
-                client, b, people, model=args.model, phase=args.phase, per_call=args.per_call, orders=args.orders
+                client, b, people, model=args.model, phase=args.phase, per_call=args.per_call, orders=args.orders, view=args.view
             )
-            single = None if args.no_single else await single_call_ranking(client, b, model=args.model, phase=args.phase)
-            per_batch.append({"batch_id": b["batch_id"], "population": sim, "single_call": single})
+            single = (
+                None
+                if args.no_single
+                else await single_call_ranking(client, b, model=args.model, phase=args.phase, view=args.view)
+            )
+            per_batch.append(
+                {"batch_id": b["batch_id"], "population": sim, "single_call": single, "short_text": short_text_ranking(b)}
+            )
             log.info(f"{b['batch_id']}: {sim['calls']} llamadas, {sim['failed_calls']} fallidas · ranking {sim['ranking']}")
     finally:
         await client.aclose()
@@ -141,8 +148,15 @@ async def run(args: argparse.Namespace) -> None:
 
     if args.source == "sealed":
         rankings = json.dumps({r["batch_id"]: r["population"]["ranking"] for r in per_batch}, sort_keys=True)
+        rivals = json.dumps(
+            {r["batch_id"]: {"single_call": (r["single_call"] or {}).get("ranking"), "short_text": r["short_text"]} for r in per_batch},
+            sort_keys=True,
+        )
+        out["rivals_sha256"] = hashlib.sha256(rivals.encode()).hexdigest()
         digest = hashlib.sha256(rankings.encode()).hexdigest()
-        (RESULTS / f"{name}_rankings.sha256").write_text(f"{digest}\n", encoding="utf-8")
+        (RESULTS / f"{name}_rankings.sha256").write_text(
+            f"{digest}  population\n{out['rivals_sha256']}  rivals\n", encoding="utf-8"
+        )
         out["rankings_sha256"] = digest
         log.info(f"SHA-256 de los rankings sellados: {digest}")
         if not args.score:
@@ -157,6 +171,7 @@ async def run(args: argparse.Namespace) -> None:
     if not args.no_single:
         single_scores = [score_batch(r["single_call"]["ranking"], truth[r["batch_id"]]) for r in per_batch]
         out["summary"]["single_call"] = summarize(single_scores)
+    out["summary"]["short_text"] = summarize([score_batch(r["short_text"], truth[r["batch_id"]]) for r in per_batch])
     for r, s in zip(per_batch, pop_scores):
         r["population_score"] = s
 

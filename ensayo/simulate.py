@@ -51,30 +51,53 @@ def feed_orders(n: int, orders: int = 4) -> list[list[int]]:
     return unique
 
 
-def _ad_line(letter: str, v: dict[str, Any]) -> str:
+VIEWS = ("full", "feed")
+FEED_CUT = 125  # caracteres del texto principal que el feed muestra antes de "… more"
+FEED_NOTE = (
+    "Each ad is shown as the feed shows it: the first line of text, then the image, then the headline under the "
+    "image. Long text is cut with \"… more\" and almost nobody taps it; people decide in about a second, mostly "
+    "from the image."
+)
+
+
+def _feed_text(body: str) -> str:
+    return body if len(body) <= FEED_CUT else body[:FEED_CUT].rsplit(" ", 1)[0] + "… more"
+
+
+def _ad_lines(letter: str, v: dict[str, Any], view: str) -> tuple[str, str]:
+    """Texto antes y después de la imagen. "full" es el formato original; "feed" imita el feed (desde el 2-nov)."""
     title = (v.get("title") or "").strip()
     body = " ".join((v.get("body") or "").split())
-    return f"Ad {letter}: headline: {title or '(no headline)'} · text: {body or '(no text)'}"
+    if view == "feed":
+        before = f"Ad {letter}: {_feed_text(body) or '(no text)'}"
+        return before, f"Ad {letter} headline under the image: {title or '(none)'}"
+    return f"Ad {letter}: headline: {title or '(no headline)'} · text: {body or '(no text)'}", ""
 
 
-def _content(header: str, ads: list[tuple[str, dict[str, Any]]], footer: str) -> str | list[dict[str, Any]]:
+def _content(
+    header: str, ads: list[tuple[str, dict[str, Any]]], footer: str, view: str = "full"
+) -> str | list[dict[str, Any]]:
     """Texto plano, o partes con imagen después de cada anuncio cuando las variantes traen image_url."""
-    lines = [_ad_line(letter, v) for letter, v in ads]
+    lines = [_ad_lines(letter, v, view) for letter, v in ads]
     if not any(v.get("image_url") for _, v in ads):
-        return "\n".join([header, *lines, footer])
+        return "\n".join([header, *(x for pair in lines for x in pair if x), footer])
     parts: list[dict[str, Any]] = [{"type": "text", "text": header}]
-    for line, (_, v) in zip(lines, ads):
-        parts.append({"type": "text", "text": line})
+    for (before, after), (_, v) in zip(lines, ads):
+        parts.append({"type": "text", "text": before})
         if v.get("image_url"):
             parts.append({"type": "image_url", "image_url": {"url": v["image_url"]}})
+        if after:
+            parts.append({"type": "text", "text": after})
     parts.append({"type": "text", "text": footer})
     return parts
 
 
-def simulation_messages(batch: dict[str, Any], order: list[int], people: list[Persona]) -> list[dict[str, Any]]:
+def simulation_messages(
+    batch: dict[str, Any], order: list[int], people: list[Persona], view: str = "full"
+) -> list[dict[str, Any]]:
     variants = batch["variants"]
     ads = [(LETTERS[pos], variants[idx]) for pos, idx in enumerate(order)]
-    header = f"Advertiser: {batch.get('page_name') or 'a brand'}.\nFeed, in this order:"
+    header = f"Advertiser: {batch.get('page_name') or 'a brand'}.\n{FEED_NOTE + chr(10) if view == 'feed' else ''}Feed, in this order:"
     personas = "\n".join(f"P{i + 1}: {p.describe()}" for i, p in enumerate(people))
     footer = (
         f"\nPeople:\n{personas}\n\n"
@@ -83,7 +106,7 @@ def simulation_messages(batch: dict[str, Any], order: list[int], people: list[Pe
         "Add a reason of 12 words at most.\n"
         'Format: {"reactions": [{"p": 1, "stop": ["A"], "click": [], "reason": "..."}]}'
     )
-    return [{"role": "system", "content": SYSTEM_SIM}, {"role": "user", "content": _content(header, ads, footer)}]
+    return [{"role": "system", "content": SYSTEM_SIM}, {"role": "user", "content": _content(header, ads, footer, view)}]
 
 
 def _target_text(batch: dict[str, Any]) -> str:
@@ -93,17 +116,18 @@ def _target_text(batch: dict[str, Any]) -> str:
     return f"age {ages[0]} to {ages[-1]}, gender {t.get('target_gender') or 'All'}, countries {', '.join(countries) or 'GB'}"
 
 
-def ranking_messages(batch: dict[str, Any]) -> list[dict[str, Any]]:
+def ranking_messages(batch: dict[str, Any], view: str = "full") -> list[dict[str, Any]]:
     ads = [(LETTERS[i], v) for i, v in enumerate(batch["variants"])]
     header = (
         f"Advertiser: {batch.get('page_name') or 'a brand'}. Targeting: {_target_text(batch)}.\n"
+        f"{FEED_NOTE + chr(10) if view == 'feed' else ''}"
         "These ads ran the same week with the same targeting:"
     )
     footer = (
         "\nRank them from the one that will reach the most people to the one that will reach the fewest. Use every letter.\n"
         'Format: {"ranking": ["B", "A", "C"], "reason": "..."}'
     )
-    return [{"role": "system", "content": SYSTEM_RANK}, {"role": "user", "content": _content(header, ads, footer)}]
+    return [{"role": "system", "content": SYSTEM_RANK}, {"role": "user", "content": _content(header, ads, footer, view)}]
 
 
 def score(stats: dict[str, Any]) -> float:
@@ -120,6 +144,7 @@ async def simulate_batch(
     per_call: int = 20,
     orders: int = 4,
     sample_size: int = 0,
+    view: str = "full",
 ) -> dict[str, Any]:
     variants = batch["variants"]
     if len(variants) > len(LETTERS):
@@ -130,7 +155,7 @@ async def simulate_batch(
 
     async def run(i: int, people: list[Persona]) -> tuple[list[int], list[Persona], dict[str, Any] | None]:
         order = feed[i % len(feed)]
-        messages = simulation_messages(batch, order, people)
+        messages = simulation_messages(batch, order, people, view)
         upcoming = estimate_call_usd(model, len(str(messages)), per_call * 40, n_images * IMAGE_TOKENS)
         res = await client.chat(
             model, messages, phase=phase, max_tokens=per_call * 60, upcoming_usd=upcoming, note=f"sim {batch['batch_id']}"
@@ -210,9 +235,11 @@ async def simulate_batch(
     }
 
 
-async def single_call_ranking(client: ModelClient, batch: dict[str, Any], *, model: str, phase: str) -> dict[str, Any]:
-    """Rival obligatorio: una sola llamada a Spark 1.3, sin población."""
-    messages = ranking_messages(batch)
+async def single_call_ranking(
+    client: ModelClient, batch: dict[str, Any], *, model: str, phase: str, view: str = "full"
+) -> dict[str, Any]:
+    """Rival obligatorio: una sola llamada a Spark 1.3, sin población. Ve los anuncios igual que la población."""
+    messages = ranking_messages(batch, view)
     ids = [v["ad_id"] for v in batch["variants"]]
     upcoming = estimate_call_usd(model, len(str(messages)), 200)
     res = await client.chat(model, messages, phase=phase, max_tokens=400, upcoming_usd=upcoming, note=f"única {batch['batch_id']}")
@@ -228,3 +255,9 @@ async def single_call_ranking(client: ModelClient, batch: dict[str, Any], *, mod
             ranking.append(ids[idx])
     missing = [ad for ad in ids if ad not in ranking]
     return {"ranking": ranking + missing, "incomplete": bool(missing), "reason": body.get("reason") or body.get("motivo")}
+
+
+def short_text_ranking(batch: dict[str, Any]) -> list[str]:
+    """Rival sin modelo (desde el 2-nov): gana el texto más corto. En dev ordenó bien el 63 % de los pares."""
+    size = {v["ad_id"]: len((v.get("body") or "").strip()) + len((v.get("title") or "").strip()) for v in batch["variants"]}
+    return sorted(size, key=lambda ad: (size[ad], ad))
