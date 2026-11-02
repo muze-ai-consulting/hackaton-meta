@@ -39,7 +39,7 @@ Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el pla
 5. **README** con la declaración de Claude Code, el protocolo y cómo correr todo. Video y formulario de entrega (Mark los envía).
 6. Actualizar `site/roadmap.json` (editar con reemplazo de texto, no con `json.dump`) y publicar con el rsync del CLAUDE.md.
 
-7. **Redesplegar** el front nuevo en labs.muze.cl/ensayo (con OK de Mark).
+7. ~~Redesplegar el front nuevo~~ hecho (2-nov) en https://labs.muze.cl/ensayo/, con los 19 lotes de desarrollo como ejemplos reales.
 8. ~~Descarga de las 79 marcas~~ hecha (1-nov): 2.010 anuncios → 32 lotes (19 de desarrollo con 72 variantes, 13 sellados). Hash de las etiquetas selladas en `results/sealed_labels.sha256`. Apify ya no se usa.
 
 ## Fechas
