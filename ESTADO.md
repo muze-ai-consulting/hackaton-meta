@@ -40,7 +40,7 @@ Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el pla
 6. Actualizar `site/roadmap.json` (editar con reemplazo de texto, no con `json.dump`) y publicar con el rsync del CLAUDE.md.
 
 7. **Redesplegar** el front nuevo en labs.muze.cl/ensayo (con OK de Mark).
-8. Cuando termine la descarga de las marcas 21–79: `uv run python -m ensayo.batches` y commitear `results/sealed_labels.sha256` (con 20 marcas: 12 lotes de desarrollo y 8 sellados).
+8. ~~Descarga de las 79 marcas~~ hecha (1-nov): 2.010 anuncios → 32 lotes (19 de desarrollo con 72 variantes, 13 sellados). Hash de las etiquetas selladas en `results/sealed_labels.sha256`. Apify ya no se usa.
 
 ## Fechas
 Entrega interna: miércoles 4-nov 18:00 Chile (cierre oficial 23:00 Chile). Hash de la prueba en vivo: antes del 3-nov 23:59.
