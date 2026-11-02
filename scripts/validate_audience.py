@@ -74,10 +74,10 @@ def truth(it: dict[str, Any]) -> dict[str, float] | None:
     }
 
 
-def load_ads() -> list[dict[str, Any]]:
+def load_ads(raw: Path = DATA / "raw" / "ad_library") -> list[dict[str, Any]]:
     by_page: dict[str, list[dict[str, Any]]] = defaultdict(list)
     seen: set[str] = set()
-    for path in sorted(glob.glob(str(DATA / "raw" / "ad_library" / "*.json"))):
+    for path in sorted(glob.glob(str(raw / "*.json"))):
         for it in json.loads(Path(path).read_text(encoding="utf-8")).get("data") or []:
             ad_id = str(it["id"])
             if ad_id in seen or (it.get("ad_delivery_start_time") or "") <= CUTOFF or not broad(it):
@@ -255,8 +255,20 @@ def half(page_id: str) -> str:
     return "A" if int(hashlib.sha256(page_id.encode()).hexdigest(), 16) % 2 == 0 else "B"
 
 
+def dev_pages() -> set[str]:
+    return {
+        str(it["page_id"])
+        for path in glob.glob(str(DATA / "raw" / "ad_library" / "*.json"))
+        for it in json.loads(Path(path).read_text(encoding="utf-8")).get("data") or []
+    }
+
+
 async def run(args: argparse.Namespace) -> None:
-    ads = load_ads()
+    if args.holdout:
+        seen_pages = dev_pages()
+        ads = [a for a in load_ads(DATA / "raw" / "holdout") if a["page_id"] not in seen_pages]
+    else:
+        ads = load_ads()
     if args.limit:
         random.Random(1).shuffle(ads)
         ads = ads[: args.limit]
@@ -274,6 +286,15 @@ async def run(args: argparse.Namespace) -> None:
             preds = await asyncio.gather(*(predict(client, http, a) for a in ads))
     await client.aclose()
     rows = [a | {"pred": p} for a, p in zip(ads, preds) if p]
+    if args.holdout:
+        # Primero solo las predicciones y su hash: se commitea antes de mirar las etiquetas (--score las lee).
+        preds_only = {r["ad_id"]: {k: round(r["pred"][k], 4) for k in TARGETS} for r in rows}
+        blob = json.dumps(preds_only, sort_keys=True)
+        digest = hashlib.sha256(blob.encode()).hexdigest()
+        (RESULTS / "holdout_predictions.json").write_text(blob, encoding="utf-8")
+        (RESULTS / "holdout_predictions.sha256").write_text(f"{digest}\n", encoding="utf-8")
+        log.info(f"{len(rows)} predicciones · SHA-256 {digest}. Commitea y después corre --score.")
+        return
     summary = {k: within_page(rows, k) for k in TARGETS}
     for h in "AB":
         part = [r for r in rows if half(r["page_id"]) == h]
@@ -283,6 +304,18 @@ async def run(args: argparse.Namespace) -> None:
     path.write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
     log.info(json.dumps(summary, indent=1))
     log.info(f"Guardado {path.name}")
+
+
+def score_holdout() -> None:
+    preds = json.loads((RESULTS / "holdout_predictions.json").read_text(encoding="utf-8"))
+    ads = {a["ad_id"]: a for a in load_ads(DATA / "raw" / "holdout")}
+    rows = [ads[k] | {"pred": v} for k, v in preds.items() if k in ads]
+    summary = {k: within_page(rows, k) for k in TARGETS}
+    passed = sum(1 for k in TARGETS if summary[k].get("within_r", 0) > 0 and summary[k].get("p_perm", 1) < 0.05)
+    summary["rule"] = {"passed_metrics": passed, "validated": passed >= 2}
+    out = {"model": MODEL, "ads": len(rows), "summary": summary, "rows": rows}
+    (RESULTS / "holdout_scored.json").write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
+    log.info(json.dumps(summary, indent=1))
 
 
 def main() -> None:
@@ -295,7 +328,13 @@ def main() -> None:
     p.add_argument("--tag", default="")
     p.add_argument("--personas", type=int, default=0, help="usar la población sintética (personas por anuncio)")
     p.add_argument("--yes", action="store_true")
-    asyncio.run(run(p.parse_args()))
+    p.add_argument("--holdout", action="store_true", help="marcas nuevas de data/raw/holdout/: solo predice y escribe el hash")
+    p.add_argument("--score", action="store_true", help="puntuar results/holdout_predictions.json contra las etiquetas")
+    args = p.parse_args()
+    if args.score:
+        score_holdout()
+        return
+    asyncio.run(run(args))
 
 
 if __name__ == "__main__":

@@ -66,7 +66,7 @@ Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el pla
 - `scripts/validate_audience.py`: 294 anuncios de 24 marcas (posteriores al 2-sep, segmentación amplia). Métrica: correlación dentro de cada marca, con nulo por permutación.
 - Llamada única (US$ 0,2): mujeres r 0,14 (p 0,004), 18–34 r 0,19 (p 0,001), 55+ r 0,17 (p 0,003). Primera señal del proyecto.
 - Población de 200 personas (US$ 1,5): mujeres r 0,17 (p 0,004), 18–34 r 0,03 (n.s.), 55+ r 0,09 (p 0,07). Iguala en género y empeora en edad: la señal está en cómo el modelo lee el creativo, no en la población.
-- Falta: prueba fuera de muestra con marcas nuevas (predicción con hash antes de puntuar).
+- **Prueba fuera de muestra (regla fijada el 2-nov ~19:10, antes de bajar los datos):** 29 marcas nuevas (`data/holdout_candidates.csv`), ninguna página de dev. Método congelado: `validate_audience.py` tal cual está en este commit (llamada única, Spark 1.3 contributor, effort low, mismo prompt, mismos filtros). Se predice, se commitea `results/holdout_predictions.sha256` y recién después `--score`. **Validado si al menos 2 de las 3 métricas (mujeres, 18–34, 55+) tienen correlación dentro de marca > 0 con p < 0,05.** Si no, se descarta la hipótesis.
 
 ## Fechas
 Entrega interna: miércoles 4-nov 18:00 Chile (cierre oficial 23:00 Chile). Hash de la prueba en vivo: antes del 3-nov 23:59.

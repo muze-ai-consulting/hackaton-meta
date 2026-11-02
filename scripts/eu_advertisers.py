@@ -218,12 +218,17 @@ def main() -> None:
     parser.add_argument("--apify", action="store_true", help="usar el actor de Apify en vez de la API oficial")
     parser.add_argument("--max-ads", type=int, default=300, help="con --apify: tope de anuncios por página")
     parser.add_argument("--yes", action="store_true", help="con --apify: confirmar el gasto en Apify")
+    parser.add_argument("--holdout", action="store_true", help="marcas nuevas para validar fuera de muestra (data/raw/holdout/)")
     args = parser.parse_args()
+    global RAW
+    if args.holdout:
+        RAW = ROOT / "data" / "raw" / "holdout"
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     load_dotenv(ROOT / ".env")
     RAW.mkdir(parents=True, exist_ok=True)
 
-    with open(ROOT / "data" / "advertisers_candidates.csv", encoding="utf-8") as f:
+    source = "holdout_candidates.csv" if args.holdout else "advertisers_candidates.csv"
+    with open(ROOT / "data" / source, encoding="utf-8") as f:
         candidates = list(csv.DictReader(f))
     candidates = candidates[args.skip :]
     if args.limit:
@@ -276,7 +281,7 @@ def main() -> None:
     results.mkdir(exist_ok=True)
     cols = ["brand", "country", "category", "page_id", "page_name", "ads_after_cutoff", "with_eu_reach",
             "single_version", "distinct_bodies", "catalog_share", "comparable_weeks", "ads_in_comparable_weeks", "note", "why"]
-    name = f"eu_advertisers_{args.skip}.csv" if args.skip else "eu_advertisers.csv"
+    name = "holdout_advertisers.csv" if args.holdout else f"eu_advertisers_{args.skip}.csv" if args.skip else "eu_advertisers.csv"
     with open(results / name, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
         writer.writeheader()
