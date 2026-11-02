@@ -118,6 +118,7 @@ async def simulate_batch(
     phase: str,
     per_call: int = 20,
     orders: int = 4,
+    sample_size: int = 0,
 ) -> dict[str, Any]:
     variants = batch["variants"]
     if len(variants) > len(LETTERS):
@@ -147,6 +148,7 @@ async def simulate_batch(
     stops_by_segment: dict[int, dict[str, int]] = defaultdict(lambda: defaultdict(int))
     seen_by_segment: dict[str, int] = defaultdict(int)
     reasons: dict[int, list[str]] = defaultdict(list)
+    sample: list[dict[str, Any]] = []  # algunas personas con su reacción completa, para mostrar en el demo
     failed = 0
     for order, people, body in results:
         if body is None:
@@ -171,6 +173,16 @@ async def simulate_batch(
                 clicks[idx] += 1
                 if len(reasons[idx]) < 5 and r.get("motivo"):
                     reasons[idx].append(str(r["motivo"]))
+            if len(sample) < sample_size:
+                sample.append(
+                    {
+                        "persona": person.describe(),
+                        "segment": segment,
+                        "stopped": [variants[i]["ad_id"] for i in sorted(stopped)],
+                        "clicked": [variants[i]["ad_id"] for i in sorted(clicked)],
+                        "reason": str(r.get("motivo") or ""),
+                    }
+                )
 
     stats = {}
     for idx, v in enumerate(variants):
@@ -186,7 +198,14 @@ async def simulate_batch(
         }
         stats[v["ad_id"]]["score"] = round(score(stats[v["ad_id"]]), 4)
     ranking = sorted(stats, key=lambda ad: (-stats[ad]["score"], ad))
-    return {"ranking": ranking, "stats": stats, "calls": len(chunks), "failed_calls": failed, "orders": feed}
+    return {
+        "ranking": ranking,
+        "stats": stats,
+        "calls": len(chunks),
+        "failed_calls": failed,
+        "orders": feed,
+        "sample_reactions": sample,
+    }
 
 
 async def single_call_ranking(client: ModelClient, batch: dict[str, Any], *, model: str, phase: str) -> dict[str, Any]:

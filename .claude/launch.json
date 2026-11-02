@@ -6,6 +6,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8765", "--directory", "site"],
       "port": 8765
+    },
+    {
+      "name": "ensayo",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": ["run", "uvicorn", "ensayo.api:app", "--port", "8040"],
+      "port": 8040
     }
   ]
 }
