@@ -1,4 +1,4 @@
-# Estado del proyecto: traspaso al 1-nov-2026 (actualizado: Muse Image, chat con personas, diseño estilo Zenith y demo desplegado)
+# Estado del proyecto: traspaso al 1-nov-2026 (actualizado: front en React con el flujo de 3 pasos y el anuncio real)
 
 Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el plan, en `PLAN.md`; la investigación, en `reports/` (la última es `reports/Hackatón de Meta apuesta final.md`).
 
@@ -16,13 +16,13 @@ Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el pla
 - `ensayo/simulate.py`: feed simulado (20 personas por llamada, 4 órdenes repartidos entre llamadas, solo letras en el prompt), puntaje = frenado + clic (supuesto a calibrar), muestra de reacciones, y el rival de llamada única.
 - `ensayo/fixtures.py`: lotes inventados.
 - `scripts/run_backtest.py`: población vs llamada única vs azar. Sin `--mock` solo muestra el costo; gasta con `--yes`. El sellado escribe los rankings y su SHA-256 antes de mirar etiquetas (`--score` después).
-- `ensayo/api.py` + `web/`: demo (FastAPI + HTML/CSS/JS sin build). Pestañas "Ensayar anuncios" y "Prueba del modelo". Modo real solo con `ENSAYO_REAL=1` (Spark estándar, fase `demo`, máx. 300 personas). Preview: `.claude/launch.json` → `ensayo` (puerto 8040).
+- `frontend/` (React 18 + Vite 5 + Tailwind 4 + componentes estilo shadcn) compila a `web/` (`cd frontend && npm run build`; el build se versiona, así el Dockerfile no cambia). Flujo de producto: 1) tus versiones (subir fotos o generarlas con Muse Image), 2) tu audiencia (6 presets + ajuste de edad, género y países), 3) resultado (ganadora, 3 razones, barras, rival de llamada única y chat con la audiencia). Más "Ejemplos reales": un lanzamiento real del set de desarrollo, Ensayo predice y después se revela el alcance UE. Tokens de zenith.chat en `src/index.css`. `ensayo/api.py` sirve `web/index.html` en `/` y `web/static/` en `/static`; `GET /api/examples` entrega hasta 12 lotes de `data/batches/dev.json` (nunca del sellado). Modo real solo con `ENSAYO_REAL=1` (Spark estándar, fase `demo`, máx. 300 personas). Preview: `ensayo` en `.claude/launch.json`.
 - `ensayo/images.py` + `POST /api/variants`: variantes con Muse Image. Una llamada a Spark escribe un ángulo por variante (título, texto, prompt de imagen; ve la foto del producto si la hay) y `muse-image-1.0` genera una imagen por variante (`ModelClient.image`, US$0,01 cada una, pasa por el `Ledger`). En el demo, el bloque "Generar variantes con Muse Image" llena el formulario. Modo falso: degradado PNG de relleno sin red, costo hipotético en `results/costs_mock.jsonl` (~US$0,03 por 3 variantes). Supuestos sin verificar hasta la sonda: que `/images/generations` acepte `size` y devuelva `b64_json` o `url` (se manejan los dos), y que no haya edición desde foto (por eso la foto pasa por Spark y no por Muse Image).
 - `ensayo/chat.py` + `POST /api/chat`: conversar con una persona de la audiencia. Cada tarjeta de "Algunas personas" tiene "Conversar": la persona responde en primera persona con su descripción, los anuncios (mismas letras del demo, con imagen) y su reacción como contexto, y puede discutir. Una llamada a Spark por pregunta (fase `demo`); el historial lo manda el navegador (máx. 10 mensajes). Modo falso con respuesta de relleno.
 - Diseño del demo basado en zenith.chat: fondo `#ebedf1`, Inter, tarjetas blancas translúcidas con sombra, botón primario `#353536`, acento cian → violeta → verde, portada con los cuatro pasos. Verificado en escritorio y a 375 px.
 - `ensayo/apify.py` + `scripts/eu_advertisers.py --apify`: Ad Library vía el actor de Apify `memo23/facebook-ads-library-scraper-cheerio`. Convierte cada anuncio a los campos de `ads_archive` (alcance UE, edad, género, países con código ISO desde el desglose de alcance, textos, plataformas) y además trae la URL de la imagen, que pasa a las variantes de los lotes. Respuestas cacheadas en `data/raw/apify/`; sin `--yes` solo muestra el costo. Probado contra Apify real el 1-nov con Snocks y Holy Energy: 4 corridas, ~US$0,25; 58 de 60 anuncios con alcance UE y segmentación, 60/60 con imagen, 24 elegibles (después del 2-sep, una versión) y 2 lotes de 3 variantes. Notas: el actor no respeta `startDateMin` en el modo por página (trae anuncios anteriores al corte, que `batches` descarta) y el plan gratis corta cada corrida en 30 anuncios.
 - `scripts/probe_model_api.py` (sonda del día 0) y `scripts/eu_advertisers.py` (descarga y ranking de anunciantes), ambos sin correr: faltan credenciales.
-- 35 pruebas: `uv run --group dev pytest -q`.
+- 39 pruebas: `uv run --group dev pytest -q`.
 
 ## Bloqueado en Mark
 1. ~~Token de la Ad Library~~ Mark no alcanzó a obtenerlo (1-nov). Reemplazo: Apify (ver abajo). Falta que Mark cree la cuenta en apify.com y ponga `APIFY_TOKEN` en `.env`. El plan gratis limita cada corrida a 30 anuncios y a un objetivo: sirve para validar; para el set completo conviene un plan pagado (máx. ~US$14 por los 79 anunciantes con 300 anuncios cada uno).
@@ -38,6 +38,9 @@ Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el pla
 4. **Datos:** ~~validar con 2 marcas~~ hecho. Siguiente: corrida completa `uv run python scripts/eu_advertisers.py --apify --yes` (máx. ~US$23 con plan pagado; con el gratis, cada página queda en 30 anuncios y los US$5 alcanzan para ~20 marcas) → `python -m ensayo.batches` → commit de `results/sealed_labels.sha256` → calibración en dev (pesos de edad, puntaje) → corrida sellada → hash de rankings en commit antes del 3-nov 23:59.
 5. **README** con la declaración de Claude Code, el protocolo y cómo correr todo. Video y formulario de entrega (Mark los envía).
 6. Actualizar `site/roadmap.json` (editar con reemplazo de texto, no con `json.dump`) y publicar con el rsync del CLAUDE.md.
+
+7. **Redesplegar** el front nuevo en labs.muze.cl/ensayo (con OK de Mark).
+8. Cuando termine la descarga de las marcas 21–79: `uv run python -m ensayo.batches` y commitear `results/sealed_labels.sha256` (con 20 marcas: 12 lotes de desarrollo y 8 sellados).
 
 ## Fechas
 Entrega interna: miércoles 4-nov 18:00 Chile (cierre oficial 23:00 Chile). Hash de la prueba en vivo: antes del 3-nov 23:59.

@@ -52,3 +52,31 @@ def test_to_batch_shape() -> None:
     assert batch["target"]["target_ages"] == ["25", "44"]
     assert [loc["name"] for loc in batch["target"]["target_locations"]] == ["DE", "FR"]
     assert batch["variants"][1]["image_url"] == PIXEL
+
+
+def test_examples_only_dev_with_reach(tmp_path, monkeypatch) -> None:
+    import json
+
+    dev = [
+        {
+            "batch_id": "b1",
+            "page_name": "Marca",
+            "week": "2026-09-14",
+            "target": {"target_ages": ["25", "65+"], "target_gender": "Women", "target_locations": [{"name": "DE", "excluded": False}]},
+            "variants": [{"ad_id": "1", "title": "T", "body": "x", "image_url": "https://img/1"}, {"ad_id": "2", "title": "", "body": "y", "image_url": None}],
+            "labels": {"1": {"reach": 900}, "2": {"reach": 100}},
+        },
+        {"batch_id": "s1", "sealed": True, "variants": [], "labels": {}},
+    ]
+    path = tmp_path / "dev.json"
+    path.write_text(json.dumps(dev), encoding="utf-8")
+    monkeypatch.setattr(api, "DEV_BATCHES", path)
+    out = client(tmp_path, monkeypatch).get("/api/examples").json()
+    assert [e["batch_id"] for e in out] == ["b1"]
+    assert out[0]["target"] == {"age_min": 25, "age_max": 65, "gender": "Women", "countries": ["DE"]}
+    assert out[0]["reach"] == {"1": 900, "2": 100}
+
+
+def test_examples_empty_without_batches(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr(api, "DEV_BATCHES", tmp_path / "missing.json")
+    assert client(tmp_path, monkeypatch).get("/api/examples").json() == []

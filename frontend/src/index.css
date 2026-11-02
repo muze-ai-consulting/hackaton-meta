@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+/* Tokens de zenith.chat: colores, tipografía, radios y sombras. */
+@theme {
+  --font-sans: Inter, system-ui, -apple-system, sans-serif;
+  --color-bg: #ebedf1;
+  --color-ink: #353536;
+  --color-heading: #080808;
+  --color-muted: #706f70;
+  --color-line: #d4d8df;
+  --color-soft: #f3eefb;
+  --color-teal: #26a3bf;
+  --color-purple: #4d308c;
+  --color-mint: #26bfb0;
+  --color-lime: #a4d955;
+  --color-ok: #1f7a34;
+  --color-ok-soft: #e7f3ea;
+  --shadow-card: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+  --radius-card: 16px;
+}
+
+/* En la capa base para que las utilidades de Tailwind les ganen. */
+@layer base {
+  html, body { background: var(--color-bg); color: var(--color-ink); }
+  body { margin: 0; font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  h1, h2, h3 { color: var(--color-heading); }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid #a855f7; outline-offset: 2px; }
+}
+
+.brand-gradient { background: linear-gradient(135deg, #22d3ee, #a855f7 55%, #4ade80); }
+.orb {
+  position: absolute; top: -180px; right: -180px; width: 640px; height: 640px; border-radius: 50%;
+  background: linear-gradient(to right, rgba(34, 211, 238, 0.22), rgba(168, 85, 247, 0.22), rgba(74, 222, 128, 0.22));
+  filter: blur(90px); pointer-events: none;
+}
+@keyframes pulse-soft { 50% { opacity: 0.5; } }
+.skeleton { background: #dfe2e8; border-radius: 12px; animation: pulse-soft 1.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }

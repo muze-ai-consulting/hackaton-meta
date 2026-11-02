@@ -213,6 +213,8 @@ def rotating_fetch(clients: list[httpx.Client], max_ads: int):  # noqa: ANN201
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--limit", type=int, default=0, help="procesar solo los primeros N candidatos")
+    parser.add_argument("--skip", type=int, default=0, help="saltar los primeros N candidatos")
+    parser.add_argument("--from-account", type=int, default=1, help="con --apify: empezar por la cuenta N (1 = APIFY_TOKEN)")
     parser.add_argument("--apify", action="store_true", help="usar el actor de Apify en vez de la API oficial")
     parser.add_argument("--max-ads", type=int, default=300, help="con --apify: tope de anuncios por página")
     parser.add_argument("--yes", action="store_true", help="con --apify: confirmar el gasto en Apify")
@@ -223,11 +225,12 @@ def main() -> None:
 
     with open(ROOT / "data" / "advertisers_candidates.csv", encoding="utf-8") as f:
         candidates = list(csv.DictReader(f))
+    candidates = candidates[args.skip :]
     if args.limit:
         candidates = candidates[: args.limit]
 
     if args.apify:
-        tokens = apify_tokens()
+        tokens = apify_tokens()[max(0, args.from_account - 1) :]
         if not tokens:
             raise SystemExit("Falta APIFY_TOKEN en .env (ver .env.example).")
         RAW_APIFY.mkdir(parents=True, exist_ok=True)
@@ -273,11 +276,12 @@ def main() -> None:
     results.mkdir(exist_ok=True)
     cols = ["brand", "country", "category", "page_id", "page_name", "ads_after_cutoff", "with_eu_reach",
             "single_version", "distinct_bodies", "catalog_share", "comparable_weeks", "ads_in_comparable_weeks", "note", "why"]
-    with open(results / "eu_advertisers.csv", "w", encoding="utf-8", newline="") as f:
+    name = f"eu_advertisers_{args.skip}.csv" if args.skip else "eu_advertisers.csv"
+    with open(results / name, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(out)
-    log.info(f"Guardado results/eu_advertisers.csv ({len(out)} anunciantes)")
+    log.info(f"Guardado results/{name} ({len(out)} anunciantes)")
 
 
 if __name__ == "__main__":

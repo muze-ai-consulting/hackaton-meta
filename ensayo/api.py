@@ -3,6 +3,7 @@
 - POST /api/simulate: ensaya las variantes de un anuncio con una población sintética y el rival de llamada única.
 - POST /api/chat: una pregunta a una persona de la audiencia sobre su reacción a las variantes.
 - POST /api/variants: propone variantes (título, texto e imagen de Muse Image) desde una descripción y una foto.
+- GET /api/examples: lanzamientos reales del set de desarrollo (nunca del sellado) para la pantalla "anuncio real".
 - GET /api/backtest: el último resultado de scripts/run_backtest.py (prefiere corridas reales a las de prueba).
 - GET /: la página (web/).
 
@@ -23,7 +24,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from ensayo import RESULTS, ROOT
+from ensayo import DATA, RESULTS, ROOT
 from ensayo.chat import ask_persona
 from ensayo.costs import BudgetExceeded
 from ensayo.images import MAX_VARIANTS, generate_variants
@@ -33,7 +34,9 @@ from ensayo.simulate import simulate_batch, single_call_ranking
 
 log = logging.getLogger(__name__)
 
-WEB = ROOT / "web"
+WEB = ROOT / "web"  # build de frontend/ (npm run build)
+DEV_BATCHES = DATA / "batches" / "dev.json"
+MAX_EXAMPLES = 12
 REAL_MODEL = "muse-spark-1.3"
 REAL_MAX_PERSONAS = 300
 MAX_IMAGE_CHARS = 4_000_000  # ~3 MB en base64
@@ -210,6 +213,55 @@ async def variants(req: VariantsIn) -> dict[str, Any]:
     return {"mode": req.mode, "usd": round(client.ledger.spent() - spent_before, 4), "variants": out}
 
 
+def example_target(target: dict[str, Any]) -> dict[str, Any]:
+    """La segmentación de un lote con la forma de TargetIn."""
+    ages = target.get("target_ages") or ["18", "65"]
+    try:
+        age_min = int(str(ages[0]).rstrip("+"))
+        age_max = int(str(ages[-1]).rstrip("+"))
+    except ValueError:
+        age_min, age_max = 18, 65
+    gender = str(target.get("target_gender") or "All").lower()
+    countries = [
+        str(loc.get("name"))[:2].upper()
+        for loc in target.get("target_locations") or []
+        if not loc.get("excluded") and len(str(loc.get("name") or "")) == 2
+    ]
+    return {
+        "age_min": max(18, min(age_min, 65)),
+        "age_max": max(18, min(age_max, 65)),
+        "gender": "Women" if gender in ("women", "female") else "Men" if gender in ("men", "male") else "All",
+        "countries": countries[:10] or ["GB"],
+    }
+
+
+@app.get("/api/examples")
+def examples() -> list[dict[str, Any]]:
+    """Lotes reales del set de desarrollo con su alcance real. El set sellado nunca sale por aquí."""
+    if not DEV_BATCHES.exists():
+        return []
+    batches = [b for b in json.loads(DEV_BATCHES.read_text(encoding="utf-8")) if not b.get("sealed")]
+    # Primero los que tienen imagen en todas las variantes y 3 o 4 versiones: se ven mejor en el demo.
+    batches.sort(key=lambda b: (not all(v.get("image_url") for v in b["variants"]), abs(len(b["variants"]) - 3), b["batch_id"]))
+    out = []
+    for b in batches[:MAX_EXAMPLES]:
+        variants = b["variants"][:6]
+        out.append(
+            {
+                "batch_id": b["batch_id"],
+                "brand": b.get("page_name") or "",
+                "week": b.get("week"),
+                "target": example_target(b.get("target") or {}),
+                "variants": [
+                    {"ad_id": v["ad_id"], "title": v.get("title") or "", "body": v.get("body") or "", "image_url": v.get("image_url")}
+                    for v in variants
+                ],
+                "reach": {v["ad_id"]: (b.get("labels") or {}).get(v["ad_id"], {}).get("reach") for v in variants},
+            }
+        )
+    return out
+
+
 @app.get("/api/backtest")
 def backtest() -> dict[str, Any]:
     files = sorted(RESULTS.glob("backtest_*.json"), key=lambda p: ("_mock" not in p.name, p.stat().st_mtime))
@@ -235,4 +287,4 @@ def index() -> FileResponse:
     return FileResponse(WEB / "index.html")
 
 
-app.mount("/static", StaticFiles(directory=WEB), name="static")
+app.mount("/static", StaticFiles(directory=WEB / "static", check_dir=False), name="static")

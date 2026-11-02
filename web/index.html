@@ -1,146 +1,17 @@
 <!doctype html>
 <html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex">
-  <title>Ensayo para anuncios</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="static/app.css">
-</head>
-<body>
-  <header class="top">
-    <div class="wrap top-inner">
-      <div class="brand">
-        <span class="mark" aria-hidden="true"></span>
-        <div>
-          <strong>Ensayo</strong>
-          <span class="tagline">Prueba tus anuncios con una audiencia sintética antes de pagar</span>
-        </div>
-      </div>
-      <nav class="tabs" role="tablist" aria-label="Secciones">
-        <button role="tab" id="tab-ensayar" aria-selected="true" aria-controls="view-ensayar">Ensayar anuncios</button>
-        <button role="tab" id="tab-prueba" aria-selected="false" aria-controls="view-prueba">Prueba del modelo</button>
-      </nav>
-    </div>
-  </header>
-
-  <main class="wrap">
-    <section id="view-ensayar" role="tabpanel" aria-labelledby="tab-ensayar" class="layout">
-      <form id="form" class="panel form" novalidate>
-        <h2>Tu anuncio</h2>
-        <label class="field">
-          <span>Marca</span>
-          <input id="brand" type="text" maxlength="120" autocomplete="off">
-        </label>
-
-        <fieldset class="field-group">
-          <legend>A quién le llega</legend>
-          <div class="row3">
-            <label class="field"><span>Edad desde</span><input id="age-min" type="number" min="18" max="65" value="25"></label>
-            <label class="field"><span>Hasta</span><input id="age-max" type="number" min="18" max="65" value="54"></label>
-            <label class="field"><span>Género</span>
-              <select id="gender">
-                <option value="All">Todos</option>
-                <option value="Women">Mujeres</option>
-                <option value="Men">Hombres</option>
-              </select>
-            </label>
-          </div>
-          <label class="field">
-            <span>Países (código de dos letras, separados por coma)</span>
-            <input id="countries" type="text" value="GB" autocomplete="off">
-          </label>
-          <label class="field">
-            <span>Personas en la audiencia: <output id="personas-out">200</output></span>
-            <input id="personas" type="range" min="40" max="1000" step="20" value="200">
-          </label>
-        </fieldset>
-
-        <fieldset class="field-group featured">
-          <legend>Generar variantes con Muse Image <span class="hint">(opcional)</span></legend>
-          <label class="field">
-            <span>Producto o idea del anuncio</span>
-            <textarea id="brief" rows="2" maxlength="2000" placeholder="Ej.: café de especialidad tostado a mano, envío en 24 horas"></textarea>
-          </label>
-          <div class="image-row">
-            <label class="btn-secondary file">
-              <input id="photo" type="file" accept="image/png,image/jpeg,image/webp">
-              <span>Foto del producto (opcional)</span>
-            </label>
-            <img id="photo-thumb" class="thumb" alt="Foto del producto" hidden>
-            <button type="button" id="photo-clear" class="link" hidden>Quitar foto</button>
-          </div>
-          <div class="gen-row">
-            <label class="field"><span>Cuántas</span>
-              <select id="n-variants">
-                <option value="2">2</option>
-                <option value="3" selected>3</option>
-                <option value="4">4</option>
-              </select>
-            </label>
-            <button type="button" id="gen-variants" class="btn-primary btn-accent">Generar variantes</button>
-          </div>
-          <p id="gen-status" class="hint" aria-live="polite"></p>
-        </fieldset>
-
-        <fieldset class="field-group">
-          <legend>Variantes <span class="hint">(de 2 a 6)</span></legend>
-          <div id="variants"></div>
-          <button type="button" id="add-variant" class="btn-secondary">Agregar variante</button>
-        </fieldset>
-
-        <fieldset class="field-group">
-          <legend>Motor</legend>
-          <label class="radio"><input type="radio" name="mode" value="mock" checked> Prueba sin costo <span class="hint">(respuestas sin señal, para ver el circuito)</span></label>
-          <label class="radio"><input type="radio" name="mode" value="real" id="mode-real"> Muse Spark 1.3 <span class="hint" id="real-hint"></span></label>
-        </fieldset>
-
-        <p id="form-error" class="error" role="alert" hidden></p>
-        <button type="submit" id="run" class="btn-primary">Ensayar</button>
-      </form>
-
-      <div id="results" class="results" aria-live="polite">
-        <div class="panel empty">
-          <span class="eyebrow">Muse Spark 1.3 · Muse Image</span>
-          <h1>Ensaya tu anuncio antes de pagar por él</h1>
-          <p class="lead">Una audiencia sintética de Instagram y Facebook ve tus variantes en su feed y te dice cuál la hace detenerse y cuál la hace hacer clic.</p>
-          <ol class="flow">
-            <li><span class="n">1</span><strong>Describe tu producto</strong><span>Escribe las variantes o genéralas con Muse Image.</span></li>
-            <li><span class="n">2</span><strong>Arma la audiencia</strong><span>Personas con la segmentación del anuncio: edad, género, países.</span></li>
-            <li><span class="n">3</span><strong>Simula el feed</strong><span>Cada persona ve las variantes en cuatro órdenes y decide.</span></li>
-            <li><span class="n">4</span><strong>Conversa y decide</strong><span>Ranking con explicación, contra una sola llamada a Spark, y chat con cada persona.</span></li>
-          </ol>
-        </div>
-      </div>
-    </section>
-
-    <section id="view-prueba" role="tabpanel" aria-labelledby="tab-prueba" hidden>
-      <div id="backtest" class="backtest"></div>
-    </section>
-  </main>
-
-  <template id="variant-tpl">
-    <div class="variant">
-      <div class="variant-head">
-        <strong class="variant-label"></strong>
-        <button type="button" class="link remove">Quitar</button>
-      </div>
-      <label class="field"><span>Título</span><input class="v-title" type="text" maxlength="200"></label>
-      <label class="field"><span>Texto</span><textarea class="v-body" rows="3" maxlength="2000"></textarea></label>
-      <div class="image-row">
-        <label class="btn-secondary file">
-          <input class="v-image" type="file" accept="image/png,image/jpeg,image/webp">
-          <span>Imagen (opcional)</span>
-        </label>
-        <img class="thumb" alt="" hidden>
-        <button type="button" class="link clear-image" hidden>Quitar imagen</button>
-      </div>
-    </div>
-  </template>
-
-  <script src="static/app.js"></script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Ensayo · ¿Cuál de tus anuncios va a funcionar?</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script type="module" crossorigin src="./static/index-rc2yVMhw.js"></script>
+    <link rel="stylesheet" crossorigin href="./static/index-DSy2mCKf.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>

@@ -16,3 +16,4 @@ data/populations/
 # Corridas con el servidor falso (los resultados reales sí se versionan)
 results/*_mock*
 results/costs_mock.jsonl
+*.tsbuildinfo
