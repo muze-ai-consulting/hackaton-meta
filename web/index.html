@@ -60,6 +60,33 @@
         </fieldset>
 
         <fieldset class="field-group">
+          <legend>Generar variantes con Muse Image <span class="hint">(opcional)</span></legend>
+          <label class="field">
+            <span>Producto o idea del anuncio</span>
+            <textarea id="brief" rows="2" maxlength="2000" placeholder="Ej.: café de especialidad tostado a mano, envío en 24 horas"></textarea>
+          </label>
+          <div class="image-row">
+            <label class="btn-secondary file">
+              <input id="photo" type="file" accept="image/png,image/jpeg,image/webp">
+              <span>Foto del producto (opcional)</span>
+            </label>
+            <img id="photo-thumb" class="thumb" alt="Foto del producto" hidden>
+            <button type="button" id="photo-clear" class="link" hidden>Quitar foto</button>
+          </div>
+          <div class="gen-row">
+            <label class="field"><span>Cuántas</span>
+              <select id="n-variants">
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="4">4</option>
+              </select>
+            </label>
+            <button type="button" id="gen-variants" class="btn-secondary">Generar variantes</button>
+          </div>
+          <p id="gen-status" class="hint" aria-live="polite"></p>
+        </fieldset>
+
+        <fieldset class="field-group">
           <legend>Variantes <span class="hint">(de 2 a 6)</span></legend>
           <div id="variants"></div>
           <button type="button" id="add-variant" class="btn-secondary">Agregar variante</button>

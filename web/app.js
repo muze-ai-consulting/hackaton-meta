@@ -47,6 +47,7 @@ function addVariant(v = { title: "", body: "" }) {
   $(".remove", el).addEventListener("click", () => { el.remove(); relabel(); });
   const thumb = $(".thumb", el);
   const clear = $(".clear-image", el);
+  if (v.image_url) { el.dataset.image = v.image_url; thumb.src = v.image_url; thumb.hidden = false; clear.hidden = false; }
   $(".v-image", el).addEventListener("change", (ev) => {
     const file = ev.target.files[0];
     if (!file) return;
@@ -63,6 +64,53 @@ function addVariant(v = { title: "", body: "" }) {
 }
 
 $("#add-variant").addEventListener("click", () => addVariant());
+
+// Variantes generadas con Muse Image
+let photo = null;
+$("#photo").addEventListener("change", (ev) => {
+  const file = ev.target.files[0];
+  if (!file) return;
+  if (file.size > 3 * 1024 * 1024) { showError("La foto pesa más de 3 MB."); ev.target.value = ""; return; }
+  const reader = new FileReader();
+  reader.onload = () => { photo = reader.result; $("#photo-thumb").src = photo; $("#photo-thumb").hidden = false; $("#photo-clear").hidden = false; };
+  reader.readAsDataURL(file);
+});
+$("#photo-clear").addEventListener("click", () => {
+  photo = null; $("#photo").value = ""; $("#photo-thumb").hidden = true; $("#photo-clear").hidden = true;
+});
+
+$("#gen-variants").addEventListener("click", async () => {
+  const brief = $("#brief").value.trim();
+  if (!brief && !photo) { showError("Describe el producto o sube una foto para generar variantes."); return; }
+  showError("");
+  const n = Number($("#n-variants").value);
+  const mode = document.querySelector('input[name="mode"]:checked').value;
+  const btn = $("#gen-variants");
+  const status = $("#gen-status");
+  btn.disabled = true;
+  btn.textContent = "Generando…";
+  status.textContent = `Escribiendo ${n} ángulos y generando ${n} imágenes…`;
+  try {
+    const res = await fetch("api/variants", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ brand: $("#brand").value.trim(), brief, photo_url: photo, n, mode }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : "Revisa los datos.");
+    $("#variants").innerHTML = "";
+    data.variants.forEach(addVariant);
+    status.textContent = data.mode === "mock"
+      ? `Listo: ${data.variants.length} variantes de prueba con imágenes de relleno (costaría US$ ${dec(data.usd)} en real).`
+      : `Listo: ${data.variants.length} variantes con Muse Image · costo: US$ ${dec(data.usd)}.`;
+  } catch (err) {
+    status.textContent = "";
+    showError(`No se pudieron generar las variantes: ${err.message}`);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Generar variantes";
+  }
+});
 $("#personas").addEventListener("input", (e) => { $("#personas-out").textContent = e.target.value; });
 
 function showError(msg) {

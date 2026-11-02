@@ -1,6 +1,7 @@
 """API y página del demo de Ensayo.
 
 - POST /api/simulate: ensaya las variantes de un anuncio con una población sintética y el rival de llamada única.
+- POST /api/variants: propone variantes (título, texto e imagen de Muse Image) desde una descripción y una foto.
 - GET /api/backtest: el último resultado de scripts/run_backtest.py (prefiere corridas reales a las de prueba).
 - GET /: la página (web/).
 
@@ -23,6 +24,7 @@ from pydantic import BaseModel, Field
 
 from ensayo import RESULTS, ROOT
 from ensayo.costs import BudgetExceeded
+from ensayo.images import MAX_VARIANTS, generate_variants
 from ensayo.llm import ModelClient
 from ensayo.population import build_population, spec_from_ad
 from ensayo.simulate import simulate_batch, single_call_ranking
@@ -59,6 +61,14 @@ class SimulateIn(BaseModel):
     variants: list[VariantIn] = Field(min_length=2, max_length=6)
     target: TargetIn = TargetIn()
     personas: int = Field(200, ge=20, le=1000)
+    mode: Literal["mock", "real"] = "mock"
+
+
+class VariantsIn(BaseModel):
+    brand: str = Field("", max_length=120)
+    brief: str = Field("", max_length=2000)
+    photo_url: str | None = Field(None, max_length=MAX_IMAGE_CHARS)
+    n: int = Field(3, ge=2, le=MAX_VARIANTS)
     mode: Literal["mock", "real"] = "mock"
 
 
@@ -121,6 +131,29 @@ async def simulate(req: SimulateIn) -> dict[str, Any]:
         "population": sim,
         "single_call": single,
     }
+
+
+@app.post("/api/variants")
+async def variants(req: VariantsIn) -> dict[str, Any]:
+    if not req.brief.strip() and not req.photo_url:
+        raise HTTPException(422, "Describe el producto o sube una foto.")
+    mock = req.mode == "mock"
+    if not mock and not real_allowed():
+        raise HTTPException(403, "El modo real está desactivado en este servidor.")
+    client = ModelClient.from_env(mock=mock)
+    spent_before = client.ledger.spent()
+    try:
+        out = await generate_variants(
+            client, brand=req.brand, brief=req.brief, n=req.n, photo_url=req.photo_url, model=REAL_MODEL, phase="demo"
+        )
+    except BudgetExceeded as exc:
+        raise HTTPException(402, f"Se alcanzó el tope de gasto del demo: {exc}") from exc
+    except (RuntimeError, ValueError) as exc:
+        log.exception("Fallo al generar variantes")
+        raise HTTPException(502, f"No se pudieron generar las variantes: {exc}") from exc
+    finally:
+        await client.aclose()
+    return {"mode": req.mode, "usd": round(client.ledger.spent() - spent_before, 4), "variants": out}
 
 
 @app.get("/api/backtest")

@@ -18,7 +18,7 @@ import httpx
 from dotenv import load_dotenv
 
 from ensayo import RESULTS, ROOT
-from ensayo.costs import PHASE_CAPS, Ledger, chat_cost
+from ensayo.costs import IMAGE_PRICE, PHASE_CAPS, Ledger, chat_cost
 
 log = logging.getLogger(__name__)
 
@@ -96,16 +96,25 @@ class ModelClient:
         self.ledger.check(phase, upcoming_usd)
         payload = {"model": model, "messages": messages, "max_tokens": max_tokens}
         async with self._sem:
-            body = await self._post(payload)
+            body = await self._post("/chat/completions", payload)
         usage = body.get("usage") or {}
         usd = self.ledger.record_chat(phase, model, usage, note=note)
         text = body["choices"][0]["message"].get("content") or ""
         return ChatResult(text=text, usage=usage, usd=usd)
 
-    async def _post(self, payload: dict[str, Any]) -> dict[str, Any]:
+    async def image(self, model: str, prompt: str, *, phase: str, size: str = "1024x1024", note: str = "") -> dict[str, Any]:
+        """Una imagen de /images/generations; se cobra el precio fijo por imagen de IMAGE_PRICE."""
+        usd = IMAGE_PRICE[model]
+        self.ledger.check(phase, usd)
+        async with self._sem:
+            body = await self._post("/images/generations", {"model": model, "prompt": prompt, "n": 1, "size": size})
+        self.ledger.record(phase, model, usd, {"images": 1}, note=note)
+        return body
+
+    async def _post(self, path: str, payload: dict[str, Any]) -> dict[str, Any]:
         for attempt in range(ATTEMPTS):
             try:
-                r = await self._http.post("/chat/completions", json=payload)
+                r = await self._http.post(path, json=payload)
             except httpx.TransportError as exc:
                 if attempt == ATTEMPTS - 1:
                     raise

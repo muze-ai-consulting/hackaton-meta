@@ -174,3 +174,5 @@ td.heat { color: var(--text); }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+.gen-row { display: flex; align-items: flex-end; gap: 12px; }
+.gen-row .field { flex: 0 0 96px; }

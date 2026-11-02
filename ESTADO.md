@@ -1,4 +1,4 @@
-# Estado del proyecto: traspaso al 1-nov-2026
+# Estado del proyecto: traspaso al 1-nov-2026 (actualizado: variantes con Muse Image)
 
 Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el plan, en `PLAN.md`; la investigación, en `reports/` (la última es `reports/Hackatón de Meta apuesta final.md`).
 
@@ -17,8 +17,9 @@ Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el pla
 - `ensayo/fixtures.py`: lotes inventados.
 - `scripts/run_backtest.py`: población vs llamada única vs azar. Sin `--mock` solo muestra el costo; gasta con `--yes`. El sellado escribe los rankings y su SHA-256 antes de mirar etiquetas (`--score` después).
 - `ensayo/api.py` + `web/`: demo (FastAPI + HTML/CSS/JS sin build). Pestañas "Ensayar anuncios" y "Prueba del modelo". Modo real solo con `ENSAYO_REAL=1` (Spark estándar, fase `demo`, máx. 300 personas). Preview: `.claude/launch.json` → `ensayo` (puerto 8040).
+- `ensayo/images.py` + `POST /api/variants`: variantes con Muse Image. Una llamada a Spark escribe un ángulo por variante (título, texto, prompt de imagen; ve la foto del producto si la hay) y `muse-image-1.0` genera una imagen por variante (`ModelClient.image`, US$0,01 cada una, pasa por el `Ledger`). En el demo, el bloque "Generar variantes con Muse Image" llena el formulario. Modo falso: degradado PNG de relleno sin red, costo hipotético en `results/costs_mock.jsonl` (~US$0,03 por 3 variantes). Supuestos sin verificar hasta la sonda: que `/images/generations` acepte `size` y devuelva `b64_json` o `url` (se manejan los dos), y que no haya edición desde foto (por eso la foto pasa por Spark y no por Muse Image).
 - `scripts/probe_model_api.py` (sonda del día 0) y `scripts/eu_advertisers.py` (descarga y ranking de anunciantes), ambos sin correr: faltan credenciales.
-- 24 pruebas: `uv run --group dev pytest -q`.
+- 29 pruebas: `uv run --group dev pytest -q`.
 
 ## Bloqueado en Mark
 1. Verificación de identidad en facebook.com/ID, app de desarrollador y token de la Ad Library (`META_ACCESS_TOKEN` en `.env`).
@@ -28,7 +29,7 @@ Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el pla
 5. Ruta sin datos: si el token no llega el lunes 2-nov al mediodía, se entrega como protocolo preregistrado + motor reproducible + demo, sin métrica de precisión.
 
 ## Pendiente (en orden sugerido)
-1. **Variantes con Muse Image** (`muse-image-1.0`, US$0,01 por imagen) en el demo: generar 2-3 variantes desde una foto o descripción, con modo falso (imagen de relleno) para desarrollar.
+1. ~~Variantes con Muse Image~~ hecho (1-nov). Con la key: probarlo una vez en real con `ENSAYO_REAL=1`.
 2. **Despliegue del demo** en el VPS (con OK de Mark): Dockerfile multi-stage, compose, nginx `location /ensayo/`. La página usa rutas relativas, funciona bajo prefijo.
 3. **Con la key:** `probe_model_api.py` → actualizar `IMAGE_TOKENS` en `simulate.py` y precios/caché medidos → piloto de 1 lote con 200 personas.
 4. **Con el token:** `eu_advertisers.py` → `python -m ensayo.batches` → commit de `results/sealed_labels.sha256` → calibración en dev (pesos de edad, puntaje) → corrida sellada → hash de rankings en commit antes del 3-nov 23:59.
