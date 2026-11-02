@@ -61,5 +61,12 @@ Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el pla
 - Regla: al sellado va la configuración con mayor promedio de pares bien ordenados de la población en dev, entre las tres (`full/low`, `feed/low`, `feed/medium`). No se prueba nada más. Se corre el sellado aunque no gane; se informa lo que salga.
 - Resultado en dev (pares bien ordenados de la población / llamada única / texto corto / azar): `full/low` 0,453 / 0,487 / 0,64 / 0,522; `feed/low` **0,493** / 0,498 / 0,64 / 0,522 (US$ 0,64); `feed/medium` 0,484 / 0,484 / 0,64 / 0,522 (US$ 0,95). Por la regla, al sellado va `feed/low`. Ninguna configuración de modelo le gana al azar; la regla del texto corto sí (IC95 0,51–0,77).
 
+## Hipótesis nueva: a quién le muestra Meta cada anuncio (2-nov)
+- Con segmentación amplia, Meta reparte cada anuncio a audiencias muy distintas (mujeres alcanzadas: 5 % a 99 %; dentro de una marca, ±10–20 puntos según el creativo).
+- `scripts/validate_audience.py`: 294 anuncios de 24 marcas (posteriores al 2-sep, segmentación amplia). Métrica: correlación dentro de cada marca, con nulo por permutación.
+- Llamada única (US$ 0,2): mujeres r 0,14 (p 0,004), 18–34 r 0,19 (p 0,001), 55+ r 0,17 (p 0,003). Primera señal del proyecto.
+- Población de 200 personas (US$ 1,5): mujeres r 0,17 (p 0,004), 18–34 r 0,03 (n.s.), 55+ r 0,09 (p 0,07). Iguala en género y empeora en edad: la señal está en cómo el modelo lee el creativo, no en la población.
+- Falta: prueba fuera de muestra con marcas nuevas (predicción con hash antes de puntuar).
+
 ## Fechas
 Entrega interna: miércoles 4-nov 18:00 Chile (cierre oficial 23:00 Chile). Hash de la prueba en vivo: antes del 3-nov 23:59.
