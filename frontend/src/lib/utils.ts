@@ -7,11 +7,11 @@ export function cn(...inputs: ClassValue[]) {
 
 export const LETTERS = ["A", "B", "C", "D", "E", "F"];
 
-export const pct = (x: number) => `${Math.round(x * 100)} %`;
+export const pct = (x: number) => `${Math.round(x * 100)}%`;
 
-export const num = (x: number) => x.toLocaleString("es-CL");
+export const num = (x: number) => x.toLocaleString("en-US");
 
-/** Achica una foto a JPEG de 768 px de lado para no mandar megas a la API. */
+/** Shrinks a photo to a 768 px JPEG so we don't send megabytes to the API. */
 export function fileToDataUrl(file: File, side = 768): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -24,7 +24,7 @@ export function fileToDataUrl(file: File, side = 768): Promise<string> {
       URL.revokeObjectURL(img.src);
       resolve(canvas.toDataURL("image/jpeg", 0.85));
     };
-    img.onerror = () => reject(new Error("No se pudo leer la imagen."));
+    img.onerror = () => reject(new Error("Could not read that image."));
     img.src = URL.createObjectURL(file);
   });
 }

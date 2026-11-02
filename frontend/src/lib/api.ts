@@ -45,6 +45,14 @@ export interface Example {
   target: Target;
   variants: { ad_id: string; title: string; body: string; image_url: string | null }[];
   reach: Record<string, number | null>;
+  prediction: {
+    model: string | null;
+    personas: number | null;
+    ran_at: string | null;
+    ranking: string[];
+    stats: Record<string, { stop_rate: number; click_rate: number }>;
+    single_call: string[] | null;
+  } | null;
 }
 
 export interface Metric {
@@ -72,7 +80,7 @@ async function call<T>(path: string, body?: unknown): Promise<T> {
     body: JSON.stringify(body),
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : "El servidor no aceptó el pedido.");
+  if (!res.ok) throw new Error(typeof data.detail === "string" ? data.detail : "The server rejected the request.");
   return data as T;
 }
 

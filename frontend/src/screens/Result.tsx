@@ -6,7 +6,7 @@ import { Button, ErrorNote, Steps } from "@/components/shell";
 import { api, type Mode, type Reaction, type SimulateOut, type Variant } from "@/lib/api";
 import { LETTERS, cn, pct } from "@/lib/utils";
 
-const SUGGESTED = ["¿Por qué te detuviste en ese anuncio?", "¿Qué te haría hacer clic?", "¿Le crees a la oferta?"];
+const SUGGESTED = ["Why did you stop on that ad?", "What would make you click?", "Do you believe the offer?"];
 
 interface Props {
   brand: string;
@@ -23,7 +23,7 @@ export default function Result({ brand, variants, data, mode, onRestart, onStep 
   const byId = (id: string) => variants[Number(id.slice(1)) - 1];
   const winner = pop.ranking[0];
   const w = pop.stats[winner];
-  const others = pop.ranking.slice(1).map((id) => `${Math.round(pop.stats[id].stop_rate * 10)} en la ${letter(id)}`);
+  const others = pop.ranking.slice(1).map((id) => `${Math.round(pop.stats[id].stop_rate * 10)} for ${letter(id)}`);
   const maxStop = Math.max(0.01, ...pop.ranking.map((id) => pop.stats[id].stop_rate));
   const singleTop = data.single_call.ranking[0];
   const reasons = [...new Set(w.click_reasons)].slice(0, 3);
@@ -34,7 +34,7 @@ export default function Result({ brand, variants, data, mode, onRestart, onStep 
       <Steps current={2} onGo={onStep} />
       {data.mode === "mock" && (
         <p className="m-0 rounded-xl bg-[#fff6e0] px-4 py-3 text-sm text-[#7a5a00]">
-          Modo prueba: las reacciones salen de un simulador sin señal. Sirve para ver el recorrido, no para decidir.
+          Test mode: these reactions come from a placeholder simulator with no signal. Use it to see the flow, not to decide.
         </p>
       )}
 
@@ -42,27 +42,27 @@ export default function Result({ brand, variants, data, mode, onRestart, onStep 
         <div className="flex min-w-0 flex-[999_1_620px] flex-col gap-6">
           <Card className="flex flex-wrap overflow-hidden">
             <div className="relative aspect-square w-full bg-[#e6dff5] sm:w-[300px]">
-              {byId(winner).image_url && <img src={byId(winner).image_url!} alt={`Versión ganadora ${letter(winner)}`} className="size-full object-cover" />}
-              <span className="absolute left-3 top-3 rounded-lg bg-ok px-2.5 py-1 text-sm font-bold text-white">Gana</span>
+              {byId(winner).image_url && <img src={byId(winner).image_url!} alt={`Winning version ${letter(winner)}`} className="size-full object-cover" />}
+              <span className="absolute left-3 top-3 rounded-lg bg-ok px-2.5 py-1 text-sm font-bold text-white">Winner</span>
             </div>
             <div className="flex min-w-[260px] flex-1 flex-col justify-center gap-3 p-7">
-              <span className="text-[15px] font-semibold text-muted">Tu audiencia eligió</span>
-              <h1 className="m-0 text-[44px] font-bold leading-[1.05] tracking-[-1.2px]">La versión {letter(winner)}</h1>
+              <span className="text-[15px] font-semibold text-muted">Your audience picked</span>
+              <h1 className="m-0 text-[44px] font-bold leading-[1.05] tracking-[-1.2px]">Version {letter(winner)}</h1>
               <p className="m-0 text-[17px] leading-normal text-muted">
-                {Math.round(w.stop_rate * 10)} de cada 10 personas se detuvieron a mirarla{others.length ? `, contra ${others.join(" y ")}` : ""}.
+                {Math.round(w.stop_rate * 10)} in 10 people stopped scrolling for it{others.length ? `, vs ${others.join(" and ")}` : ""}.
               </p>
               <p className="m-0 text-sm text-muted">
-                {data.personas} personas · {pop.calls + 1} llamadas a {data.model}
+                {data.personas} people · {pop.calls + 1} calls to {data.model}
                 {data.mode === "real" ? ` · US$ ${data.usd.toFixed(3)}` : ""}
               </p>
               <div className="mt-1 flex flex-wrap gap-3">
                 <Button asChild>
                   <a href="#chat">
-                    <MessageCircle aria-hidden="true" /> Pregúntale a tu audiencia
+                    <MessageCircle aria-hidden="true" /> Ask your audience
                   </a>
                 </Button>
                 <Button variant="secondary" onClick={onRestart}>
-                  <RotateCcw aria-hidden="true" /> Ensayar otras versiones
+                  <RotateCcw aria-hidden="true" /> Rehearse other versions
                 </Button>
               </div>
             </div>
@@ -70,7 +70,7 @@ export default function Result({ brand, variants, data, mode, onRestart, onStep 
 
           {reasons.length > 0 && (
             <Card className="flex flex-col gap-4 p-6">
-              <CardTitle>Por qué gana la {letter(winner)}</CardTitle>
+              <CardTitle>Why {letter(winner)} wins</CardTitle>
               {reasons.map((r, i) => (
                 <div key={r} className="flex items-start gap-3.5">
                   <span className="grid size-8 shrink-0 place-items-center rounded-full bg-soft text-sm font-bold">{i + 1}</span>
@@ -81,7 +81,7 @@ export default function Result({ brand, variants, data, mode, onRestart, onStep 
           )}
 
           <Card className="flex flex-col gap-4 p-6">
-            <CardTitle>{variants.length === 2 ? "Las dos versiones" : `Las ${variants.length} versiones`}</CardTitle>
+            <CardTitle>{variants.length === 2 ? "Both versions" : `All ${variants.length} versions`}</CardTitle>
             {pop.ranking.map((id, i) => {
               const s = pop.stats[id];
               const v = byId(id);
@@ -92,24 +92,24 @@ export default function Result({ brand, variants, data, mode, onRestart, onStep 
                   </div>
                   <div className="flex min-w-0 flex-1 flex-col gap-1.5">
                     <span className="truncate text-sm">
-                      <strong>{letter(id)}</strong> · {v.title || v.body || "(sin texto)"}
+                      <strong>{letter(id)}</strong> · {v.title || v.body || "(no text)"}
                     </span>
-                    <div className="h-2.5 overflow-hidden rounded-full bg-bg" role="img" aria-label={`Se detienen: ${pct(s.stop_rate)}. Hacen clic: ${pct(s.click_rate)}`}>
+                    <div className="h-2.5 overflow-hidden rounded-full bg-bg" role="img" aria-label={`Stopped: ${pct(s.stop_rate)}. Clicked: ${pct(s.click_rate)}`}>
                       <div className={cn("h-full rounded-full", i === 0 ? "brand-gradient" : "bg-[#b9bec8]")} style={{ width: `${(s.stop_rate / maxStop) * 100}%` }} />
                     </div>
                   </div>
                   <div className="w-24 shrink-0 text-right text-sm">
                     <div className="font-bold">{pct(s.stop_rate)}</div>
-                    <div className="text-xs text-muted">{pct(s.click_rate)} clic</div>
+                    <div className="text-xs text-muted">{pct(s.click_rate)} click</div>
                   </div>
                 </div>
               );
             })}
             <p className="m-0 text-sm text-muted">
-              Barra: personas que se detuvieron.{" "}
+              Bar: people who stopped scrolling.{" "}
               {singleTop === winner
-                ? `Una sola pregunta a la IA también habría elegido la ${letter(winner)}.`
-                : `Una sola pregunta a la IA habría elegido la ${letter(singleTop)}.`}
+                ? `A single AI prompt would also have picked ${letter(winner)}.`
+                : `A single AI prompt would have picked ${letter(singleTop)}.`}
             </p>
           </Card>
         </div>
@@ -148,7 +148,7 @@ function Chat({
   }, [history.length, busy]);
 
   if (!p) return null;
-  const did = p.stopped.length ? `Se detuvo en la ${p.stopped.map(letter).join(" y la ")}` : "Pasó de largo";
+  const did = p.stopped.length ? `Stopped on ${p.stopped.map(letter).join(" and ")}` : "Kept scrolling";
 
   async function ask(q: string) {
     if (!q.trim() || busy) return;
@@ -170,8 +170,8 @@ function Chat({
   }
 
   return (
-    <Card id="chat" aria-label="Conversación con tu audiencia" className="flex min-w-0 flex-[1_1_340px] flex-col gap-4 p-6 lg:sticky lg:top-6">
-      <CardTitle className="text-lg">Pregúntale a tu audiencia</CardTitle>
+    <Card id="chat" aria-label="Conversation with your audience" className="flex min-w-0 flex-[1_1_340px] flex-col gap-4 p-6 lg:sticky lg:top-6">
+      <CardTitle className="text-lg">Ask your audience</CardTitle>
       <div className="flex flex-wrap gap-2">
         {people.slice(0, 6).map((x, i) => (
           <button
@@ -190,12 +190,12 @@ function Chat({
         <div className="text-[15px] font-bold">{shortName(p)}</div>
         <div className="text-[13px] text-muted">
           {did}
-          {p.clicked.length ? ` · hizo clic en la ${p.clicked.map(letter).join(" y la ")}` : ""}
+          {p.clicked.length ? ` · clicked ${p.clicked.map(letter).join(" and ")}` : ""}
         </div>
-        {p.reason && <div className="mt-1.5 text-sm italic">«{p.reason}»</div>}
+        {p.reason && <div className="mt-1.5 text-sm italic">“{p.reason}”</div>}
       </div>
       <div ref={log} className="flex max-h-[360px] min-h-24 flex-col gap-2.5 overflow-y-auto" aria-live="polite">
-        {history.length === 0 && <p className="m-0 text-sm text-muted">Pregúntale lo que le preguntarías en un focus group.</p>}
+        {history.length === 0 && <p className="m-0 text-sm text-muted">Ask what you would ask in a focus group.</p>}
         {history.map((t, i) => (
           <div
             key={i}
@@ -215,8 +215,8 @@ function Chat({
         ))}
       </div>
       <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); ask(question); }}>
-        <Input aria-label="Tu pregunta" value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="Escribe una pregunta…" maxLength={500} />
-        <Button type="submit" size="icon" aria-label="Enviar" disabled={busy || !question.trim()} className="shrink-0">
+        <Input aria-label="Your question" value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="Type a question…" maxLength={500} />
+        <Button type="submit" size="icon" aria-label="Send" disabled={busy || !question.trim()} className="shrink-0">
           <Send aria-hidden="true" />
         </Button>
       </form>

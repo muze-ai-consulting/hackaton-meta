@@ -36,7 +36,7 @@ Capas previstas: ingesta (Ad Library) → variantes (Muse Image) → población 
   - `llm.py`: cliente async de la Model API; toda llamada pasa por el `Ledger`. `--mock` usa `mock.py` (sin red; el costo hipotético va a `results/costs_mock.jsonl`).
   - `simulate.py`: feed simulado (20 personas por llamada, 4 órdenes repartidos entre llamadas, solo letras en el prompt) y el rival de llamada única. Puntaje = frenado + clic (supuesto a calibrar en dev).
   - `fixtures.py`: lotes inventados para desarrollar sin Ad Library.
-  - `api.py` + `web/`: demo (FastAPI). `web/` es el build de `frontend/` (React + Vite + Tailwind; `cd frontend && npm run build`) y se versiona. `uv run uvicorn ensayo.api:app --port 8040`. Por defecto modo falso; el modo real usa Spark 1.3 estándar (fase `demo`) y solo se habilita con `ENSAYO_REAL=1`.
+  - `api.py` + `web/`: demo (FastAPI). `web/` es el build de `frontend/` (React + Vite + Tailwind; `cd frontend && npm run build`) y se versiona. Interfaz en inglés (jurado global). `GET /api/examples` adjunta la predicción del último backtest real de dev; en modo real hay cupo diario por IP. `uv run uvicorn ensayo.api:app --port 8040`. Por defecto modo falso; el modo real usa Spark 1.3 estándar (fase `demo`) y solo se habilita con `ENSAYO_REAL=1`.
 - Scripts: `scripts/run_backtest.py` (población vs llamada única vs azar; sin `--mock` muestra el costo y solo gasta con `--yes`), `scripts/probe_model_api.py` (día 0) y `scripts/eu_advertisers.py` (descarga a `data/raw/ad_library/`, que alimenta `python -m ensayo.batches`; con `--apify` usa Apify y sin `--yes` solo muestra el costo).
 
 ## Deployment

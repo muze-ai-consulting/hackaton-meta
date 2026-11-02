@@ -21,25 +21,25 @@ export function Header({ onHome, onExamples }: { onHome: () => void; onExamples:
   return (
     <header className="relative border-b border-white/40 bg-white/70 backdrop-blur-md">
       <div className="mx-auto flex min-h-16 max-w-[1180px] flex-wrap items-center justify-between gap-4 px-6">
-        <button type="button" onClick={onHome} className="cursor-pointer" aria-label="Ir al inicio">
+        <button type="button" onClick={onHome} className="cursor-pointer" aria-label="Home">
           <Logo />
         </button>
-        <nav aria-label="Principal" className="flex flex-wrap items-center gap-5 text-[15px] font-semibold">
+        <nav aria-label="Main" className="flex flex-wrap items-center gap-5 text-[15px] font-semibold">
           <button type="button" onClick={onExamples} className="cursor-pointer hover:text-heading">
-            Ejemplos reales
+            Real ads
           </button>
-          <Badge className="hidden sm:inline-flex">Con Muse Spark 1.3 y Muse Image</Badge>
+          <Badge className="hidden sm:inline-flex">Built on Muse Spark 1.3 and Muse Image</Badge>
         </nav>
       </div>
     </header>
   );
 }
 
-const STEPS = ["Tus versiones", "Tu audiencia", "Resultado"];
+const STEPS = ["Your versions", "Your audience", "Result"];
 
 export function Steps({ current, onGo }: { current: number; onGo: (i: number) => void }) {
   return (
-    <ol aria-label="Pasos" className="m-0 flex list-none flex-wrap gap-2 p-0">
+    <ol aria-label="Steps" className="m-0 flex list-none flex-wrap gap-2 p-0">
       {STEPS.map((s, i) => (
         <li key={s}>
           <button
@@ -71,21 +71,19 @@ export function PageTitle({ title, lead, big = false }: { title: string; lead: s
   );
 }
 
-/** La línea de confianza: cuántas ganadoras acierta Ensayo contra los rivales. */
+/** The trust line: how often Ensayo picks the winner vs the rivals. Hidden until there is a real backtest. */
 export function TrustLine({ backtest, onMore }: { backtest: Backtest | null; onMore?: () => void }) {
-  if (!backtest) return null;
+  if (!backtest || backtest.mock) return null;
   const s = backtest.summary;
   return (
     <div className="text-sm leading-normal">
-      En <strong>{backtest.batches} lanzamientos{backtest.mock ? " de prueba" : " reales"}</strong>, Ensayo eligió la versión ganadora el{" "}
-      <strong>{pct(s.population.top1.mean)}</strong> de las veces. Una sola pregunta a la IA: {pct(s.single_call.top1.mean)}. Al azar:{" "}
-      {pct(s.random.top1.mean)}.{" "}
+      Across <strong>{backtest.batches} real launches</strong>, Ensayo picked the winning version <strong>{pct(s.population.top1.mean)}</strong> of
+      the time. A single AI prompt: {pct(s.single_call.top1.mean)}. Chance: {pct(s.random.top1.mean)}.{" "}
       {onMore && (
         <button type="button" onClick={onMore} className="cursor-pointer font-semibold underline">
-          Cómo lo medimos
+          How we measure it
         </button>
       )}
-      {backtest.mock && <span className="mt-1 block text-[13px] text-muted">Datos del circuito de prueba. Se reemplazan por la corrida real.</span>}
     </div>
   );
 }

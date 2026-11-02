@@ -80,3 +80,37 @@ def test_examples_only_dev_with_reach(tmp_path, monkeypatch) -> None:
 def test_examples_empty_without_batches(tmp_path, monkeypatch) -> None:
     monkeypatch.setattr(api, "DEV_BATCHES", tmp_path / "missing.json")
     assert client(tmp_path, monkeypatch).get("/api/examples").json() == []
+
+
+def test_real_daily_limit(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("ENSAYO_REAL", "1")
+    monkeypatch.setitem(api.REAL_DAILY_LIMITS, "simulate", 0)
+    res = client(tmp_path, monkeypatch).post("/api/simulate", json=request(mode="real"))
+    assert res.status_code == 429
+
+
+def test_examples_carry_real_dev_prediction(tmp_path, monkeypatch) -> None:
+    import json
+
+    dev = [
+        {
+            "batch_id": "b1",
+            "page_name": "Marca",
+            "week": "2026W40",
+            "target": {"target_ages": ["18", "65+"], "target_gender": "All", "target_locations": [{"name": "FR"}]},
+            "variants": [{"ad_id": "1", "body": "x", "image_url": None}, {"ad_id": "2", "body": "y", "image_url": None}],
+            "labels": {"1": {"reach": 10}, "2": {"reach": 20}},
+        }
+    ]
+    (tmp_path / "dev.json").write_text(json.dumps(dev), encoding="utf-8")
+    stats = {"1": {"stop_rate": 0.2, "click_rate": 0.05, "click_reasons": []}, "2": {"stop_rate": 0.4, "click_rate": 0.1, "click_reasons": []}}
+    run = {"mock": False, "config": {"model": "muse-spark-1.3-contributor", "personas": 1000}, "batches": [
+        {"batch_id": "b1", "population": {"ranking": ["2", "1"], "stats": stats}, "single_call": {"ranking": ["1", "2"]}}
+    ]}
+    (tmp_path / "backtest_dev.json").write_text(json.dumps(run), encoding="utf-8")
+    (tmp_path / "backtest_dev_mock.json").write_text(json.dumps({**run, "mock": True}), encoding="utf-8")
+    monkeypatch.setattr(api, "DEV_BATCHES", tmp_path / "dev.json")
+    monkeypatch.setattr(api, "RESULTS", tmp_path)
+    pred = client(tmp_path, monkeypatch).get("/api/examples").json()[0]["prediction"]
+    assert pred["ranking"] == ["2", "1"] and pred["single_call"] == ["1", "2"] and pred["personas"] == 1000
+    assert pred["stats"]["2"] == {"stop_rate": 0.4, "click_rate": 0.1}

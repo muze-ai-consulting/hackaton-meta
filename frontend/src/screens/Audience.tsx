@@ -6,18 +6,18 @@ import type { Target } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 export const PRESETS: { title: string; detail: string; target: Target }[] = [
-  { title: "Mujeres 25–44", detail: "Reino Unido · Instagram y Facebook", target: { age_min: 25, age_max: 44, gender: "Women", countries: ["GB"] } },
-  { title: "Hombres 25–44", detail: "Reino Unido · Instagram y Facebook", target: { age_min: 25, age_max: 44, gender: "Men", countries: ["GB"] } },
-  { title: "Todos 18–34", detail: "Alemania y Austria", target: { age_min: 18, age_max: 34, gender: "All", countries: ["DE", "AT"] } },
-  { title: "Todos 35–54", detail: "Alemania y Austria", target: { age_min: 35, age_max: 54, gender: "All", countries: ["DE", "AT"] } },
-  { title: "Todos 25–54", detail: "Francia, España e Italia", target: { age_min: 25, age_max: 54, gender: "All", countries: ["FR", "ES", "IT"] } },
-  { title: "Todos 18–65+", detail: "Unión Europea", target: { age_min: 18, age_max: 65, gender: "All", countries: ["DE", "FR", "ES", "IT", "NL", "PL"] } },
+  { title: "Women 25–44", detail: "United Kingdom · Instagram and Facebook", target: { age_min: 25, age_max: 44, gender: "Women", countries: ["GB"] } },
+  { title: "Men 25–44", detail: "United Kingdom · Instagram and Facebook", target: { age_min: 25, age_max: 44, gender: "Men", countries: ["GB"] } },
+  { title: "Everyone 18–34", detail: "Germany and Austria", target: { age_min: 18, age_max: 34, gender: "All", countries: ["DE", "AT"] } },
+  { title: "Everyone 35–54", detail: "Germany and Austria", target: { age_min: 35, age_max: 54, gender: "All", countries: ["DE", "AT"] } },
+  { title: "Everyone 25–54", detail: "France, Spain and Italy", target: { age_min: 25, age_max: 54, gender: "All", countries: ["FR", "ES", "IT"] } },
+  { title: "Everyone 18–65+", detail: "European Union", target: { age_min: 18, age_max: 65, gender: "All", countries: ["DE", "FR", "ES", "IT", "NL", "PL"] } },
 ];
 
-const GENDER = { All: "Todos", Women: "Mujeres", Men: "Hombres" } as const;
+const GENDER = { All: "Everyone", Women: "Women", Men: "Men" } as const;
 
 export function describeTarget(t: Target) {
-  const ages = t.age_max >= 65 ? `${t.age_min} años o más` : `de ${t.age_min} a ${t.age_max} años`;
+  const ages = t.age_max >= 65 ? `${t.age_min}+` : `${t.age_min}–${t.age_max}`;
   return `${GENDER[t.gender]} ${ages} · ${t.countries.join(", ")}`;
 }
 
@@ -37,10 +37,10 @@ export default function Audience({ target, setTarget, personas, versions, busy, 
   return (
     <>
       <Steps current={1} onGo={onStep} />
-      <PageTitle title="¿A quién le vas a mostrar el anuncio?" lead={`Elige la audiencia como lo harías en Meta. Armamos ${personas} personas con ese perfil.`} />
+      <PageTitle title="Who will see this ad?" lead={`Pick the audience as you would in Meta Ads Manager. We build ${personas} synthetic people with that profile.`} />
 
       <Card className="flex flex-col gap-4.5 p-6">
-        <CardTitle className="text-lg">Audiencias frecuentes</CardTitle>
+        <CardTitle className="text-lg">Common audiences</CardTitle>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3">
           {PRESETS.map((p) => (
             <button
@@ -59,26 +59,26 @@ export default function Audience({ target, setTarget, personas, versions, busy, 
           ))}
         </div>
         <details className="border-t border-line pt-3.5">
-          <summary className="min-h-8 cursor-pointer text-[15px] font-semibold">Ajustar edad, género y países</summary>
+          <summary className="min-h-8 cursor-pointer text-[15px] font-semibold">Adjust age, gender and countries</summary>
           <div className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3">
             <label className="flex flex-col gap-1.5 text-sm font-semibold">
-              Edad desde
+              Age from
               <Input type="number" min={18} max={65} value={target.age_min} onChange={(e) => setTarget({ ...target, age_min: Number(e.target.value) || 18 })} />
             </label>
             <label className="flex flex-col gap-1.5 text-sm font-semibold">
-              Hasta (65 = 65 o más)
+              To (65 = 65+)
               <Input type="number" min={18} max={65} value={target.age_max} onChange={(e) => setTarget({ ...target, age_max: Number(e.target.value) || 65 })} />
             </label>
             <label className="flex flex-col gap-1.5 text-sm font-semibold">
-              Género
+              Gender
               <Select value={target.gender} onChange={(e) => setTarget({ ...target, gender: e.target.value as Target["gender"] })}>
-                <option value="All">Todos</option>
-                <option value="Women">Mujeres</option>
-                <option value="Men">Hombres</option>
+                <option value="All">Everyone</option>
+                <option value="Women">Women</option>
+                <option value="Men">Men</option>
               </Select>
             </label>
             <label className="flex flex-col gap-1.5 text-sm font-semibold">
-              Países (códigos)
+              Countries (codes)
               <Input
                 value={target.countries.join(", ")}
                 onChange={(e) => setTarget({ ...target, countries: e.target.value.split(/[,\s]+/).map((c) => c.toUpperCase()).filter(Boolean).slice(0, 10) })}
@@ -93,14 +93,14 @@ export default function Audience({ target, setTarget, personas, versions, busy, 
         <div className="flex min-w-[240px] flex-1 flex-col gap-0.5">
           <span className="text-base font-bold">{describeTarget(target)}</span>
           <span className="text-sm text-muted">
-            {personas} personas verán tus {versions} versiones en su feed, en distinto orden. Tarda menos de un minuto.
+            {personas} people will see your {versions} versions in their feed, in different orders. Takes under a minute.
           </span>
         </div>
         <Button variant="secondary" onClick={onBack}>
-          <ChevronLeft aria-hidden="true" /> Atrás
+          <ChevronLeft aria-hidden="true" /> Back
         </Button>
         <Button onClick={onRun} disabled={busy}>
-          <Play aria-hidden="true" /> {busy ? "Ensayando…" : "Ensayar mis anuncios"}
+          <Play aria-hidden="true" /> {busy ? "Rehearsing…" : "Rehearse my ads"}
         </Button>
       </Card>
     </>
