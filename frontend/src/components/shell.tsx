@@ -9,15 +9,16 @@ export function Logo() {
     <div className="flex items-center gap-2.5">
       <div className="brand-gradient grid size-9 place-items-center rounded-[10px]">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <path d="M4 12h4l3-8 4 16 3-8h2" />
+          <path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z" />
+          <path d="M9 12l2 2 4-4" />
         </svg>
       </div>
-      <span className="text-xl font-extrabold tracking-[-0.3px] text-heading">Ensayo</span>
+      <span className="text-xl font-extrabold tracking-[-0.3px] text-heading">Second Look</span>
     </div>
   );
 }
 
-export function Header({ onHome, onExamples }: { onHome: () => void; onExamples: () => void }) {
+export function Header({ onHome, onEvidence }: { onHome: () => void; onEvidence: () => void }) {
   return (
     <header className="relative border-b border-white/40 bg-white/70 backdrop-blur-md">
       <div className="mx-auto flex min-h-16 max-w-[1180px] flex-wrap items-center justify-between gap-4 px-6">
@@ -25,10 +26,10 @@ export function Header({ onHome, onExamples }: { onHome: () => void; onExamples:
           <Logo />
         </button>
         <nav aria-label="Main" className="flex flex-wrap items-center gap-5 text-[15px] font-semibold">
-          <button type="button" onClick={onExamples} className="cursor-pointer hover:text-heading">
-            Real ads
+          <button type="button" onClick={onEvidence} className="cursor-pointer hover:text-heading">
+            How we measured it
           </button>
-          <Badge className="hidden sm:inline-flex">Built on Muse Spark 1.3 and Muse Image</Badge>
+          <Badge className="hidden sm:inline-flex">Built on Muse Spark 1.3 and Muse Voice Transcribe</Badge>
         </nav>
       </div>
     </header>

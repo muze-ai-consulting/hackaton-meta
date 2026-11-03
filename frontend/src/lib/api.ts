@@ -103,3 +103,56 @@ export const api = {
     mode: Mode;
   }) => call<{ answer: string; usd: number }>("chat", req),
 };
+
+// Escudo antiestafas (POST /api/check, GET /api/evidence).
+export type Band = "scam" | "careful" | "genuine";
+
+export interface CheckIn {
+  text: string;
+  note: string;
+  images: string[];
+  audio: string | null;
+  mode: Mode;
+}
+
+export interface CheckOut {
+  mode: Mode;
+  model: string;
+  usd: number;
+  probability: number;
+  band: Band;
+  verdict: "scam" | "legit";
+  reason: string;
+  action: string;
+  transcript: string;
+  images: number;
+}
+
+export interface ShieldMetrics {
+  balanced_accuracy: number;
+  recall_scam: number;
+  false_alarm_legit: number;
+  auc: number;
+}
+
+export interface Round {
+  sha256: string;
+  bands: Record<Band, { scam: number; legit: number }>;
+  scored: {
+    n: number;
+    scam: number;
+    legit: number;
+    shield: ShieldMetrics;
+    keywords: ShieldMetrics;
+    always_scam: ShieldMetrics;
+    gap_vs_keywords_ci95: [number, number];
+    rule: Record<string, boolean>;
+  };
+}
+
+export type Evidence = Record<"round1" | "round2", Round>;
+
+export const shield = {
+  check: (req: CheckIn) => call<CheckOut>("check", req),
+  evidence: () => call<Evidence>("evidence"),
+};

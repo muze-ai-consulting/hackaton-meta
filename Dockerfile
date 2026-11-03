@@ -1,4 +1,4 @@
-# Demo de Ensayo (FastAPI + web/). Escucha en 8040; /health para el health check.
+# Demo (Second Look, el escudo antiestafas; FastAPI + web/). Escucha en 8040; /health para el health check.
 FROM python:3.12-slim AS build
 COPY --from=ghcr.io/astral-sh/uv:0.8.17 /uv /bin/uv
 WORKDIR /app
@@ -10,6 +10,8 @@ RUN uv sync --frozen --no-dev
 
 FROM python:3.12-slim
 WORKDIR /app
+# ffmpeg: convierte notas de voz (opus, m4a, webm) al WAV que pide Muse Voice Transcribe.
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
 RUN useradd --create-home --uid 1000 ensayo
 COPY --from=build /app/.venv /app/.venv
 COPY ensayo ./ensayo

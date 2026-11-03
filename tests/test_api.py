@@ -43,7 +43,7 @@ def test_validation_and_pages(tmp_path, monkeypatch) -> None:
     c = client(tmp_path, monkeypatch)
     assert c.post("/api/simulate", json=request(variants=[{"title": "solo una"}])).status_code == 422
     assert c.get("/health").json() == {"status": "ok"}
-    assert "Ensayo" in c.get("/").text
+    assert "Second Look" in c.get("/").text
     assert c.get("/api/config").json()["real_allowed"] in (True, False)
 
 

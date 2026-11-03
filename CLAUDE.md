@@ -3,7 +3,7 @@
 Proyecto Labs de Muze para la **Meta Global AI Developer Hackathon** (26-oct al 4-nov-2026, US$1M, track Startup, tema "Push the Frontier").
 **Entrega: miércoles 4-nov-2026 a las 18:00 de Chile** (cierre oficial 21:00 ET = 23:00 Chile). Jurado 4–8 nov, cierre 9 nov.
 
-**Producto: Ensayo para anuncios.** Audiencias sintéticas de Instagram y Facebook que ven las variantes de un anuncio y predicen cuál rinde, antes de que el anunciante gaste. Plan y roadmap: `PLAN.md` (versión visual: https://claude.ai/artifact/QLNs68p9s2JJEpou72BfH3). Investigación detrás: `reports/` y `research_notes/`.
+**Producto (desde el 3-nov): Second Look, escudo antiestafas** (`ensayo/shield.py`; ver ESTADO.md). Antes fue Ensayo para anuncios: audiencias sintéticas que predecían qué anuncio rinde; no pasó su validación y su código queda en el repo. Plan y roadmap: `PLAN.md` (versión visual: https://claude.ai/artifact/QLNs68p9s2JJEpou72BfH3). Investigación detrás: `reports/` y `research_notes/`.
 
 ## Stack (propuesto, confirmar el día 0)
 - Python 3.12 con `uv` para la ingesta, el motor de población, el backtest y la API (FastAPI).

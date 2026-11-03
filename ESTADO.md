@@ -1,4 +1,4 @@
-# Estado del proyecto: traspaso al 1-nov-2026 (actualizado: front en React con el flujo de 3 pasos y el anuncio real)
+# Estado del proyecto (actualizado 3-nov: el producto es Second Look, el escudo antiestafas; lo de Ensayo queda como historia)
 
 Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el plan, en `PLAN.md`; la investigación, en `reports/` (la última es `reports/Hackatón de Meta apuesta final.md`).
 
@@ -86,6 +86,16 @@ Investigación de ganadores 2026 en `reports/Ganadores hackathons 2026.md`. Mark
   - **Misma regla:** ≥ 30 legítimos; exactitud balanceada ≥ 0,80; ventaja ≥ 0,10 sobre palabras clave con IC 95 % sobre cero; falsas alarmas ≤ 30 %. Si falla, se pasa a "Ojos por voz" sin otro intento. El 0,787 del intento 1 se publica igual en el README.
   - **Etiquetas (antes de predecir):** 1.189 publicaciones → 823 scam, 122 legit, 244 unclear. Auditoría a mano de 30 (semilla 30): 12/15 legit claras (3 dudosas: un bróker que "robó", un aviso de Barclays, un cheque de Capital One), 15/15 scam correctas.
   - **Resultado (3-nov, hash 38b435bb…): PASA, justo en el borde.** 945 casos (823 scam, 122 legit). Exactitud balanceada **0,801** (IC 95 % 0,759–0,839, o sea que el piso de 0,80 queda dentro del intervalo), detecta 84 % de las estafas, falsa alarma 23,8 %, AUC 0,88. Palabras clave: 0,517; ventaja +0,28 (IC 0,22–0,34). Cumple las 4 condiciones. Cómo contarlo: "en 945 preguntas reales posteriores al modelo, el escudo coincide con la comunidad 8 de cada 10 veces y detecta 84 % de las estafas, contra 48 % de un filtro de palabras clave". El intento 1 (0,787) se cuenta igual.
+
+## Producto: Second Look (3-nov, Mark: "Sí, construye")
+- **Qué hace:** pegas un mensaje, agregas hasta 3 pantallazos (también pegándolos) o una nota de voz (grabada en el navegador o subida: opus, m4a, webm, wav) y en 4–7 s responde *Likely a scam* / *Be careful* / *No clear signs of a scam*, con la razón, lo único que hay que hacer y un botón "Warn someone" (hoja de compartir del teléfono o WhatsApp). Responde en el idioma de la persona (probado en español). Cuatro ejemplos inventados (SMS de Royal Mail, llamada del "banco" en audio, oferta de trabajo, recordatorio del médico, que es legítimo).
+- **Motor:** `ensayo/shield.py`. El prompt es el validado en el intento 2 (`scripts/validate_scams.py` lo importa desde ahí; mensajes idénticos, verificado por hash); el producto solo agrega `LANGUAGE_LINE`. Spark 1.3 **estándar** (datos de usuarios), fase `demo`. Costo medido: ~US$ 0,003 por consulta, ~US$ 0,004 con voz.
+- **Voz:** Muse Voice Transcribe en `POST /v1/asr/transcribe` (no está en `/audio/transcriptions`): multipart con una parte `request` (JSON `{"model": "muse-voice-transcribe-1.0", "audioEncoding": "WAV"}`) y una parte `audio`. Solo acepta `WAV` (MP3, OGG_OPUS, WEBM_OPUS, FLAC, M4A dan "Malformed request"), así que ffmpeg convierte todo a WAV mono de 16 kHz (`to_wav`; en el Dockerfile). Detecta el idioma sin `languageCode`. US$ 0,18/hora, anotado en el `Ledger` (`ModelClient.transcribe`).
+- **Bandas:** ≥ 0,5 *Likely a scam* (en el intento 2, 96 % de 720 eran estafas), 0,2–0,49 *Be careful* (70 % de 120), < 0,2 *No clear signs* (46 % de 105: por eso nunca dice "seguro"). `scripts/scam_bands.py` → `results/scam_bands.json`.
+- **API:** `POST /api/check` (texto, nota, imágenes, audio en base64; cupo de 30 por IP y día en modo real) y `GET /api/evidence`. Los endpoints de Ensayo siguen, sin uso en el front.
+- **Front:** `frontend/src/screens/Check.tsx` y `Evidence.tsx` ("How we measured it": los dos intentos con su regla, hashes, bandas y límites). Las pantallas de Ensayo quedan en el repo sin usar. Verificado en el navegador en modo real (la llamada del banco: 99 %, razón y acción correctas) y a 375 px sin scroll horizontal. Preview en modo real: `shield-real` (puerto 8041) en `.claude/launch.json`.
+- **Para desplegar (con OK de Mark):** subir también `results/scam_bands.json` a `/opt/ensayo/results/` (el volumen tapa el de la imagen), poner `ENSAYO_REAL=1` y `MODEL_API_KEY` en `/opt/ensayo/.env` y **subir `client_max_body_size` en nginx** para `/ensayo/` (por defecto 1 MB; las notas de voz y los pantallazos pesan más; sugerido 16m). Luego el rsync y `docker compose up -d --build` de `CLAUDE.md`.
+- **Falta:** README en inglés (Claude Code, Arctic Shift, Apify, los dos intentos), guion del video, `site/roadmap.json`, despliegue.
 
 ## Fechas
 Entrega interna: miércoles 4-nov 18:00 Chile (cierre oficial 23:00 Chile). Hash de la prueba en vivo: antes del 3-nov 23:59.
