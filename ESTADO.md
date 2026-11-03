@@ -115,32 +115,32 @@ Relato: "la IA ya fabrica las estafas, y la IA de Meta las desarma". El veredict
   - Responde 200 de inmediato y revisa en segundo plano.
   - Manda dos mensajes: el veredicto validado (citando el mensaje original) y después lo que revisó el agente más la familia.
   - Acepta texto, pantallazos y notas de voz; 30 consultas por número y día; los registros solo guardan un hash del número.
-  - Las variables `WHATSAPP_*` están copiadas a `/opt/ensayo/.env`. **Falta `WHATSAPP_APP_SECRET`**: sin él se rechaza todo POST.
-  - Después, en el panel de Meta: Callback URL más verify token, y suscribir `messages`.
+  - **Funciona de punta a punta (3-nov, probado por Mark desde su WhatsApp).** `WHATSAPP_APP_SECRET` está en `/opt/ensayo/.env`. El panel tiene la Callback URL, el verify token y el campo `messages` suscrito.
 - `ModelClient.chat_message` devuelve el mensaje completo (con `tool_calls`); `chat` lo usa por dentro.
 
 ## WhatsApp Cloud API (3-nov, OK de Mark)
-Activo, sin código todavía:
-- App **Second Look**, de tipo Business y solo con el caso de uso WhatsApp. Pertenece al portfolio **Muze SPA Marketing**, que no está verificado.
+Activo y probado con mensajes reales (el bot está descrito arriba, en "Bot de WhatsApp"):
+- App **Second Look**: tipo Business, solo con el caso de uso WhatsApp y **publicada**. Pertenece al portfolio **Muze SPA Marketing**, que no está verificado.
   - App ID: `2398768447629662`
   - Business ID: `1079571729304625`
-- Número de prueba de Meta: +1 555-165-2559.
-  - Phone Number ID: `1378053318730517`
-  - WhatsApp Business Account ID: `2694084821039382`
-- El teléfono de Mark está agregado como destinatario de prueba. La plantilla de prueba le llegó.
+  - Política de privacidad e instrucciones para borrar datos: https://labs.muze.cl/hackaton-meta/privacy.html (fuente: `site/privacy.html`).
+- Número de prueba de Meta: +1 555-165-2559. Phone Number ID: `1378053318730517`.
+- Meta ahora separa la cuenta en dos:
+  - **Messaging account** `2694084821039382`: maneja plantillas y pagos, y es donde va la suscripción del webhook (`/subscribed_apps`).
+  - **WhatsApp account** `2492142621276501`: maneja el número.
 - System User `second-look-bot` (ID `61596325586076`, rol Employee).
-  - Tiene control total sobre la app y la cuenta de WhatsApp.
-  - Su token tiene los permisos `whatsapp_business_messaging` y `whatsapp_business_management` y vence en 60 días (~2-ene-2027). Verificado con `debug_token`.
-- Valores en `.env`, nunca en el repo: `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID` y `WHATSAPP_VERIFY_TOKEN` (aleatorio). Los nombres van en `.env.example`.
+  - Tiene control total de la app y de las dos cuentas.
+  - Su token tiene los permisos `whatsapp_business_messaging` y `whatsapp_business_management` y vence en 60 días (~2-ene-2027).
+- Webhook `https://labs.muze.cl/ensayo/api/whatsapp`, con el campo `messages` suscrito.
+- Valores en `.env` local y en `/opt/ensayo/.env`, nunca en el repo: `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_VERIFY_TOKEN` y `WHATSAPP_APP_SECRET`.
 
-Falta (cada paso con OK de Mark):
-1. Webhook en `ensayo/api.py`, en la ruta propuesta `https://labs.muze.cl/ensayo/webhook/whatsapp`:
-   - `GET`: verifica con `hub.verify_token` y devuelve `hub.challenge`.
-   - `POST`: recibe un mensaje (texto, imagen o audio), pasa por `shield.py` y responde con el veredicto vía `POST /{phone_number_id}/messages`.
-   - Conviene validar la firma `X-Hub-Signature-256`, que necesita el App Secret en `.env`.
-2. Pasar las tres variables a `/opt/ensayo/.env` y redesplegar.
-3. En developers.facebook.com, en WhatsApp › Configuración, poner la URL de callback y el verify token y suscribirse al campo `messages`. Meta solo guarda la URL si el endpoint ya responde.
-4. Límite del modo de prueba: solo se escribe a los 5 destinatarios verificados. Para usar un número real hace falta verificar el negocio.
+Lecciones (para no perder otra hora):
+- Una app sin publicar solo recibe webhooks de prueba del panel, no mensajes reales.
+- Guardar el webhook en el panel **no** suscribe la app a la cuenta. Hay que hacer `POST /2694084821039382/subscribed_apps` con el token del bot. Antes de eso, la cuenta solo tenía suscrita la app interna de Meta "WA DevX Webhook Events".
+
+Pendiente:
+- El log de acceso de uvicorn guarda la URL de verificación, que lleva el verify token en claro. El riesgo es bajo, pero conviene sacar esa ruta del log o rotar el token después de la hackatón.
+- Modo de prueba: solo se puede escribir a los 5 destinatarios verificados. Para un número real hace falta verificar el negocio.
 
 ## Fechas
 Entrega interna: miércoles 4-nov 18:00 Chile (cierre oficial 23:00 Chile). Hash de la prueba en vivo: antes del 3-nov 23:59.
