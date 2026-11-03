@@ -112,5 +112,28 @@ Relato: "la IA ya fabrica las estafas, y la IA de Meta las desarma". El veredict
 - **Desplegado (3-nov, OK de Mark)** en https://labs.muze.cl/ensayo/: `results/scam_campaigns.json` subido aparte a `/opt/ensayo/results/` (chown 1000). Verificado en vivo: familia correcta y el agente usó las dos herramientas (9 s, US$ 0,007).
 - `ModelClient.chat_message` devuelve el mensaje completo (con `tool_calls`); `chat` lo usa por dentro.
 
+## WhatsApp Cloud API (3-nov, OK de Mark)
+Activo, sin código todavía:
+- App **Second Look**, de tipo Business y solo con el caso de uso WhatsApp. Pertenece al portfolio **Muze SPA Marketing**, que no está verificado.
+  - App ID: `2398768447629662`
+  - Business ID: `1079571729304625`
+- Número de prueba de Meta: +1 555-165-2559.
+  - Phone Number ID: `1378053318730517`
+  - WhatsApp Business Account ID: `2694084821039382`
+- El teléfono de Mark está agregado como destinatario de prueba. La plantilla de prueba le llegó.
+- System User `second-look-bot` (ID `61596325586076`, rol Employee).
+  - Tiene control total sobre la app y la cuenta de WhatsApp.
+  - Su token tiene los permisos `whatsapp_business_messaging` y `whatsapp_business_management` y vence en 60 días (~2-ene-2027). Verificado con `debug_token`.
+- Valores en `.env`, nunca en el repo: `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID` y `WHATSAPP_VERIFY_TOKEN` (aleatorio). Los nombres van en `.env.example`.
+
+Falta (cada paso con OK de Mark):
+1. Webhook en `ensayo/api.py`, en la ruta propuesta `https://labs.muze.cl/ensayo/webhook/whatsapp`:
+   - `GET`: verifica con `hub.verify_token` y devuelve `hub.challenge`.
+   - `POST`: recibe un mensaje (texto, imagen o audio), pasa por `shield.py` y responde con el veredicto vía `POST /{phone_number_id}/messages`.
+   - Conviene validar la firma `X-Hub-Signature-256`, que necesita el App Secret en `.env`.
+2. Pasar las tres variables a `/opt/ensayo/.env` y redesplegar.
+3. En developers.facebook.com, en WhatsApp › Configuración, poner la URL de callback y el verify token y suscribirse al campo `messages`. Meta solo guarda la URL si el endpoint ya responde.
+4. Límite del modo de prueba: solo se escribe a los 5 destinatarios verificados. Para usar un número real hace falta verificar el negocio.
+
 ## Fechas
 Entrega interna: miércoles 4-nov 18:00 Chile (cierre oficial 23:00 Chile). Hash de la prueba en vivo: antes del 3-nov 23:59.
