@@ -1,6 +1,9 @@
 """API y página del demo: el escudo antiestafas (producto desde el 3-nov) y, detrás, los endpoints de Ensayo.
 
 - POST /api/check: veredicto del escudo para un mensaje, hasta 3 pantallazos y una nota de voz (ensayo.shield).
+- POST /api/investigate: pistas aparte del veredicto: la familia de estafas a la que se parece (ensayo.campaigns) y el
+  agente que revisa enlaces y dominios con herramientas (ensayo.investigate). No cambia el puntaje del escudo.
+- GET /api/campaigns: qué está circulando, desde los casos públicos de Reddit (results/scam_campaigns.json).
 - GET /api/evidence: la validación preregistrada del escudo (dos intentos, hashes y bandas; results/scam_bands.json).
 
 - POST /api/simulate: ensaya las variantes de un anuncio con una población sintética y el rival de llamada única.
@@ -18,6 +21,7 @@ visitante tiene un tope diario de pedidos (REAL_DAILY_LIMITS); el tope total lo 
 Uso: uv run uvicorn ensayo.api:app --reload --port 8040
 """
 
+import asyncio
 import base64
 import binascii
 import hashlib
@@ -34,13 +38,16 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from ensayo import DATA, RESULTS, ROOT
+from ensayo import campaigns
 from ensayo.chat import ask_persona
 from ensayo.costs import BudgetExceeded
 from ensayo.images import MAX_VARIANTS, generate_variants
+from ensayo.investigate import investigate as run_investigation
 from ensayo.llm import ModelClient
 from ensayo.population import build_population, spec_from_ad
 from ensayo.shield import MAX_IMAGES as SHIELD_MAX_IMAGES
 from ensayo.shield import check as shield_check
+from ensayo.shield import shrink_image
 from ensayo.simulate import simulate_batch, single_call_ranking
 
 log = logging.getLogger(__name__)
@@ -52,7 +59,7 @@ MAX_EXAMPLES = 20
 # Marcas que no se muestran como ejemplo en el demo (decisión de Mark, 2-nov: ropa interior de hombre en primer plano).
 HIDDEN_EXAMPLE_PAGES = {"Le Slip Français"}
 # Pedidos en modo real por visitante (IP) y por día. El gasto total lo limita la fase "demo" del Ledger.
-REAL_DAILY_LIMITS = {"simulate": 5, "variants": 3, "chat": 30, "check": 30}
+REAL_DAILY_LIMITS = {"simulate": 5, "variants": 3, "chat": 30, "check": 30, "investigate": 30}
 _real_usage: dict[tuple[str, str, str], int] = defaultdict(int)
 REAL_MODEL = "muse-spark-1.3"
 REAL_MAX_PERSONAS = 300
@@ -128,6 +135,12 @@ class CheckIn(BaseModel):
     note: str = Field("", max_length=500)
     images: list[str] = Field(default_factory=list, max_length=SHIELD_MAX_IMAGES)
     audio: str | None = Field(None, max_length=MAX_AUDIO_CHARS)
+    mode: Literal["mock", "real"] = "mock"
+
+
+class InvestigateIn(BaseModel):
+    text: str = Field("", max_length=12000)  # el mensaje más la transcripción de la nota de voz, si hubo
+    images: list[str] = Field(default_factory=list, max_length=SHIELD_MAX_IMAGES)
     mode: Literal["mock", "real"] = "mock"
 
 
@@ -221,6 +234,56 @@ async def check(req: CheckIn, request: Request) -> dict[str, Any]:
     finally:
         await client.aclose()
     return {"mode": req.mode, "model": REAL_MODEL, "usd": round(client.ledger.spent() - spent_before, 5), **out}
+
+
+@app.post("/api/investigate")
+async def investigate(req: InvestigateIn, request: Request) -> dict[str, Any]:
+    if any(len(i) > MAX_IMAGE_CHARS for i in req.images):
+        raise HTTPException(413, "Each screenshot must be under 3 MB.")
+    if not (req.text.strip() or req.images):
+        raise HTTPException(422, "Nothing to investigate.")
+    try:
+        pics = [shrink_image(u) for u in req.images]
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    mock = req.mode == "mock"
+    if not mock:
+        guard_real(request, "investigate")
+    client = ModelClient.from_env(mock=mock)
+    client.effort = "low"
+    spent_before = client.ledger.spent()
+    data = campaigns.load()
+    try:
+        family, clues = await asyncio.gather(
+            campaigns.match(client, data, model=REAL_MODEL, phase="demo", text=req.text, images=pics) if data else _none(),
+            run_investigation(client, model=REAL_MODEL, phase="demo", text=req.text, images=pics),
+            return_exceptions=True,
+        )
+    finally:
+        await client.aclose()
+    for part in (family, clues):
+        if isinstance(part, BudgetExceeded):
+            raise HTTPException(402, "The demo has reached its spending cap. Try again tomorrow.")
+        if isinstance(part, BaseException):
+            log.error(f"Fallo de la investigación: {part!r}")
+    return {
+        "mode": req.mode,
+        "usd": round(client.ledger.spent() - spent_before, 5),
+        "family": None if isinstance(family, BaseException) else family,
+        "investigation": None if isinstance(clues, BaseException) else clues,
+    }
+
+
+async def _none() -> None:
+    return None
+
+
+@app.get("/api/campaigns")
+def campaigns_view() -> dict[str, Any]:
+    data = campaigns.load()
+    if not data:
+        raise HTTPException(404, "No campaign data yet.")
+    return data
 
 
 @app.get("/api/evidence")

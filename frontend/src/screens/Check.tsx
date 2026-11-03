@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { AlertTriangle, ImagePlus, Mic, RotateCcw, Send, Share2, ShieldAlert, ShieldCheck, Square, Upload, X } from "lucide-react";
+import { AlertTriangle, Globe, ImagePlus, Link2, Mic, RotateCcw, Search, Send, Share2, ShieldAlert, ShieldCheck, Square, Upload, Users, X } from "lucide-react";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Input, Textarea } from "@/components/ui/input";
 import { Button, ErrorNote, PageTitle } from "@/components/shell";
-import { shield, type Band, type CheckOut, type Evidence, type Mode } from "@/lib/api";
+import { radar, shield, type Band, type CheckOut, type Evidence, type InvestigateOut, type Mode, type ToolStep } from "@/lib/api";
 import { cn, fileToDataUrl, pct } from "@/lib/utils";
 
 const MAX_IMAGES = 3;
@@ -58,7 +58,17 @@ export function precision(evidence: Evidence | null) {
   return b ? { share: b.scam / (b.scam + b.legit), n: b.scam + b.legit } : null;
 }
 
-export default function Check({ mode, evidence, onEvidence }: { mode: Mode; evidence: Evidence | null; onEvidence: () => void }) {
+export default function Check({
+  mode,
+  evidence,
+  onEvidence,
+  onCampaigns,
+}: {
+  mode: Mode;
+  evidence: Evidence | null;
+  onEvidence: () => void;
+  onCampaigns: () => void;
+}) {
   const [text, setText] = useState("");
   const [note, setNote] = useState("");
   const [images, setImages] = useState<string[]>([]);
@@ -67,6 +77,8 @@ export default function Check({ mode, evidence, onEvidence }: { mode: Mode; evid
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<CheckOut | null>(null);
+  const [probe, setProbe] = useState<InvestigateOut | null>(null);
+  const [probing, setProbing] = useState(false);
   const recorder = useRef<MediaRecorder | null>(null);
   const imageInput = useRef<HTMLInputElement | null>(null);
   const audioInput = useRef<HTMLInputElement | null>(null);
@@ -123,6 +135,7 @@ export default function Check({ mode, evidence, onEvidence }: { mode: Mode; evid
 
   async function loadExample(ex: Example) {
     setResult(null);
+    setProbe(null);
     setError("");
     setText(ex.text ?? "");
     setNote(ex.note ?? "");
@@ -136,20 +149,41 @@ export default function Check({ mode, evidence, onEvidence }: { mode: Mode; evid
     setImages([]);
     setAudio(null);
     setResult(null);
+    setProbe(null);
     setError("");
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // The investigation runs apart from the verdict, which comes only from the tested prompt. Without a voice note both
+  // start together; with one, the investigation waits for the transcript.
+  async function investigate(content: string) {
+    if (!content.trim() && !images.length) return;
+    setProbing(true);
+    try {
+      setProbe(await radar.investigate({ text: content, images, mode }));
+    } catch {
+      setProbe(null);
+    } finally {
+      setProbing(false);
+    }
   }
 
   async function run() {
     setError("");
     setBusy(true);
+    setProbe(null);
+    const context = [note, text].filter((s) => s.trim()).join("\n\n");
+    const early = audio ? null : investigate(context);
     try {
-      setResult(await shield.check({ text, note, images, audio, mode }));
+      const out = await shield.check({ text, note, images, audio, mode });
+      setResult(out);
+      if (audio) void investigate([context, out.transcript].filter((s) => s.trim()).join("\n\n"));
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setBusy(false);
     }
+    await early;
   }
 
   return (
@@ -268,6 +302,9 @@ export default function Check({ mode, evidence, onEvidence }: { mode: Mode; evid
       {result && !busy && (
         <div ref={resultRef} className="scroll-mt-6">
           <Result result={result} precision={p} onEvidence={onEvidence} onReset={reset} />
+          <div className="mt-6">
+            <Investigation probe={probe} probing={probing} onCampaigns={onCampaigns} />
+          </div>
         </div>
       )}
 
@@ -367,5 +404,107 @@ function Result({
         </p>
       </div>
     </Card>
+  );
+}
+
+const SIGNAL = {
+  risky: "bg-[#fdecec] text-[#9b1c1c]",
+  reassuring: "bg-ok-soft text-ok",
+  neutral: "bg-bg text-muted",
+} as const;
+
+const TREND_LABEL = { rising: "Rising", falling: "Falling", steady: "Steady" } as const;
+
+/** One line per tool the agent used, in plain words. */
+function stepLine(s: ToolStep): { icon: typeof Link2; text: string } {
+  const r = s.result as Record<string, unknown>;
+  if (s.tool === "inspect_link") {
+    const hops = (r.hops as { domain: string }[] | undefined) ?? [];
+    const path = hops.map((h) => h.domain).join(" → ");
+    if (r.error) return { icon: Link2, text: `Followed ${s.input.url}: ${String(r.error)}` };
+    return { icon: Link2, text: `Followed the link without opening it: ${path || s.input.url}` };
+  }
+  if (s.tool === "domain_registration") {
+    if (r.error) return { icon: Globe, text: `Looked up who registered ${String(r.domain ?? s.input.domain)}: ${String(r.error)}` };
+    if (r.registered === false) return { icon: Globe, text: `${String(r.domain)} has no public registration record` };
+    const age = typeof r.age_days === "number" ? r.age_days : null;
+    const when = age === null ? "" : age < 60 ? `, ${age} days ago` : `, ${Math.round(age / 365)} years ago`;
+    return { icon: Globe, text: `${String(r.domain)} was registered on ${String(r.registered_on)}${when}${r.registrar ? ` (${String(r.registrar)})` : ""}` };
+  }
+  return { icon: Search, text: s.tool };
+}
+
+function Investigation({ probe, probing, onCampaigns }: { probe: InvestigateOut | null; probing: boolean; onCampaigns: () => void }) {
+  if (probing) {
+    return (
+      <Card className="flex items-center gap-3 p-5 text-sm text-muted sm:p-7" aria-live="polite">
+        <Search className="size-5 animate-pulse" aria-hidden="true" /> Checking the links and looking for this pattern in past reports…
+      </Card>
+    );
+  }
+  const inv = probe?.investigation;
+  const fam = probe?.family;
+  const checked = inv && !inv.skipped && (inv.steps.length > 0 || inv.clues.length > 0);
+  if (!checked && !fam) return null;
+  return (
+    <div className="grid gap-6 lg:grid-cols-2" aria-live="polite">
+      {checked && (
+        <Card className="flex flex-col gap-4 p-5 sm:p-7">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Search className="size-5" aria-hidden="true" /> What we checked
+          </CardTitle>
+          {inv.steps.length > 0 && (
+            <ul className="m-0 flex list-none flex-col gap-2 p-0 text-sm">
+              {inv.steps.map((s, i) => {
+                const { icon: I, text } = stepLine(s);
+                return (
+                  <li key={i} className="flex gap-2 break-all">
+                    <I className="mt-0.5 size-4 shrink-0 text-muted" aria-hidden="true" /> {text}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+          {inv.clues.length > 0 && (
+            <ul className="m-0 flex list-none flex-col gap-2 p-0">
+              {inv.clues.map((c, i) => (
+                <li key={i} className={cn("rounded-xl px-4 py-3 text-sm", SIGNAL[c.signal])}>
+                  <strong>{c.label}.</strong> {c.detail}
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="m-0 text-xs text-muted">An agent on Muse Spark 1.3 chose which checks to run. These clues don't change the score above.</p>
+        </Card>
+      )}
+      {fam && (
+        <Card className="flex flex-col gap-4 p-5 sm:p-7">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Users className="size-5" aria-hidden="true" /> {fam.fit === "strong" ? "Seen before" : "Looks similar to"}: {fam.name}
+          </CardTitle>
+          <p className="m-0 text-[15px] leading-normal">{fam.what}</p>
+          <p className="m-0 text-sm">
+            <strong>{fam.reports} people</strong> reported this kind of scam on Reddit since September
+            {fam.trend !== "steady" && (
+              <>
+                {" "}
+                · <strong>{TREND_LABEL[fam.trend].toLowerCase()}</strong> last month
+              </>
+            )}
+            {fam.top_brands.length > 0 && <> · often posing as {fam.top_brands.slice(0, 3).map((b) => b.brand).join(", ")}</>}
+          </p>
+          {fam.spot.length > 0 && (
+            <ul className="m-0 flex flex-col gap-1 pl-5 text-sm">
+              {fam.spot.map((s) => (
+                <li key={s}>{s}</li>
+              ))}
+            </ul>
+          )}
+          <button type="button" onClick={onCampaigns} className="cursor-pointer self-start text-sm font-semibold underline">
+            See what's going around
+          </button>
+        </Card>
+      )}
+    </div>
   );
 }

@@ -124,6 +124,13 @@ def respond(payload: dict[str, Any]) -> dict[str, Any]:
     prompt, images = _flatten(messages)
     if "You are a scam shield" in prompt:
         text = json.dumps(_shield(prompt))
+    elif "You are the investigator" in prompt:
+        # Sin herramientas en el modo falso: responde de una vez, sin revisar nada.
+        text = json.dumps({"clues": [{"label": "Mock investigation", "detail": "The mock server does not check links.",
+                                      "signal": "neutral"}], "summary": "Turn on real mode to check links."})
+    elif "Scam families:" in prompt:
+        fam = re.search(r"^- ([a-z0-9_]+):", prompt, re.M)
+        text = json.dumps({"family": fam.group(1) if fam else "other", "fit": "partial"})
     elif "Task: conversation" in prompt:
         text = _conversation(messages)
     else:

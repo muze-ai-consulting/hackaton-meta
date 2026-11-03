@@ -156,3 +156,63 @@ export const shield = {
   check: (req: CheckIn) => call<CheckOut>("check", req),
   evidence: () => call<Evidence>("evidence"),
 };
+
+// Pistas aparte del veredicto (POST /api/investigate) y qué está circulando (GET /api/campaigns).
+export type Trend = "rising" | "falling" | "steady";
+
+export interface Family {
+  id: string;
+  name: string;
+  what: string;
+  spot: string[];
+  do: string;
+  reports: number;
+  share: number;
+  monthly: Record<string, number>;
+  trend: Trend;
+  trend_change: number;
+  channels: Record<string, number>;
+  payments: Record<string, number>;
+  top_brands: { brand: string; reports: number }[];
+  meta_share: number;
+  ai_share: number;
+  examples: { hook: string; channel: string; url: string | null }[];
+}
+
+export interface Clue {
+  label: string;
+  detail: string;
+  signal: "risky" | "reassuring" | "neutral";
+}
+
+export interface ToolStep {
+  tool: "inspect_link" | "domain_registration" | string;
+  input: Record<string, string>;
+  result: Record<string, unknown>;
+}
+
+export interface InvestigateOut {
+  mode: Mode;
+  usd: number;
+  family: (Pick<Family, "id" | "name" | "what" | "spot" | "do" | "reports" | "trend" | "top_brands"> & { fit: "strong" | "partial" }) | null;
+  investigation: { clues: Clue[]; summary: string; steps: ToolStep[]; skipped?: boolean } | null;
+}
+
+export interface Campaigns {
+  source: string;
+  window: [string, string];
+  reports: number;
+  months: Record<string, number>;
+  trend_months: string[];
+  channels: Record<string, number>;
+  meta_share: number;
+  known_channel_meta_share: number;
+  ai: Record<string, number>;
+  ai_share: number;
+  families: Family[];
+}
+
+export const radar = {
+  investigate: (req: { text: string; images: string[]; mode: Mode }) => call<InvestigateOut>("investigate", req),
+  campaigns: () => call<Campaigns>("campaigns"),
+};

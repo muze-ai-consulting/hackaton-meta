@@ -97,5 +97,19 @@ Investigación de ganadores 2026 en `reports/Ganadores hackathons 2026.md`. Mark
 - **Desplegado (3-nov, OK de Mark) en https://labs.muze.cl/ensayo/ con el modo real encendido:** `/opt/ensayo/.env` (600) con `MODEL_API_KEY` y `ENSAYO_REAL=1`; `results/scam_bands.json` subido (el volumen tapa el de la imagen; cada vez que cambie, se vuelve a subir); nginx ya tenía `client_max_body_size 25m` en `/ensayo/`, no se tocó. ffmpeg 7.1 dentro del contenedor. Verificado: consulta real de texto ("hi mum", 95 %, US$ 0,0024) y la llamada del banco en audio desde el navegador (99 %). Gasto del VPS en su propio `results/costs.jsonl` (tope fase `demo`: US$ 30). Con voz, en el VPS tarda 10–20 s (local, 7 s).
 - **Falta:** README en inglés (Claude Code, Arctic Shift, Apify, los dos intentos), guion del video, `site/roadmap.json`.
 
+## Second Look: familias de estafas y agente investigador (3-nov, plan aprobado por Mark)
+Relato: "la IA ya fabrica las estafas, y la IA de Meta las desarma". El veredicto **no cambia**: sigue saliendo solo del prompt validado. Lo nuevo va aparte, como pistas.
+- **Qué está circulando** (`ensayo/campaigns.py`, `scripts/scam_campaigns.py`): los casos de Reddit que la comunidad llamó estafa (intentos 1 y 2, más los del 28-oct al 2-nov bajados de Arctic Shift a `data/raw/scams3` y etiquetados con el mismo etiquetador en `data/scams/labels3.json`). Spark 1.3 contributor (datos públicos, fase `campanas`, tope US$ 8):
+  1. describe cada caso (canal, marca usada de cebo, pago, uso de IA, tipo y gancho sin nombres, números ni enlaces);
+  2. arma ~20 familias;
+  3. asigna cada caso a una.
+  `results/scam_campaigns.json` trae, por familia, casos, tendencia (parte del total en los dos últimos meses completos), canales, marcas con ≥ 3 casos ("campañas") y ejemplos. Pantalla "What's going around".
+- **Agente investigador** (`ensayo/investigate.py`): la Model API acepta function calling (probado) pero **no** búsqueda web (`web_search`, `web_search_options` dan 400). Spark 1.3 estándar decide qué revisar con dos herramientas nuestras:
+  - `inspect_link`: sigue redirecciones sin descargar la página; solo http(s) a los puertos 80/443 y nunca a IP privadas, revisando cada salto.
+  - `domain_registration`: fecha de registro y registrador por RDAP (rdap.org).
+  Lee también enlaces dentro de pantallazos. Si no hay enlaces ni imágenes, no se llama. ~13 s con enlaces.
+- **API:** `POST /api/investigate` (familia + agente en paralelo, cupo de 30 por IP y día) y `GET /api/campaigns`. El front lanza la investigación en paralelo con el veredicto; con nota de voz, después, con la transcripción. Lo que la gente revisa **no** se agrega a las familias.
+- `ModelClient.chat_message` devuelve el mensaje completo (con `tool_calls`); `chat` lo usa por dentro.
+
 ## Fechas
 Entrega interna: miércoles 4-nov 18:00 Chile (cierre oficial 23:00 Chile). Hash de la prueba en vivo: antes del 3-nov 23:59.

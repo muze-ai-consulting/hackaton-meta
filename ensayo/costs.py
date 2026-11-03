@@ -33,6 +33,7 @@ PHASE_CAPS = {
     "sellado": 20.0,
     "en-vivo": 20.0,
     "demo": 30.0,
+    "campanas": 8.0,
 }
 
 

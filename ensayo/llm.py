@@ -99,20 +99,36 @@ class ModelClient:
         upcoming_usd: float = 0.0,
         note: str = "",
     ) -> ChatResult:
+        msg = await self.chat_message(model, messages, phase=phase, max_tokens=max_tokens, upcoming_usd=upcoming_usd, note=note)
+        return ChatResult(text=msg.get("content") or "", usage=msg["_usage"], usd=msg["_usd"])
+
+    async def chat_message(
+        self,
+        model: str,
+        messages: list[dict[str, Any]],
+        *,
+        phase: str,
+        tools: list[dict[str, Any]] | None = None,
+        max_tokens: int = 1500,
+        upcoming_usd: float = 0.0,
+        note: str = "",
+    ) -> dict[str, Any]:
+        """El mensaje completo de la respuesta (con tool_calls si se pasaron herramientas), más _usage y _usd."""
         self.ledger.check(phase, upcoming_usd)
         # max_tokens es lo que necesita la respuesta; se le suma el margen para razonar del esfuerzo elegido.
-        payload = {
+        payload: dict[str, Any] = {
             "model": model,
             "messages": messages,
             "max_tokens": max_tokens + REASONING_ALLOWANCE[self.effort],
             "reasoning_effort": self.effort,
         }
+        if tools:
+            payload["tools"] = tools
         async with self._sem:
             body = await self._post("/chat/completions", payload)
         usage = body.get("usage") or {}
         usd = self.ledger.record_chat(phase, model, usage, note=note)
-        text = body["choices"][0]["message"].get("content") or ""
-        return ChatResult(text=text, usage=usage, usd=usd)
+        return {**body["choices"][0]["message"], "_usage": usage, "_usd": usd}
 
     async def image(self, model: str, prompt: str, *, phase: str, size: str = "1024x1024", note: str = "") -> dict[str, Any]:
         """Una imagen de /images/generations; se cobra el precio fijo por imagen de IMAGE_PRICE."""

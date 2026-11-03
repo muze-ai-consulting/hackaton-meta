@@ -1,0 +1,233 @@
+[
+ {
+  "id": "fake_online_stores",
+  "name": "Fake Online Stores",
+  "what": "Sellers advertise cheap trendy goods online, take payment, then never ship anything.",
+  "spot": [
+   "Prices far below real retailers",
+   "New site with no reviews",
+   "Only card or transfer payment"
+  ],
+  "do": "Do not buy; check trusted retailers only"
+ },
+ {
+  "id": "fake_job_task_scams",
+  "name": "Fake Jobs and Tasks",
+  "what": "Scammers offer easy remote work then demand fees or deposits to continue earning.",
+  "spot": [
+   "Paid to like videos or rate hotels",
+   "Asked to pay deposit or training",
+   "Contact only on WhatsApp Telegram"
+  ],
+  "do": "Never pay to get a job"
+ },
+ {
+  "id": "fake_crypto_investment",
+  "name": "Fake Crypto Investments",
+  "what": "Fake advisors show growing profits to lure bigger deposits, then block withdrawals.",
+  "spot": [
+   "Guaranteed high returns with no risk",
+   "Romance contact pushes trading platform",
+   "Must pay fee to withdraw funds"
+  ],
+  "do": "Do not invest; verify with licensed broker"
+ },
+ {
+  "id": "romance_sugar_scams",
+  "name": "Romance and Sugar Scams",
+  "what": "Someone builds love or sugar relationship then asks money, checks, or fees.",
+  "spot": [
+   "Quick love or generous allowance promise",
+   "Never meets in person or video",
+   "Requests gift cards checks or fees"
+  ],
+  "do": "Never send money to online lover"
+ },
+ {
+  "id": "bank_fraud_calls",
+  "name": "Bank Fraud Calls",
+  "what": "Callers pretend to be your bank warning of fraud to steal codes and transfers.",
+  "spot": [
+   "Urgent fraud warning demands action",
+   "Asks for OTPs passwords or transfers",
+   "Spoofed caller ID or callback pressure"
+  ],
+  "do": "Hang up; call bank number yourself"
+ },
+ {
+  "id": "official_threat_calls",
+  "name": "Official Threat Calls",
+  "what": "Callers pose as police, courts, or collectors threatening arrest unless you pay.",
+  "spot": [
+   "Threat of arrest lawsuit or warrant",
+   "Demands gift cards wire or crypto",
+   "No written proof or case details"
+  ],
+  "do": "Hang up; verify with official agency directly"
+ },
+ {
+  "id": "delivery_fee_texts",
+  "name": "Delivery Fee Texts",
+  "what": "Texts claim unpaid parcel, customs, traffic, or toll fee with malicious payment link.",
+  "spot": [
+   "Unexpected fee text with link",
+   "Shortened or odd website address",
+   "Small payment to release package"
+  ],
+  "do": "Do not click; check official site directly"
+ },
+ {
+  "id": "wrong_number_texts",
+  "name": "Wrong Number Texts",
+  "what": "Stranger texts wrong number then befriends you to pitch jobs or investments.",
+  "spot": [
+   "Oops wrong number friendly chat",
+   "Quickly moves to WhatsApp",
+   "Introduces investment or job task"
+  ],
+  "do": "Do not reply; block and report"
+ },
+ {
+  "id": "fake_sellers_listings",
+  "name": "Fake Sellers and Rentals",
+  "what": "Listings offer tickets, pets, cars, or rentals cheaply then vanish after deposit.",
+  "spot": [
+   "Price far below market value",
+   "Requires deposit before viewing",
+   "Refuses in-person meeting or escrow"
+  ],
+  "do": "Never pay before seeing in person"
+ },
+ {
+  "id": "fake_check_overpayment",
+  "name": "Fake Check Overpayments",
+  "what": "Someone sends extra check or payment then asks you to refund the difference.",
+  "spot": [
+   "Overpaid check or transfer received",
+   "Asked to refund extra amount",
+   "Pressure to act before clearance"
+  ],
+  "do": "Wait for bank clearance; never refund"
+ },
+ {
+  "id": "gift_card_asks",
+  "name": "Gift Card Requests",
+  "what": "Boss, family, or celebrity urgently asks you to buy gift cards for them.",
+  "spot": [
+   "Urgent secret gift card request",
+   "Impersonated boss family or star",
+   "Scratch codes photos demanded"
+  ],
+  "do": "Verify by calling person directly"
+ },
+ {
+  "id": "prize_freebie_scams",
+  "name": "Prize and Freebie Scams",
+  "what": "You supposedly won a prize or gift but must pay shipping or fees first.",
+  "spot": [
+   "Won contest you never entered",
+   "Fee to claim prize or gift",
+   "Celebrity giveaway asks payment"
+  ],
+  "do": "Never pay to claim prizes"
+ },
+ {
+  "id": "sextortion_scams",
+  "name": "Sextortion Scams",
+  "what": "Someone threatens to share intimate images or videos unless you pay.",
+  "spot": [
+   "Threat to leak explicit photos",
+   "Demands crypto or gift cards",
+   "Contact from stranger or hacked account"
+  ],
+  "do": "Do not pay; save evidence report"
+ },
+ {
+  "id": "violent_extortion_threats",
+  "name": "Violent Extortion Threats",
+  "what": "Criminals threaten harm, kidnapping, or exposure claiming cartel or police connection.",
+  "spot": [
+   "Death kidnapping or exposure threat",
+   "Demands immediate secret payment",
+   "No proof victim is harmed"
+  ],
+  "do": "Stay safe; call police immediately"
+ },
+ {
+  "id": "phishing_account_theft",
+  "name": "Phishing and Account Theft",
+  "what": "Fake emails, texts, or support agents trick you into sharing codes or access.",
+  "spot": [
+   "Link to verify account or order",
+   "Asks for OTP password or access",
+   "Fake support or ban warning"
+  ],
+  "do": "Never share codes; open official app"
+ },
+ {
+  "id": "advance_fee_scams",
+  "name": "Advance Fee Scams",
+  "what": "Promised inheritance, loan, grant, or payout requires upfront fees to release.",
+  "spot": [
+   "Large payout promised easily",
+   "Upfront fee tax or insurance",
+   "Unknown lawyer lender or agent"
+  ],
+  "do": "Never pay upfront for promised money"
+ },
+ {
+  "id": "mule_reshipping_scams",
+  "name": "Mule Reshipping Scams",
+  "what": "Job asks you to receive, forward, or deposit packages or money for others.",
+  "spot": [
+   "Paid to forward parcels or cash",
+   "Uses your bank or address",
+   "No real company or interview"
+  ],
+  "do": "Refuse; you carry legal risk"
+ },
+ {
+  "id": "family_emergency_scams",
+  "name": "Family Emergency Scams",
+  "what": "Caller claims loved one crashed, arrested, or stranded and needs money now.",
+  "spot": [
+   "Panicked call about loved one",
+   "Begs secrecy and quick payment",
+   "Cannot video call or verify"
+  ],
+  "do": "Hang up; call family directly"
+ },
+ {
+  "id": "charity_plea_scams",
+  "name": "Fake Charity Pleas",
+  "what": "Fake charities solicit donations for disasters, illness, or causes that vanish.",
+  "spot": [
+   "Emotional disaster or medical plea",
+   "Pressure to donate immediately",
+   "No registered charity details"
+  ],
+  "do": "Donate only via verified charities"
+ },
+ {
+  "id": "gambling_betting_scams",
+  "name": "Gambling and Betting Scams",
+  "what": "Tipsters or casinos promise sure wins but rig games or demand withdrawal fees.",
+  "spot": [
+   "Guaranteed tips or rigged bonuses",
+   "Fee to withdraw winnings",
+   "Unlicensed site or Telegram group"
+  ],
+  "do": "Do not deposit; leave site"
+ },
+ {
+  "id": "other",
+  "name": "Other Mixed Scams",
+  "what": "Unclear or unusual reports that do not fit common scam patterns above.",
+  "spot": [
+   "Vague story with missing details",
+   "Odd request for money or info",
+   "Cannot verify identity or business"
+  ],
+  "do": "Pause; ask trusted person first"
+ }
+]

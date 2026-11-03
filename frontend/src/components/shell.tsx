@@ -18,7 +18,7 @@ export function Logo() {
   );
 }
 
-export function Header({ onHome, onEvidence }: { onHome: () => void; onEvidence: () => void }) {
+export function Header({ onHome, onCampaigns, onEvidence }: { onHome: () => void; onCampaigns: () => void; onEvidence: () => void }) {
   return (
     <header className="relative border-b border-white/40 bg-white/70 backdrop-blur-md">
       <div className="mx-auto flex min-h-16 max-w-[1180px] flex-wrap items-center justify-between gap-4 px-6">
@@ -26,6 +26,9 @@ export function Header({ onHome, onEvidence }: { onHome: () => void; onEvidence:
           <Logo />
         </button>
         <nav aria-label="Main" className="flex flex-wrap items-center gap-5 text-[15px] font-semibold">
+          <button type="button" onClick={onCampaigns} className="cursor-pointer hover:text-heading">
+            What's going around
+          </button>
           <button type="button" onClick={onEvidence} className="cursor-pointer hover:text-heading">
             How we measured it
           </button>
