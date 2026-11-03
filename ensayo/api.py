@@ -3,6 +3,8 @@
 - POST /api/check: veredicto del escudo para un mensaje, hasta 3 pantallazos y una nota de voz (ensayo.shield).
 - POST /api/investigate: pistas aparte del veredicto: la familia de estafas a la que se parece (ensayo.campaigns) y el
   agente que revisa enlaces y dominios con herramientas (ensayo.investigate). No cambia el puntaje del escudo.
+- GET/POST /api/whatsapp: webhook de la WhatsApp Cloud API (ensayo.whatsapp): verificación con el verify token y
+  mensajes firmados con el App Secret; responde por WhatsApp en segundo plano.
 - GET /api/campaigns: qué está circulando, desde los casos públicos de Reddit (results/scam_campaigns.json).
 - GET /api/evidence: la validación preregistrada del escudo (dos intentos, hashes y bandas; results/scam_bands.json).
 
@@ -33,12 +35,12 @@ from collections import defaultdict
 from typing import Any, Literal
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from ensayo import DATA, RESULTS, ROOT
-from ensayo import campaigns
+from ensayo import campaigns, whatsapp
 from ensayo.chat import ask_persona
 from ensayo.costs import BudgetExceeded
 from ensayo.images import MAX_VARIANTS, generate_variants
@@ -276,6 +278,34 @@ async def investigate(req: InvestigateIn, request: Request) -> dict[str, Any]:
 
 async def _none() -> None:
     return None
+
+
+_tasks: set[asyncio.Task[None]] = set()
+
+
+@app.get("/api/whatsapp")
+def whatsapp_verify(request: Request) -> PlainTextResponse:
+    q = request.query_params
+    token = whatsapp.env("WHATSAPP_VERIFY_TOKEN")
+    if q.get("hub.mode") == "subscribe" and token and q.get("hub.verify_token") == token:
+        return PlainTextResponse(q.get("hub.challenge", ""))
+    raise HTTPException(403, "Verification failed.")
+
+
+@app.post("/api/whatsapp")
+async def whatsapp_webhook(request: Request) -> dict[str, str]:
+    body = await request.body()
+    if not whatsapp.valid_signature(body, request.headers.get("x-hub-signature-256")):
+        raise HTTPException(401, "Bad signature.")
+    if not real_allowed():
+        raise HTTPException(403, "Real mode is disabled on this server.")
+    # Meta espera un 200 rápido y reintenta si no llega: se responde ya y la revisión sigue en segundo plano.
+    for message in whatsapp.messages_in(json.loads(body or b"{}")):
+        if whatsapp.first_time(message.get("id", "")):
+            task = asyncio.create_task(whatsapp.handle(message))
+            _tasks.add(task)
+            task.add_done_callback(_tasks.discard)
+    return {"status": "ok"}
 
 
 @app.get("/api/campaigns")
