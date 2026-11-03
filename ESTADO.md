@@ -70,5 +70,13 @@ Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el pla
 - **Resultado fuera de muestra (2-nov ~20:00):** 133 anuncios de 12 marcas nuevas (Apify US$ ~2, modelo US$ 0,1). Hash de las predicciones `30d88295…` commiteado en `de4425e` antes de puntuar. Mujeres r **0,385** (p < 0,001); 18–34 r 0,154 (p 0,17, n.s.); 55+ r 0,417 (p 0,0495). **Regla cumplida (2 de 3).**
 - Robustez (hecha después): género es sólido. Quitando cualquier marca sigue entre 0,32 y 0,42, y 9 de 12 marcas dan positivo. El 55+ depende de una sola marca (sin Junglück da −0,07). Conclusión honesta: **el modelo anticipa hacia qué género empuja Meta cada creativo; la edad no está demostrada.** El producto y el pitch se apoyan en género; la edad se muestra como exploratoria.
 
+## Pivote: escudo antiestafas (2-nov, decisión de Mark; regla fijada antes de correr)
+Investigación de ganadores 2026 en `reports/Ganadores hackathons 2026.md`. Mark eligió el escudo antiestafas: reenvías un mensaje, pantallazo o llamada y te dice si es estafa, por qué y qué hacer.
+- **Datos:** preguntas reales de r/Scams, r/isthisascam y r/IsThisAScamIndia posteriores al 3-sep-2026 (después de Spark 1.3), bajadas con Apify (`scripts/scam_reddit.py`, en `data/raw/scams/`, no se versiona).
+- **Etiqueta:** el veredicto de la comunidad, que Spark extrae leyendo solo los comentarios (scam/legit/unclear). Se descartan los "unclear". Se auditan a mano 30 etiquetas al azar antes de puntuar.
+- **Predicción:** Spark 1.3 contributor lee solo la publicación (título, texto, hasta 3 imágenes), nunca los comentarios. Predicciones y SHA-256 se commitean antes de puntuar (`scripts/validate_scams.py`).
+- **Rivales:** regla de palabras clave (≥3 términos típicos de estafa = estafa) y "siempre estafa".
+- **Regla de éxito (todas):** al menos 30 casos legítimos; exactitud balanceada del escudo ≥ 0,80; supera a la regla de palabras clave por ≥ 0,10 con el IC 95 % bootstrap sobre cero; falsas alarmas sobre casos legítimos ≤ 30 %. Si falla, se pasa a "Ojos por voz" (VizWiz).
+
 ## Fechas
 Entrega interna: miércoles 4-nov 18:00 Chile (cierre oficial 23:00 Chile). Hash de la prueba en vivo: antes del 3-nov 23:59.
