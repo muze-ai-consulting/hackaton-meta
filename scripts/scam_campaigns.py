@@ -35,6 +35,7 @@ MODEL = "muse-spark-1.3-contributor"
 PHASE = "campanas"
 OUT = DATA / "scams"
 DESCRIBED, FAMILIES, ASSIGNED = OUT / "described.json", OUT / "families.json", OUT / "assigned.json"
+MIN_TREND = 30
 RAW_DIRS = [DATA / "raw" / d for d in ("scams", "scams2", "scams3")]
 
 
@@ -128,7 +129,8 @@ def aggregate(posts: list[dict[str, Any]], described: dict[str, Any], families: 
             "reports": len(rs),
             "share": round(len(rs) / n, 4),
             "monthly": monthly,
-            "trend": "rising" if change >= 0.25 else "falling" if change <= -0.25 else "steady",
+            # Con pocos casos el cambio es ruido: tendencia solo desde MIN_TREND casos.
+            "trend": "steady" if len(rs) < MIN_TREND else "rising" if change >= 0.25 else "falling" if change <= -0.25 else "steady",
             "trend_change": round(change, 3),
             "channels": dict(Counter(r["channel"] for r in rs).most_common(5)),
             "payments": dict(Counter(r["payment"] for r in rs).most_common(4)),

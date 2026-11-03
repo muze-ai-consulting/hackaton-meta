@@ -1,0 +1,1355 @@
+{
+ "source": "Reddit posts (r/Scams, r/isthisascam, r/IsThisAScamIndia, r/ScamCenter, r/scamsUK) the community judged to be scams",
+ "window": [
+  "2026-09-03",
+  "2026-11-02"
+ ],
+ "reports": 1902,
+ "months": {
+  "2026-09": 931,
+  "2026-10": 925,
+  "2026-11": 46
+ },
+ "trend_months": [
+  "2026-09",
+  "2026-10"
+ ],
+ "channels": {
+  "unknown": 361,
+  "website": 327,
+  "phone_call": 272,
+  "other_app": 225,
+  "email": 182,
+  "sms": 126,
+  "marketplace": 97,
+  "in_person": 91,
+  "instagram": 70,
+  "whatsapp": 43,
+  "dating_app": 36,
+  "facebook": 35,
+  "telegram": 35,
+  "messenger": 2
+ },
+ "meta_share": 0.13,
+ "known_channel_meta_share": 0.16,
+ "ai": {
+  "ai_image": 15,
+  "ai_other": 13,
+  "ai_chatbot": 10,
+  "deepfake_video": 5,
+  "voice_clone": 3
+ },
+ "ai_share": 0.024,
+ "families": [
+  {
+   "id": "other",
+   "name": "Other Mixed Scams",
+   "what": "Unclear or unusual reports that do not fit common scam patterns above.",
+   "spot": [
+    "Vague story with missing details",
+    "Odd request for money or info",
+    "Cannot verify identity or business"
+   ],
+   "do": "Pause; ask trusted person first",
+   "reports": 366,
+   "share": 0.1924,
+   "monthly": {
+    "2026-09": 187,
+    "2026-10": 167,
+    "2026-11": 12
+   },
+   "trend": "steady",
+   "trend_change": -0.101,
+   "channels": {
+    "unknown": 103,
+    "in_person": 54,
+    "phone_call": 49,
+    "website": 43,
+    "email": 36
+   },
+   "payments": {
+    "unknown": 153,
+    "card": 44,
+    "upfront_fee": 42,
+    "none": 38
+   },
+   "top_brands": [
+    {
+     "brand": "Amazon",
+     "reports": 5
+    },
+    {
+     "brand": "Apple",
+     "reports": 3
+    }
+   ],
+   "meta_share": 0.115,
+   "ai_share": 0.027,
+   "examples": [
+    {
+     "hook": "Trusted repeat customer requesting jerseys on promise to pay later",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/IsThisAScamIndia/comments/1w5tqln/got_blocked_by_a_scammy_customer/"
+    },
+    {
+     "hook": "Store-bought gift card already emptied elsewhere",
+     "channel": "in_person",
+     "url": "https://www.reddit.com/r/ScamCenter/comments/1w5weyp/i_bought_a_visa_gift_card_at_the_grocery_store_i/"
+    },
+    {
+     "hook": "No details provided about scam content",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/ScamCenter/comments/1w5ziek/scammerrrr/"
+    },
+    {
+     "hook": "Rotten grocery delivered but refund requires photo upload that crashes",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/IsThisAScamIndia/comments/1w68g7t/zeptos_brilliant_new_trick_to_avoid_refunds_make/"
+    }
+   ]
+  },
+  {
+   "id": "fake_online_stores",
+   "name": "Fake Online Stores",
+   "what": "Sellers advertise cheap trendy goods online, take payment, then never ship anything.",
+   "spot": [
+    "Prices far below real retailers",
+    "New site with no reviews",
+    "Only card or transfer payment"
+   ],
+   "do": "Do not buy; check trusted retailers only",
+   "reports": 255,
+   "share": 0.1341,
+   "monthly": {
+    "2026-09": 111,
+    "2026-10": 136,
+    "2026-11": 8
+   },
+   "trend": "steady",
+   "trend_change": 0.233,
+   "channels": {
+    "website": 163,
+    "instagram": 32,
+    "other_app": 23,
+    "marketplace": 11,
+    "unknown": 11
+   },
+   "payments": {
+    "card": 137,
+    "unknown": 80,
+    "payment_app": 13,
+    "upfront_fee": 11
+   },
+   "top_brands": [
+    {
+     "brand": "Apple",
+     "reports": 4
+    },
+    {
+     "brand": "Amazon",
+     "reports": 4
+    },
+    {
+     "brand": "Walmart",
+     "reports": 3
+    },
+    {
+     "brand": "Aldi",
+     "reports": 3
+    }
+   ],
+   "meta_share": 0.204,
+   "ai_share": 0.035,
+   "examples": [
+    {
+     "hook": "Custom lamp available for order from online shop",
+     "channel": "website",
+     "url": "https://www.reddit.com/r/Scams/comments/1w5usyh/theshiestyproofcom_scammer_us/"
+    },
+    {
+     "hook": "Online shop selling dog treats that never shipped",
+     "channel": "website",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1w5vaqg/pet_cart_supplies/"
+    },
+    {
+     "hook": "Online shop selling e-bike takes payment then goes silent",
+     "channel": "website",
+     "url": "https://www.reddit.com/r/ScamCenter/comments/1w66awx/scam_website_httpschvelohousecom/"
+    },
+    {
+     "hook": "Moving magical portraits advertised as real collectible decor",
+     "channel": "instagram",
+     "url": "https://www.reddit.com/r/ScamCenter/comments/1w6f2ak/is_this_website_a_scam/"
+    }
+   ]
+  },
+  {
+   "id": "fake_job_task_scams",
+   "name": "Fake Jobs and Tasks",
+   "what": "Scammers offer easy remote work then demand fees or deposits to continue earning.",
+   "spot": [
+    "Paid to like videos or rate hotels",
+    "Asked to pay deposit or training",
+    "Contact only on WhatsApp Telegram"
+   ],
+   "do": "Never pay to get a job",
+   "reports": 218,
+   "share": 0.1146,
+   "monthly": {
+    "2026-09": 91,
+    "2026-10": 122,
+    "2026-11": 5
+   },
+   "trend": "rising",
+   "trend_change": 0.349,
+   "channels": {
+    "unknown": 53,
+    "email": 37,
+    "other_app": 33,
+    "website": 32,
+    "sms": 13
+   },
+   "payments": {
+    "upfront_fee": 64,
+    "unknown": 49,
+    "personal_data": 47,
+    "none": 19
+   },
+   "top_brands": [
+    {
+     "brand": "Amazon",
+     "reports": 4
+    }
+   ],
+   "meta_share": 0.119,
+   "ai_share": 0.028,
+   "examples": [
+    {
+     "hook": "High-paying massage therapist job for female freshers serving male clients at home",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/Scams/comments/1w5zdsk/india_is_this_massage_therapist_job_in_bangalore/"
+    },
+    {
+     "hook": "Play games to earn real cash",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/ScamCenter/comments/1w60zey/scam_app_freecash/"
+    },
+    {
+     "hook": "Immediate selection after written Teams interview for finance role",
+     "channel": "email",
+     "url": "https://www.reddit.com/r/Scams/comments/1w67v9b/obsidian_capital_group/"
+    },
+    {
+     "hook": "Text to schedule interview for retail position applied for",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/Scams/comments/1w6axoy/cvs_interviewer_wants_me_to_send_resume_to_a/"
+    }
+   ]
+  },
+  {
+   "id": "phishing_account_theft",
+   "name": "Phishing and Account Theft",
+   "what": "Fake emails, texts, or support agents trick you into sharing codes or access.",
+   "spot": [
+    "Link to verify account or order",
+    "Asks for OTP password or access",
+    "Fake support or ban warning"
+   ],
+   "do": "Never share codes; open official app",
+   "reports": 213,
+   "share": 0.112,
+   "monthly": {
+    "2026-09": 104,
+    "2026-10": 101,
+    "2026-11": 8
+   },
+   "trend": "steady",
+   "trend_change": -0.023,
+   "channels": {
+    "email": 51,
+    "other_app": 41,
+    "phone_call": 36,
+    "sms": 28,
+    "unknown": 25
+   },
+   "payments": {
+    "account_access": 101,
+    "unknown": 40,
+    "card": 31,
+    "personal_data": 21
+   },
+   "top_brands": [
+    {
+     "brand": "Apple",
+     "reports": 13
+    },
+    {
+     "brand": "Amazon",
+     "reports": 9
+    },
+    {
+     "brand": "Reddit",
+     "reports": 7
+    },
+    {
+     "brand": "Google",
+     "reports": 7
+    },
+    {
+     "brand": "Twitter",
+     "reports": 4
+    }
+   ],
+   "meta_share": 0.061,
+   "ai_share": 0.014,
+   "examples": [
+    {
+     "hook": "Misaddressed email with attachment mentioning unfamiliar names",
+     "channel": "email",
+     "url": "https://www.reddit.com/r/ScamCenter/comments/1w5s35w/scam/"
+    },
+    {
+     "hook": "Accused of phishing, told to contact support to appeal ban",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1w5tbq2/phishing_scam_messages/"
+    },
+    {
+     "hook": "Paid request to share Kenyan SMS verification code",
+     "channel": "facebook",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1w5yeus/is_this_a_scam_possible_fraud/"
+    },
+    {
+     "hook": "Mistaken report filed, contact support to appeal suspension",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1w679i7/report_on_twitter_scam/"
+    }
+   ]
+  },
+  {
+   "id": "fake_sellers_listings",
+   "name": "Fake Sellers and Rentals",
+   "what": "Listings offer tickets, pets, cars, or rentals cheaply then vanish after deposit.",
+   "spot": [
+    "Price far below market value",
+    "Requires deposit before viewing",
+    "Refuses in-person meeting or escrow"
+   ],
+   "do": "Never pay before seeing in person",
+   "reports": 133,
+   "share": 0.0699,
+   "monthly": {
+    "2026-09": 64,
+    "2026-10": 67,
+    "2026-11": 2
+   },
+   "trend": "steady",
+   "trend_change": 0.054,
+   "channels": {
+    "marketplace": 42,
+    "other_app": 23,
+    "website": 22,
+    "unknown": 15,
+    "whatsapp": 8
+   },
+   "payments": {
+    "unknown": 45,
+    "payment_app": 26,
+    "upfront_fee": 21,
+    "bank_transfer": 17
+   },
+   "top_brands": [
+    {
+     "brand": "Ticketmaster",
+     "reports": 5
+    }
+   ],
+   "meta_share": 0.436,
+   "ai_share": 0.015,
+   "examples": [
+    {
+     "hook": "Camera for sale requiring gift card payment",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1w5tw4x/scammer_threatened_to_send_files_to_the_fbi_with/"
+    },
+    {
+     "hook": "Studio for rent requiring fee to reserve viewing slot",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1w5v7ro/just_got_scammed_out_of_70_on_venmo_feeling/"
+    },
+    {
+     "hook": "Expensive electronics requiring direct transfer before off-platform shipping",
+     "channel": "marketplace",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1w6g5u0/olx_scam/"
+    },
+    {
+     "hook": "year-long full-body laser hair removal at huge discount",
+     "channel": "website",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1w6i3ns/giant_discount_seems_fake/"
+    }
+   ]
+  },
+  {
+   "id": "official_threat_calls",
+   "name": "Official Threat Calls",
+   "what": "Callers pose as police, courts, or collectors threatening arrest unless you pay.",
+   "spot": [
+    "Threat of arrest lawsuit or warrant",
+    "Demands gift cards wire or crypto",
+    "No written proof or case details"
+   ],
+   "do": "Hang up; verify with official agency directly",
+   "reports": 108,
+   "share": 0.0568,
+   "monthly": {
+    "2026-09": 56,
+    "2026-10": 52,
+    "2026-11": 0
+   },
+   "trend": "steady",
+   "trend_change": -0.065,
+   "channels": {
+    "phone_call": 87,
+    "sms": 8,
+    "email": 5,
+    "unknown": 5,
+    "website": 2
+   },
+   "payments": {
+    "unknown": 68,
+    "personal_data": 15,
+    "bank_transfer": 9,
+    "upfront_fee": 8
+   },
+   "top_brands": [],
+   "meta_share": 0.0,
+   "ai_share": 0.009,
+   "examples": [
+    {
+     "hook": "Federal agent knew your name, asked about speaking Mandarin",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1w5t3qk/2023400281_is_a_fraud/"
+    },
+    {
+     "hook": "Pay owed crypto debt or be reported to employer and police",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/Scams/comments/1w6bexx/us_i_am_being_framed_for_a_crypto_scam_and_they/"
+    },
+    {
+     "hook": "Unpaid credit card debt now settled in court for fraud",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/Scams/comments/1w6cfpl/scam_call_that_had_personal_info/"
+    },
+    {
+     "hook": "Formal notice of noncompliance complaint moving forward legally without consent",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/Scams/comments/1w6ejx6/us_got_this_voice_mail_for_my_mil/"
+    }
+   ]
+  },
+  {
+   "id": "fake_check_overpayment",
+   "name": "Fake Check Overpayments",
+   "what": "Someone sends extra check or payment then asks you to refund the difference.",
+   "spot": [
+    "Overpaid check or transfer received",
+    "Asked to refund extra amount",
+    "Pressure to act before clearance"
+   ],
+   "do": "Wait for bank clearance; never refund",
+   "reports": 89,
+   "share": 0.0468,
+   "monthly": {
+    "2026-09": 48,
+    "2026-10": 39,
+    "2026-11": 2
+   },
+   "trend": "steady",
+   "trend_change": -0.182,
+   "channels": {
+    "unknown": 28,
+    "other_app": 15,
+    "email": 11,
+    "marketplace": 10,
+    "sms": 9
+   },
+   "payments": {
+    "bank_transfer": 41,
+    "payment_app": 22,
+    "unknown": 14,
+    "personal_data": 5
+   },
+   "top_brands": [
+    {
+     "brand": "Venmo",
+     "reports": 3
+    }
+   ],
+   "meta_share": 0.124,
+   "ai_share": 0.0,
+   "examples": [
+    {
+     "hook": "Fake transfer confirmation to pretend payment was sent",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/ScamCenter/comments/1w67swp/comenten/"
+    },
+    {
+     "hook": "Urgent buyer needs music gear shipped immediately for weekend gig",
+     "channel": "marketplace",
+     "url": "https://www.reddit.com/r/Scams/comments/1w6bs8l/de_ebay_different_buyers_asking_for_extra_fast/"
+    },
+    {
+     "hook": "Fully remote data entry job paying hourly with equipment check provided",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/Scams/comments/1w6kz4h/usnationwide_remote_job_scam_with_united_thai/"
+    },
+    {
+     "hook": "Interested buyer for couches needs help receiving business payment",
+     "channel": "marketplace",
+     "url": "https://www.reddit.com/r/Scams/comments/1w70ug5/zelle_scam_hooked_and_almost_sunked/"
+    }
+   ]
+  },
+  {
+   "id": "romance_sugar_scams",
+   "name": "Romance and Sugar Scams",
+   "what": "Someone builds love or sugar relationship then asks money, checks, or fees.",
+   "spot": [
+    "Quick love or generous allowance promise",
+    "Never meets in person or video",
+    "Requests gift cards checks or fees"
+   ],
+   "do": "Never send money to online lover",
+   "reports": 78,
+   "share": 0.041,
+   "monthly": {
+    "2026-09": 36,
+    "2026-10": 41,
+    "2026-11": 1
+   },
+   "trend": "steady",
+   "trend_change": 0.146,
+   "channels": {
+    "unknown": 23,
+    "dating_app": 19,
+    "other_app": 15,
+    "email": 4,
+    "whatsapp": 3
+   },
+   "payments": {
+    "unknown": 34,
+    "upfront_fee": 14,
+    "personal_data": 10,
+    "bank_transfer": 6
+   },
+   "top_brands": [],
+   "meta_share": 0.115,
+   "ai_share": 0.077,
+   "examples": [
+    {
+     "hook": "Air Force serviceman seeking romantic connection online",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/ScamCenter/comments/1w5vogm/does_anyone_know_this_guy/"
+    },
+    {
+     "hook": "Virtual sugar daddy sending gift cards before weekly cash allowance",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/Scams/comments/1w6a3hk/in_amazon_gift_card_scam/"
+    },
+    {
+     "hook": "Virtual sugar daddy sending gift cards before cash allowance",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1w6a6wm/amazon_gift_card_scam/"
+    },
+    {
+     "hook": "Hookup partner demanded cash for Plan B then fake STI clinic bills",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/Scams/comments/1w6pqpt/targeted_by_an_sti_scanningpregnancy_extortion/"
+    }
+   ]
+  },
+  {
+   "id": "advance_fee_scams",
+   "name": "Advance Fee Scams",
+   "what": "Promised inheritance, loan, grant, or payout requires upfront fees to release.",
+   "spot": [
+    "Large payout promised easily",
+    "Upfront fee tax or insurance",
+    "Unknown lawyer lender or agent"
+   ],
+   "do": "Never pay upfront for promised money",
+   "reports": 75,
+   "share": 0.0394,
+   "monthly": {
+    "2026-09": 39,
+    "2026-10": 35,
+    "2026-11": 1
+   },
+   "trend": "steady",
+   "trend_change": -0.097,
+   "channels": {
+    "unknown": 20,
+    "phone_call": 18,
+    "email": 9,
+    "website": 7,
+    "other_app": 4
+   },
+   "payments": {
+    "upfront_fee": 36,
+    "unknown": 15,
+    "personal_data": 11,
+    "bank_transfer": 3
+   },
+   "top_brands": [],
+   "meta_share": 0.133,
+   "ai_share": 0.027,
+   "examples": [
+    {
+     "hook": "Receive cash-filled package as hush money after small delivery fee",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/Scams/comments/1w7vlao/usmom_is_bipolar_and_manic_almost_got_romance/"
+    },
+    {
+     "hook": "Requested upfront payment before delivering promise",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/IsThisAScamIndia/comments/1w81h2h/should_i_pay_100_and_block_them_after_payment_or/"
+    },
+    {
+     "hook": "Letter claiming unexpected inheritance from unknown relative needing legal help",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/Scams/comments/1w8fmly/insuranceinheritance_scam_via_postal_mail/"
+    },
+    {
+     "hook": "Send crypto to hedge losing trade for bank repayment with profit",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1w92yhh/discord_scammer_noahoptions_server/"
+    }
+   ]
+  },
+  {
+   "id": "fake_crypto_investment",
+   "name": "Fake Crypto Investments",
+   "what": "Fake advisors show growing profits to lure bigger deposits, then block withdrawals.",
+   "spot": [
+    "Guaranteed high returns with no risk",
+    "Romance contact pushes trading platform",
+    "Must pay fee to withdraw funds"
+   ],
+   "do": "Do not invest; verify with licensed broker",
+   "reports": 61,
+   "share": 0.0321,
+   "monthly": {
+    "2026-09": 36,
+    "2026-10": 25,
+    "2026-11": 0
+   },
+   "trend": "falling",
+   "trend_change": -0.301,
+   "channels": {
+    "unknown": 21,
+    "other_app": 9,
+    "website": 9,
+    "dating_app": 7,
+    "telegram": 4
+   },
+   "payments": {
+    "crypto": 30,
+    "unknown": 16,
+    "upfront_fee": 8,
+    "bank_transfer": 4
+   },
+   "top_brands": [],
+   "meta_share": 0.098,
+   "ai_share": 0.016,
+   "examples": [
+    {
+     "hook": "Promised returns via investment channel with thousands supposedly investing",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1w66wet/please_help_me_identify_this_fake_guru/"
+    },
+    {
+     "hook": "Invest crypto for big returns, pay tax to withdraw",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/Scams/comments/1w7jsr3/us_ideal_finance_ltd_scam_httpswwwidealfinanccom/"
+    },
+    {
+     "hook": "Quick guaranteed investment returns requiring direct transfers to personal accounts",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/ScamCenter/comments/1w892ee/india_scam_warning_fake_investment_return_network/"
+    },
+    {
+     "hook": "Crash-proof crypto promising steady monthly withdrawals after vesting",
+     "channel": "telegram",
+     "url": "https://www.reddit.com/r/ScamCenter/comments/1w9i69g/phil_40_boostyfi_aleta_scam/"
+    }
+   ]
+  },
+  {
+   "id": "prize_freebie_scams",
+   "name": "Prize and Freebie Scams",
+   "what": "You supposedly won a prize or gift but must pay shipping or fees first.",
+   "spot": [
+    "Won contest you never entered",
+    "Fee to claim prize or gift",
+    "Celebrity giveaway asks payment"
+   ],
+   "do": "Never pay to claim prizes",
+   "reports": 44,
+   "share": 0.0231,
+   "monthly": {
+    "2026-09": 24,
+    "2026-10": 18,
+    "2026-11": 2
+   },
+   "trend": "steady",
+   "trend_change": -0.245,
+   "channels": {
+    "unknown": 11,
+    "other_app": 9,
+    "website": 6,
+    "email": 5,
+    "phone_call": 3
+   },
+   "payments": {
+    "upfront_fee": 18,
+    "unknown": 11,
+    "personal_data": 10,
+    "gift_card": 2
+   },
+   "top_brands": [
+    {
+     "brand": "MrBeast",
+     "reports": 5
+    }
+   ],
+   "meta_share": 0.091,
+   "ai_share": 0.023,
+   "examples": [
+    {
+     "hook": "Closing store offering free jewelry if you cover shipping",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1w7ogj0/free_jewelry_if_you_cover_shipping/"
+    },
+    {
+     "hook": "Free expensive golf clubs from deceased relative, just pay shipping",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1w84wsz/golf_clubs_please_help_us/"
+    },
+    {
+     "hook": "Won huge cash prize in free giveaway with certificate",
+     "channel": "email",
+     "url": "https://www.reddit.com/r/Scams/comments/1w8pkju/uae_usaxpaccom_anyone_know_who_is_behind_this_i/"
+    },
+    {
+     "hook": "Friend-shared giveaway win with account balance proof photos",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/Scams/comments/1w9sog0/mr_beasts_runicwincom_giveaway_is_a_scam/"
+    }
+   ]
+  },
+  {
+   "id": "bank_fraud_calls",
+   "name": "Bank Fraud Calls",
+   "what": "Callers pretend to be your bank warning of fraud to steal codes and transfers.",
+   "spot": [
+    "Urgent fraud warning demands action",
+    "Asks for OTPs passwords or transfers",
+    "Spoofed caller ID or callback pressure"
+   ],
+   "do": "Hang up; call bank number yourself",
+   "reports": 41,
+   "share": 0.0216,
+   "monthly": {
+    "2026-09": 20,
+    "2026-10": 20,
+    "2026-11": 1
+   },
+   "trend": "steady",
+   "trend_change": 0.006,
+   "channels": {
+    "phone_call": 35,
+    "sms": 3,
+    "email": 2,
+    "in_person": 1
+   },
+   "payments": {
+    "personal_data": 11,
+    "bank_transfer": 7,
+    "account_access": 7,
+    "payment_app": 7
+   },
+   "top_brands": [
+    {
+     "brand": "Chase",
+     "reports": 4
+    },
+    {
+     "brand": "US Bank",
+     "reports": 3
+    },
+    {
+     "brand": "Wells Fargo",
+     "reports": 3
+    }
+   ],
+   "meta_share": 0.0,
+   "ai_share": 0.0,
+   "examples": [
+    {
+     "hook": "Account breached, transfer money to stay safe",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/Scams/comments/1w6mcki/es_scammers_as_a_bank_manager/"
+    },
+    {
+     "hook": "legitimate email urging review of suspicious change via fraud team",
+     "channel": "email",
+     "url": "https://www.reddit.com/r/Scams/comments/1w8u93p/aus_scammed_of_5k_by_bank_impersonator/"
+    },
+    {
+     "hook": "Polite bank official call with convincing personal account knowledge",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1wcj1r0/my_boss_was_just_scammed_and_they_text_her_from/"
+    },
+    {
+     "hook": "Call about verifying unusual bank account activity",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/Scams/comments/1wcv71o/us_return_of_the_merrick_scam/"
+    }
+   ]
+  },
+  {
+   "id": "gambling_betting_scams",
+   "name": "Gambling and Betting Scams",
+   "what": "Tipsters or casinos promise sure wins but rig games or demand withdrawal fees.",
+   "spot": [
+    "Guaranteed tips or rigged bonuses",
+    "Fee to withdraw winnings",
+    "Unlicensed site or Telegram group"
+   ],
+   "do": "Do not deposit; leave site",
+   "reports": 40,
+   "share": 0.021,
+   "monthly": {
+    "2026-09": 22,
+    "2026-10": 17,
+    "2026-11": 1
+   },
+   "trend": "steady",
+   "trend_change": -0.222,
+   "channels": {
+    "other_app": 18,
+    "website": 13,
+    "unknown": 5,
+    "telegram": 2,
+    "email": 1
+   },
+   "payments": {
+    "unknown": 13,
+    "upfront_fee": 12,
+    "crypto": 5,
+    "bank_transfer": 3
+   },
+   "top_brands": [
+    {
+     "brand": "MrBeast",
+     "reports": 6
+    },
+    {
+     "brand": "Kalshi",
+     "reports": 3
+    }
+   ],
+   "meta_share": 0.025,
+   "ai_share": 0.025,
+   "examples": [
+    {
+     "hook": "Owed small betting account balance to payment processor",
+     "channel": "email",
+     "url": "https://www.reddit.com/r/Scams/comments/1w736ck/indebted_and_trustly_scam/"
+    },
+    {
+     "hook": "Guaranteed winning sports betting tips for sale",
+     "channel": "telegram",
+     "url": "https://www.reddit.com/r/ScamCenter/comments/1w7lamu/telegram_scammer_alert/"
+    },
+    {
+     "hook": "Celebrity crypto casino offering instant withdrawable signup bonus",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1w81dy3/usmy_friend_sent_me_a_scam_i_think/"
+    },
+    {
+     "hook": "Friend impersonator promised big sports betting returns for upfront fees",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1wb8zxg/us_got_scammed_on_discord_through_my_friends/"
+    }
+   ]
+  },
+  {
+   "id": "delivery_fee_texts",
+   "name": "Delivery Fee Texts",
+   "what": "Texts claim unpaid parcel, customs, traffic, or toll fee with malicious payment link.",
+   "spot": [
+    "Unexpected fee text with link",
+    "Shortened or odd website address",
+    "Small payment to release package"
+   ],
+   "do": "Do not click; check official site directly",
+   "reports": 39,
+   "share": 0.0205,
+   "monthly": {
+    "2026-09": 12,
+    "2026-10": 26,
+    "2026-11": 1
+   },
+   "trend": "rising",
+   "trend_change": 1.181,
+   "channels": {
+    "sms": 14,
+    "unknown": 9,
+    "phone_call": 7,
+    "whatsapp": 3,
+    "email": 3
+   },
+   "payments": {
+    "unknown": 11,
+    "upfront_fee": 11,
+    "card": 11,
+    "personal_data": 2
+   },
+   "top_brands": [
+    {
+     "brand": "FedEx",
+     "reports": 7
+    }
+   ],
+   "meta_share": 0.128,
+   "ai_share": 0.0,
+   "examples": [
+    {
+     "hook": "Unexpected parcel delivery call asking to accept or cancel order",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/IsThisAScamIndia/comments/1wakxh2/2_days_ago_i_received_some_calls_mostly_time_i/"
+    },
+    {
+     "hook": "package on hold for security reasons press to speak to agent",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/Scams/comments/1wcx71u/ca_fell_for_canada_post_scam/"
+    },
+    {
+     "hook": "Pay clearance fee before gift parcel delivery",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1wfqvu3/smart_cargolink/"
+    },
+    {
+     "hook": "delivery issue needing small fee to reroute",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1wgoi9q/fed_ex_shipping/"
+    }
+   ]
+  },
+  {
+   "id": "wrong_number_texts",
+   "name": "Wrong Number Texts",
+   "what": "Stranger texts wrong number then befriends you to pitch jobs or investments.",
+   "spot": [
+    "Oops wrong number friendly chat",
+    "Quickly moves to WhatsApp",
+    "Introduces investment or job task"
+   ],
+   "do": "Do not reply; block and report",
+   "reports": 33,
+   "share": 0.0174,
+   "monthly": {
+    "2026-09": 17,
+    "2026-10": 16,
+    "2026-11": 0
+   },
+   "trend": "steady",
+   "trend_change": -0.053,
+   "channels": {
+    "sms": 21,
+    "other_app": 5,
+    "unknown": 4,
+    "phone_call": 1,
+    "email": 1
+   },
+   "payments": {
+    "unknown": 26,
+    "crypto": 3,
+    "account_access": 2,
+    "personal_data": 1
+   },
+   "top_brands": [],
+   "meta_share": 0.0,
+   "ai_share": 0.061,
+   "examples": [
+    {
+     "hook": "Mistaken text from friendly woman wanting ongoing chat",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/Scams/comments/1w7bu8i/us_wrong_number_from_nyc_who_wants_to_keep/"
+    },
+    {
+     "hook": "Friendly wrong-number text turning into investment encouragement",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/Scams/comments/1w9gm0s/us_grandfather_claims_hes_just_messing_with/"
+    },
+    {
+     "hook": "Unfamiliar local text shared old photo saying so many years ago",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1wavwj5/text_phishing_with_old_phot_from_facebook/"
+    },
+    {
+     "hook": "friendly message about theater plans and dinner meant for someone else",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/Scams/comments/1wb1idh/ca_fake_number_scam/"
+    }
+   ]
+  },
+  {
+   "id": "sextortion_scams",
+   "name": "Sextortion Scams",
+   "what": "Someone threatens to share intimate images or videos unless you pay.",
+   "spot": [
+    "Threat to leak explicit photos",
+    "Demands crypto or gift cards",
+    "Contact from stranger or hacked account"
+   ],
+   "do": "Do not pay; save evidence report",
+   "reports": 29,
+   "share": 0.0152,
+   "monthly": {
+    "2026-09": 20,
+    "2026-10": 8,
+    "2026-11": 1
+   },
+   "trend": "steady",
+   "trend_change": -0.597,
+   "channels": {
+    "unknown": 6,
+    "other_app": 5,
+    "dating_app": 5,
+    "email": 4,
+    "instagram": 4
+   },
+   "payments": {
+    "unknown": 16,
+    "crypto": 5,
+    "gift_card": 3,
+    "personal_data": 2
+   },
+   "top_brands": [],
+   "meta_share": 0.207,
+   "ai_share": 0.034,
+   "examples": [
+    {
+     "hook": "Flirty video chat turned into demands to pay for silence",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1w5uoj7/my_friend_fall_into_a_scam_and_they_claims_theyll/"
+    },
+    {
+     "hook": "Flirty video chat turning into gift card blackmail",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1w5uvnr/my_friend_fall_into_a_scam_and_they_using_a/"
+    },
+    {
+     "hook": "Claimed hacker installed trojan and tracked browsing activity",
+     "channel": "email",
+     "url": "https://www.reddit.com/r/Scams/comments/1w83bk7/i_am_not_falling_for_this_since_i_dont_use_a/"
+    },
+    {
+     "hook": "private roleplay encounter followed by frightening threats",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/ScamCenter/comments/1wa4f3y/what_do_i_do_idk_if_this_is_a_scam/"
+    }
+   ]
+  },
+  {
+   "id": "mule_reshipping_scams",
+   "name": "Mule Reshipping Scams",
+   "what": "Job asks you to receive, forward, or deposit packages or money for others.",
+   "spot": [
+    "Paid to forward parcels or cash",
+    "Uses your bank or address",
+    "No real company or interview"
+   ],
+   "do": "Refuse; you carry legal risk",
+   "reports": 29,
+   "share": 0.0152,
+   "monthly": {
+    "2026-09": 15,
+    "2026-10": 14,
+    "2026-11": 0
+   },
+   "trend": "steady",
+   "trend_change": -0.061,
+   "channels": {
+    "unknown": 12,
+    "phone_call": 7,
+    "website": 4,
+    "other_app": 2,
+    "dating_app": 1
+   },
+   "payments": {
+    "personal_data": 11,
+    "bank_transfer": 5,
+    "none": 4,
+    "account_access": 3
+   },
+   "top_brands": [],
+   "meta_share": 0.0,
+   "ai_share": 0.0,
+   "examples": [
+    {
+     "hook": "Earn commission sourcing pharma raw materials from India",
+     "channel": "dating_app",
+     "url": "https://www.reddit.com/r/IsThisAScamIndia/comments/1wbd7zy/pharma_company_order_fulfillment_from_india/"
+    },
+    {
+     "hook": "Work-from-home shipping job paying high monthly salary",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/Scams/comments/1wbe2uq/is_vektorix_express_scam_they_threatening_me/"
+    },
+    {
+     "hook": "Remote packaging job that seemed legitimate",
+     "channel": "website",
+     "url": "https://www.reddit.com/r/Scams/comments/1wbf087/what_to_do_after_packaging_scam_scheme/"
+    },
+    {
+     "hook": "Earn easy money by renting out bank account",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/IsThisAScamIndia/comments/1wbhpsv/p2p_scam_renting_bank_account_is_a_trap/"
+    }
+   ]
+  },
+  {
+   "id": "charity_plea_scams",
+   "name": "Fake Charity Pleas",
+   "what": "Fake charities solicit donations for disasters, illness, or causes that vanish.",
+   "spot": [
+    "Emotional disaster or medical plea",
+    "Pressure to donate immediately",
+    "No registered charity details"
+   ],
+   "do": "Donate only via verified charities",
+   "reports": 15,
+   "share": 0.0079,
+   "monthly": {
+    "2026-09": 9,
+    "2026-10": 6,
+    "2026-11": 0
+   },
+   "trend": "steady",
+   "trend_change": -0.329,
+   "channels": {
+    "unknown": 5,
+    "other_app": 4,
+    "email": 2,
+    "in_person": 2,
+    "instagram": 1
+   },
+   "payments": {
+    "payment_app": 4,
+    "unknown": 3,
+    "bank_transfer": 3,
+    "card": 2
+   },
+   "top_brands": [],
+   "meta_share": 0.133,
+   "ai_share": 0.0,
+   "examples": [
+    {
+     "hook": "Gaza woman persistently begging for large donation via direct messages",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1w6w1rq/us_this_account_on_tiktok_that_claims_to_be_from/"
+    },
+    {
+     "hook": "Donation appeal for sick cat needing help",
+     "channel": "instagram",
+     "url": "https://www.reddit.com/r/ScamCenter/comments/1waz1ux/marias_barn_drive_sight_is_a_scam_do_not_make/"
+    },
+    {
+     "hook": "Pay to post anonymous fundraiser for friend in need",
+     "channel": "facebook",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1wfany8/woman_wants_to_pay_for_me_to_post_to_gofundme_for/"
+    },
+    {
+     "hook": "Desperate video call begging for food money transfer",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1wi6nps/i_need_some_advice_on_african_guy_adding_me/"
+    }
+   ]
+  },
+  {
+   "id": "violent_extortion_threats",
+   "name": "Violent Extortion Threats",
+   "what": "Criminals threaten harm, kidnapping, or exposure claiming cartel or police connection.",
+   "spot": [
+    "Death kidnapping or exposure threat",
+    "Demands immediate secret payment",
+    "No proof victim is harmed"
+   ],
+   "do": "Stay safe; call police immediately",
+   "reports": 14,
+   "share": 0.0074,
+   "monthly": {
+    "2026-09": 12,
+    "2026-10": 2,
+    "2026-11": 0
+   },
+   "trend": "steady",
+   "trend_change": -0.832,
+   "channels": {
+    "phone_call": 6,
+    "sms": 4,
+    "unknown": 2,
+    "telegram": 1,
+    "whatsapp": 1
+   },
+   "payments": {
+    "unknown": 11,
+    "gift_card": 1,
+    "upfront_fee": 1,
+    "payment_app": 1
+   },
+   "top_brands": [],
+   "meta_share": 0.071,
+   "ai_share": 0.071,
+   "examples": [
+    {
+     "hook": "Call appearing from daughter's number demanding ransom",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/Scams/comments/1w6j13h/us_hello_someone_called_my_mom_from_my_phone/"
+    },
+    {
+     "hook": "Return money or assassins will find and kill you and family",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/Scams/comments/1w6wm9k/assassin_death_threat_scam/"
+    },
+    {
+     "hook": "Kidnapper demanding ransom with cloned child's crying voice",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/Scams/comments/1w8i5bj/repost_ai_voice_replication_scams_please_be/"
+    },
+    {
+     "hook": "Pay for wasting escort time or face violent retaliation",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/Scams/comments/1waa0j1/uk_vivastreet_scam/"
+    }
+   ]
+  },
+  {
+   "id": "family_emergency_scams",
+   "name": "Family Emergency Scams",
+   "what": "Caller claims loved one crashed, arrested, or stranded and needs money now.",
+   "spot": [
+    "Panicked call about loved one",
+    "Begs secrecy and quick payment",
+    "Cannot video call or verify"
+   ],
+   "do": "Hang up; call family directly",
+   "reports": 13,
+   "share": 0.0068,
+   "monthly": {
+    "2026-09": 3,
+    "2026-10": 9,
+    "2026-11": 1
+   },
+   "trend": "steady",
+   "trend_change": 2.019,
+   "channels": {
+    "phone_call": 5,
+    "in_person": 4,
+    "sms": 2,
+    "unknown": 1,
+    "whatsapp": 1
+   },
+   "payments": {
+    "unknown": 8,
+    "bank_transfer": 2,
+    "payment_app": 2,
+    "upfront_fee": 1
+   },
+   "top_brands": [],
+   "meta_share": 0.077,
+   "ai_share": 0.0,
+   "examples": [
+    {
+     "hook": "Funds sent to stranger's number for relative",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/IsThisAScamIndia/comments/1w8213s/can_anyone_get_the_details_of_this_number_got/"
+    },
+    {
+     "hook": "Coworker needed urgent money for sister's accident treatment",
+     "channel": "in_person",
+     "url": "https://www.reddit.com/r/IsThisAScamIndia/comments/1w8ce62/any_way_to_find_the_scammers_current_details/"
+    },
+    {
+     "hook": "Caller pretended to be a relative during strange phone call",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/ScamCenter/comments/1wmjg0y/scam_number_1_754_2357635/"
+    },
+    {
+     "hook": "Relative in serious legal trouble needs money immediately",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/Scams/comments/1x01chw/grandma_got_scammed_for_200k/"
+    }
+   ]
+  },
+  {
+   "id": "gift_card_asks",
+   "name": "Gift Card Requests",
+   "what": "Boss, family, or celebrity urgently asks you to buy gift cards for them.",
+   "spot": [
+    "Urgent secret gift card request",
+    "Impersonated boss family or star",
+    "Scratch codes photos demanded"
+   ],
+   "do": "Verify by calling person directly",
+   "reports": 9,
+   "share": 0.0047,
+   "monthly": {
+    "2026-09": 5,
+    "2026-10": 4,
+    "2026-11": 0
+   },
+   "trend": "steady",
+   "trend_change": -0.195,
+   "channels": {
+    "email": 4,
+    "unknown": 2,
+    "sms": 1,
+    "phone_call": 1,
+    "in_person": 1
+   },
+   "payments": {
+    "gift_card": 7,
+    "unknown": 1,
+    "personal_data": 1
+   },
+   "top_brands": [],
+   "meta_share": 0.0,
+   "ai_share": 0.0,
+   "examples": [
+    {
+     "hook": "Boss asked to buy gift cards for reimbursement by end of day",
+     "channel": "email",
+     "url": "https://www.reddit.com/r/Scams/comments/1we0iyx/i_fell_for_gift_card_scam_i_lost_2500_is_there/"
+    },
+    {
+     "hook": "Former supervisor asking for thank-you cards with gift cards for clients",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/Scams/comments/1wfqxla/someone_was_pretending_to_be_my_old_internship/"
+    },
+    {
+     "hook": "favourite wrestler requested birthday gift card in personal video",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/ScamCenter/comments/1wlmz7t/learntospotscamscom/"
+    },
+    {
+     "hook": "Agency voicemail offering personal call after fan letter",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1wno5n7/i_sent_a_fan_mail_letter_to_megan_fox_in_december/"
+    }
+   ]
+  }
+ ]
+}
