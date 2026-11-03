@@ -77,6 +77,7 @@ Investigación de ganadores 2026 en `reports/Ganadores hackathons 2026.md`. Mark
 - **Predicción:** Spark 1.3 contributor lee solo la publicación (título, texto, hasta 3 imágenes), nunca los comentarios. Predicciones y SHA-256 se commitean antes de puntuar (`scripts/validate_scams.py`).
 - **Rivales:** regla de palabras clave (≥3 términos típicos de estafa = estafa) y "siempre estafa".
 - **Regla de éxito (todas):** al menos 30 casos legítimos; exactitud balanceada del escudo ≥ 0,80; supera a la regla de palabras clave por ≥ 0,10 con el IC 95 % bootstrap sobre cero; falsas alarmas sobre casos legítimos ≤ 30 %. Si falla, se pasa a "Ojos por voz" (VizWiz).
+- **Etiquetas (3-nov, antes de predecir):** 1.547 publicaciones → 969 scam, 169 legit, 407 unclear, 2 fallidas. Auditoría a mano de 30 (15 legit + 15 scam, semilla 30): 13/15 legit claras (2 dudosas: producto defectuoso, yogur de larga duración), 15/15 scam correctas. Muchos "legit" son quejas de consumo que la gente llama estafa: casos difíciles a propósito.
 
 ## Fechas
 Entrega interna: miércoles 4-nov 18:00 Chile (cierre oficial 23:00 Chile). Hash de la prueba en vivo: antes del 3-nov 23:59.
