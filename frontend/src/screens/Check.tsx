@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { AlertTriangle, Globe, ImagePlus, Link2, Mic, RotateCcw, Search, Send, Share2, ShieldAlert, ShieldCheck, Square, Upload, Users, X } from "lucide-react";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Input, Textarea } from "@/components/ui/input";
+import PhoneDemo from "@/components/PhoneDemo";
 import { Button, ErrorNote, PageTitle } from "@/components/shell";
-import { radar, shield, type Band, type CheckOut, type Evidence, type InvestigateOut, type Mode, type ToolStep } from "@/lib/api";
+import { radar, shield, type Band, type CheckOut, type Evidence, type Clue, type InvestigateOut, type Mode, type ToolStep } from "@/lib/api";
 import { cn, fileToDataUrl, pct } from "@/lib/utils";
 
 const MAX_IMAGES = 3;
@@ -15,6 +16,7 @@ interface Example {
   text?: string;
   note?: string;
   audio?: string;
+  image?: string;
 }
 
 // Made-up examples for the demo (not taken from the validation set).
@@ -23,6 +25,12 @@ const EXAMPLES: Example[] = [
     label: "Parcel fee text",
     kind: "SMS",
     text: "Royal Mail: Your parcel could not be delivered due to an unpaid shipping fee of £1.45. Pay now to rebook your delivery: royalmail-redelivery-uk.com",
+  },
+  {
+    label: "Marketplace buyer",
+    kind: "Screenshot",
+    image: "static/examples/marketplace-chat.png",
+    note: "A buyer on Marketplace sent me this about my table",
   },
   { label: "Call from 'the bank'", kind: "Voice note", audio: "static/examples/bank-call.wav", note: "Someone called me saying they were from my bank" },
   {
@@ -79,6 +87,7 @@ export default function Check({
   const [result, setResult] = useState<CheckOut | null>(null);
   const [probe, setProbe] = useState<InvestigateOut | null>(null);
   const [probing, setProbing] = useState(false);
+  const [checked, setChecked] = useState(""); // the text as it was when the person pressed "Check it"
   const recorder = useRef<MediaRecorder | null>(null);
   const imageInput = useRef<HTMLInputElement | null>(null);
   const audioInput = useRef<HTMLInputElement | null>(null);
@@ -139,7 +148,7 @@ export default function Check({
     setError("");
     setText(ex.text ?? "");
     setNote(ex.note ?? "");
-    setImages([]);
+    setImages(ex.image ? [await fileToDataUrl(new File([await (await fetch(ex.image)).blob()], "example.png", { type: "image/png" }), 1024)] : []);
     setAudio(ex.audio ? await blobToDataUrl(await (await fetch(ex.audio)).blob()) : null);
   }
 
@@ -172,6 +181,7 @@ export default function Check({
     setError("");
     setBusy(true);
     setProbe(null);
+    setChecked(text);
     const context = [note, text].filter((s) => s.trim()).join("\n\n");
     const early = audio ? null : investigate(context);
     try {
@@ -188,13 +198,13 @@ export default function Check({
 
   return (
     <>
-      <PageTitle
-        big
-        title="Got a message that feels off? Check it before you act."
-        lead="Paste the text, add a screenshot or a voice note of the call. In a few seconds you'll know if it looks like a scam, why, and the one thing to do now."
-      />
-
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+        <div className="flex flex-col gap-7">
+      <PageTitle
+          big
+          title="Got a message that feels off? Check it before you act."
+          lead="Paste the text, add a screenshot or a voice note of the call. In a few seconds you'll know if it looks like a scam, why, and the one thing to do now."
+        />
         <Card className="flex flex-col gap-5 p-5 sm:p-7">
           <label className="flex flex-col gap-2">
             <span className="text-sm font-semibold text-heading">The message</span>
@@ -279,7 +289,12 @@ export default function Check({
           </div>
           {error && <ErrorNote message={error} />}
         </Card>
+        </div>
 
+        <div className="flex flex-col gap-6">
+        <div className="hidden lg:block">
+          <PhoneDemo />
+        </div>
         <Card className="flex flex-col gap-3 p-5 sm:p-6">
           <CardTitle className="text-lg">Try an example</CardTitle>
           <p className="m-0 text-sm text-muted">Made up for this demo, based on common scams.</p>
@@ -295,6 +310,7 @@ export default function Check({
             </button>
           ))}
         </Card>
+        </div>
       </div>
 
       {busy && <div className="skeleton h-48" aria-label="Checking" />}
@@ -303,7 +319,7 @@ export default function Check({
         <div ref={resultRef} className="scroll-mt-6">
           <Result result={result} precision={p} onEvidence={onEvidence} onReset={reset} />
           <div className="mt-6">
-            <Investigation probe={probe} probing={probing} onCampaigns={onCampaigns} />
+            <Investigation probe={probe} probing={probing} message={checked} onCampaigns={onCampaigns} />
           </div>
         </div>
       )}
@@ -434,7 +450,52 @@ function stepLine(s: ToolStep): { icon: typeof Link2; text: string } {
   return { icon: Search, text: s.tool };
 }
 
-function Investigation({ probe, probing, onCampaigns }: { probe: InvestigateOut | null; probing: boolean; onCampaigns: () => void }) {
+const MARK = {
+  risky: "bg-[#fdecec] text-[#9b1c1c] decoration-[#d64545]",
+  reassuring: "bg-ok-soft text-ok decoration-ok",
+  neutral: "bg-bg decoration-muted",
+} as const;
+
+/** The message with each quoted clue marked in place and numbered like its clue. */
+function MarkedMessage({ text, clues }: { text: string; clues: Clue[] }) {
+  const lower = text.toLowerCase();
+  const spans: { start: number; end: number; n: number; signal: Clue["signal"] }[] = [];
+  clues.forEach((c, i) => {
+    if (!c.quote) return;
+    const start = lower.indexOf(c.quote.toLowerCase());
+    const end = start + c.quote.length;
+    if (start < 0 || spans.some((s) => start < s.end && end > s.start)) return;
+    spans.push({ start, end, n: i + 1, signal: c.signal });
+  });
+  if (!spans.length) return null;
+  spans.sort((a, b) => a.start - b.start);
+  const parts: React.ReactNode[] = [];
+  let at = 0;
+  for (const s of spans) {
+    parts.push(text.slice(at, s.start));
+    parts.push(
+      <mark key={s.n} className={cn("rounded px-0.5 underline decoration-2 underline-offset-4", MARK[s.signal])}>
+        {text.slice(s.start, s.end)}
+        <sup className="ml-0.5 text-[10px] font-bold no-underline">{s.n}</sup>
+      </mark>,
+    );
+    at = s.end;
+  }
+  parts.push(text.slice(at));
+  return <p className="m-0 whitespace-pre-wrap rounded-xl border border-line bg-white px-4 py-3 text-[15px] leading-relaxed">{parts}</p>;
+}
+
+function Investigation({
+  probe,
+  probing,
+  message,
+  onCampaigns,
+}: {
+  probe: InvestigateOut | null;
+  probing: boolean;
+  message: string;
+  onCampaigns: () => void;
+}) {
   if (probing) {
     return (
       <Card className="flex items-center gap-3 p-5 text-sm text-muted sm:p-7" aria-live="polite">
@@ -451,7 +512,7 @@ function Investigation({ probe, probing, onCampaigns }: { probe: InvestigateOut 
       {checked && (
         <Card className="flex flex-col gap-4 p-5 sm:p-7">
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Search className="size-5" aria-hidden="true" /> What we checked
+            <Search className="size-5" aria-hidden="true" /> {inv.steps.length ? "What we checked" : "What we found"}
           </CardTitle>
           {inv.steps.length > 0 && (
             <ul className="m-0 flex list-none flex-col gap-2 p-0 text-sm">
@@ -465,11 +526,15 @@ function Investigation({ probe, probing, onCampaigns }: { probe: InvestigateOut 
               })}
             </ul>
           )}
+          <MarkedMessage text={message} clues={inv.clues} />
           {inv.clues.length > 0 && (
             <ul className="m-0 flex list-none flex-col gap-2 p-0">
               {inv.clues.map((c, i) => (
-                <li key={i} className={cn("rounded-xl px-4 py-3 text-sm", SIGNAL[c.signal])}>
-                  <strong>{c.label}.</strong> {c.detail}
+                <li key={i} className={cn("flex gap-2 rounded-xl px-4 py-3 text-sm", SIGNAL[c.signal])}>
+                  <span className="font-bold">{i + 1}</span>
+                  <span>
+                    <strong>{c.label}.</strong> {c.detail}
+                  </span>
                 </li>
               ))}
             </ul>

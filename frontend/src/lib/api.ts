@@ -183,6 +183,7 @@ export interface Clue {
   label: string;
   detail: string;
   signal: "risky" | "reassuring" | "neutral";
+  quote: string | null;
 }
 
 export interface ToolStep {

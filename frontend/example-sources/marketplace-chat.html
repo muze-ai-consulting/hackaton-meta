@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=390">
+<title>Example chat</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; width: 390px; height: 720px; background: #fff; font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; color: #111; }
+  .status { height: 44px; display: flex; justify-content: space-between; align-items: center; padding: 0 22px; font-size: 15px; font-weight: 600; }
+  .head { display: flex; align-items: center; gap: 10px; padding: 8px 14px 12px; border-bottom: 1px solid #e6e6e6; }
+  .back { font-size: 26px; color: #0a66ff; line-height: 1; }
+  .avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #b9c4d6, #8795ab); display: grid; place-items: center; color: #fff; font-weight: 700; }
+  .name { font-weight: 700; font-size: 16px; }
+  .sub { font-size: 12px; color: #777; }
+  .item { margin: 12px 14px; display: flex; gap: 10px; align-items: center; padding: 10px; border: 1px solid #e6e6e6; border-radius: 12px; }
+  .thumb { width: 48px; height: 48px; border-radius: 8px; background: linear-gradient(135deg, #e9d9c4, #c7a77f); }
+  .item b { display: block; font-size: 14px; }
+  .item span { font-size: 13px; color: #555; }
+  .chat { padding: 4px 14px; display: flex; flex-direction: column; gap: 8px; }
+  .day { text-align: center; font-size: 12px; color: #888; margin: 6px 0; }
+  .b { max-width: 78%; padding: 9px 13px; border-radius: 18px; font-size: 15px; line-height: 1.35; }
+  .in { background: #f0f0f2; align-self: flex-start; border-bottom-left-radius: 6px; }
+  .out { background: #0a66ff; color: #fff; align-self: flex-end; border-bottom-right-radius: 6px; }
+  .link { color: #0a66ff; text-decoration: underline; word-break: break-all; }
+  .bar { position: absolute; bottom: 0; width: 390px; padding: 10px 14px 26px; border-top: 1px solid #e6e6e6; display: flex; gap: 8px; }
+  .input { flex: 1; height: 36px; border-radius: 18px; background: #f0f0f2; padding: 0 14px; display: flex; align-items: center; color: #999; font-size: 15px; }
+</style>
+</head>
+<body>
+  <div class="status"><span>14:32</span><span>●●● 5G ▮</span></div>
+  <div class="head">
+    <span class="back">‹</span>
+    <div class="avatar">JW</div>
+    <div><div class="name">James Whitfield</div><div class="sub">Buyer · joined this week</div></div>
+  </div>
+  <div class="item"><div class="thumb"></div><div><b>Oak dining table, 6 chairs</b><span>£180 · Collection only</span></div></div>
+  <div class="chat">
+    <div class="day">Today 14:05</div>
+    <div class="b in">Hi, is this still available? I'll take it at full price, no need to haggle 👍</div>
+    <div class="b out">Yes it is! When can you collect?</div>
+    <div class="b in">I'm working offshore so my courier will collect. I've already paid £180 + £45 for the courier through the secure delivery service.</div>
+    <div class="b in">To receive the money just confirm your card details here, it's protected for sellers: <span class="link">marketplace-secure-pay.com/claim/88213</span></div>
+    <div class="b in">Please do it within 30 min or the payment is cancelled</div>
+  </div>
+  <div class="bar"><div class="input">Message…</div></div>
+</body>
+</html>

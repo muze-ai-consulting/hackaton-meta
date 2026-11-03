@@ -37,14 +37,16 @@ TWO_LEVEL = {"co.uk", "org.uk", "gov.uk", "ac.uk", "com.au", "net.au", "co.in", 
 INVESTIGATOR = (
     "You are the investigator inside a scam shield. Someone forwarded a message, screenshot or call. Find every link, "
     "website or domain in it (also inside screenshots) and check them with your tools before concluding. Watch for "
-    "domains that imitate a real brand, link shorteners, very new domains and redirects to unrelated sites. If there "
-    "is nothing to check, say so; never guess facts you did not check. When you are done, answer only with your "
-    "report. "
+    "domains that imitate a real brand, link shorteners, very new domains and redirects to unrelated sites. Also point "
+    "out the warning signs in the wording (pressure, payment requests, odd sender) and anything reassuring. Never "
+    "guess facts you did not check. When you are done, answer only with your report. "
 )
 FINISH = (
-    "Report only what you found. Format: "
-    '{"clues": [{"label": "max 8 words", "detail": "max 25 words", "signal": "risky|reassuring|neutral"}], '
-    '"summary": "max 20 words"}. Write label, detail and summary in the language the person wrote in.'
+    "Report only what you found, at most 5 clues. In quote, copy the exact words from the forwarded text that show "
+    "the clue (max 12 words, character for character), or null if it comes from a screenshot or a tool. Format: "
+    '{"clues": [{"label": "max 8 words", "detail": "max 25 words", "signal": "risky|reassuring|neutral", '
+    '"quote": "exact words or null"}], "summary": "max 20 words"}. Write label, detail and summary in the language '
+    "the person wrote in."
 )
 
 TOOLS = [
@@ -140,7 +142,8 @@ async def investigate(
     """Pistas comprobadas sobre los enlaces y dominios, con el rastro de cada herramienta usada."""
     content: list[dict[str, Any]] = [{"type": "text", "text": f"Forwarded content:\n{text[:3000] or '(only screenshots)'}"}]
     content += [{"type": "image_url", "image_url": {"url": u}} for u in (images or [])]
-    if not images and not LINKISH.search(text):
+    # Sin enlaces el agente igual marca las señales del texto (una sola llamada, sin herramientas); muy corto, no.
+    if not images and not LINKISH.search(text) and len(text.strip()) < 40:
         return {"clues": [], "summary": "", "steps": [], "skipped": True}
     messages: list[dict[str, Any]] = [{"role": "system", "content": INVESTIGATOR + FINISH}, {"role": "user", "content": content}]
     steps: list[dict[str, Any]] = []
@@ -175,8 +178,10 @@ async def investigate(
     except ValueError:
         out = {"clues": [], "summary": ""}
     clues = [{"label": str(c.get("label") or ""), "detail": str(c.get("detail") or ""),
-              "signal": c.get("signal") if c.get("signal") in ("risky", "reassuring", "neutral") else "neutral"}
-             for c in out.get("clues") or [] if isinstance(c, dict)]
+              "signal": c.get("signal") if c.get("signal") in ("risky", "reassuring", "neutral") else "neutral",
+              # Solo citas que aparecen tal cual en el texto: así el front puede marcarlas sin inventar.
+              "quote": quote if (quote := str(c.get("quote") or "").strip()) and quote.lower() in text.lower() else None}
+             for c in (out.get("clues") or [])[:5] if isinstance(c, dict)]
     return {"clues": clues, "summary": str(out.get("summary") or ""), "steps": steps}
 
 
