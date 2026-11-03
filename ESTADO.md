@@ -116,6 +116,10 @@ Relato: "la IA ya fabrica las estafas, y la IA de Meta las desarma". El veredict
   - Manda dos mensajes: el veredicto validado (citando el mensaje original) y después lo que revisó el agente más la familia.
   - Acepta texto, pantallazos y notas de voz; 30 consultas por número y día; los registros solo guardan un hash del número.
   - **Funciona de punta a punta (3-nov, probado por Mark desde su WhatsApp).** `WHATSAPP_APP_SECRET` está en `/opt/ensayo/.env`. El panel tiene la Callback URL, el verify token y el campo `messages` suscrito.
+- **Portada para el jurado (3-nov, desplegado con OK de Mark):**
+  - Un teléfono animado (`PhoneDemo.tsx`) muestra el flujo en WhatsApp con las respuestas reales del ejemplo del paquete.
+  - Las pistas del agente traen la cita exacta y la web la marca en el mensaje. El agente ahora corre también sin enlaces, si el texto tiene 40 caracteres o más.
+  - Ejemplo nuevo con pantallazo de un chat de Marketplace (`frontend/example-sources/` → PNG).
 - `ModelClient.chat_message` devuelve el mensaje completo (con `tool_calls`); `chat` lo usa por dentro.
 
 ## WhatsApp Cloud API (3-nov, OK de Mark)
