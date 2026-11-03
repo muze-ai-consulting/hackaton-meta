@@ -50,7 +50,7 @@ export default function PhoneDemo() {
         role="img"
         aria-label="A phone where someone forwards a parcel-fee text to Second Look on WhatsApp and gets back 'Likely a scam', why, what to do, and what the agent checked."
       >
-        <div className="flex h-[580px] flex-col overflow-hidden rounded-[30px] bg-[#e7ece6]">
+        <div className="flex h-[600px] flex-col overflow-hidden rounded-[30px] bg-[#e7ece6]">
           <div className="flex items-center gap-2 bg-[#1f6f5c] px-3.5 pb-2.5 pt-5 text-white">
             <div className="grid size-8 place-items-center rounded-full bg-white/15">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -63,7 +63,8 @@ export default function PhoneDemo() {
               <div className="text-[11px] text-white/75">{step === 1 || step === 3 ? "typing…" : "on WhatsApp"}</div>
             </div>
           </div>
-          <div className="flex flex-1 flex-col justify-end gap-1.5 p-2.5">
+          <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-hidden p-2.5">
+            <div className="mb-1 self-center rounded-md bg-white/80 px-2 py-0.5 text-[10.5px] text-[#5b6470]">Today</div>
             <Bubble show={step >= 1} out>
               <div className="mb-0.5 text-[10.5px] italic text-[#4b6b4f]">↪ Forwarded</div>
               Royal Mail: Your parcel could not be delivered due to an unpaid shipping fee of £1.45. Pay now: royalmail-redelivery-uk.com
@@ -88,7 +89,7 @@ export default function PhoneDemo() {
               <div>39 people reported this on Reddit since September, rising.</div>
             </Bubble>
           </div>
-          <div className="flex items-center gap-2 bg-[#f4f6f4] px-2.5 py-2">
+          <div className="flex shrink-0 items-center gap-2 bg-[#f4f6f4] px-2.5 py-2">
             <div className="h-7 flex-1 rounded-full bg-white px-3 text-[11.5px] leading-7 text-[#9aa3ad]">Message</div>
           </div>
         </div>

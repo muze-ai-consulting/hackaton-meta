@@ -198,14 +198,34 @@ export default function Check({
 
   return (
     <>
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="flex flex-col gap-7">
-      <PageTitle
-          big
-          title="Got a message that feels off? Check it before you act."
-          lead="Paste the text, add a screenshot or a voice note of the call. In a few seconds you'll know if it looks like a scam, why, and the one thing to do now."
-        />
-        <Card className="flex flex-col gap-5 p-5 sm:p-7">
+          <div className="flex max-w-[680px] flex-col gap-3">
+            <h1 className="m-0 text-[38px] font-bold leading-[1.06] tracking-[-1px] md:text-[52px] md:tracking-[-1.4px]">
+              Got a message that feels off? Check it before you act.
+            </h1>
+            <p className="m-0 text-lg leading-normal text-muted">
+              Paste the text, add a screenshot or a voice note of the call. In seconds you'll know if it looks like a scam, why, and the one thing to do
+              now.
+            </p>
+          </div>
+          <Card className="flex flex-col gap-5 p-5 sm:p-7">
+            <div className="flex flex-col gap-2">
+              <span className="text-sm text-muted">No message at hand? Try one (made up, based on common scams):</span>
+              <div className="flex flex-wrap gap-2">
+                {EXAMPLES.map((ex) => (
+                  <button
+                    key={ex.label}
+                    type="button"
+                    onClick={() => void loadExample(ex)}
+                    className="flex cursor-pointer items-baseline gap-1.5 rounded-lg border border-line bg-white px-3 py-1.5 text-sm hover:border-ink"
+                  >
+                    <span className="font-semibold text-heading">{ex.label}</span>
+                    <span className="text-xs text-muted">{ex.kind}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           <label className="flex flex-col gap-2">
             <span className="text-sm font-semibold text-heading">The message</span>
             <Textarea
@@ -288,28 +308,11 @@ export default function Check({
             {mode === "mock" && <span className="text-sm text-muted">Demo mode: answers are placeholders, not real verdicts.</span>}
           </div>
           {error && <ErrorNote message={error} />}
-        </Card>
+          </Card>
         </div>
 
-        <div className="flex flex-col gap-6">
-        <div className="hidden lg:block">
+        <div className="hidden lg:sticky lg:top-6 lg:block">
           <PhoneDemo />
-        </div>
-        <Card className="flex flex-col gap-3 p-5 sm:p-6">
-          <CardTitle className="text-lg">Try an example</CardTitle>
-          <p className="m-0 text-sm text-muted">Made up for this demo, based on common scams.</p>
-          {EXAMPLES.map((ex) => (
-            <button
-              key={ex.label}
-              type="button"
-              onClick={() => void loadExample(ex)}
-              className="flex cursor-pointer items-center justify-between gap-3 rounded-xl bg-bg px-4 py-3 text-left hover:bg-line"
-            >
-              <span className="font-semibold text-heading">{ex.label}</span>
-              <span className="shrink-0 text-xs text-muted">{ex.kind}</span>
-            </button>
-          ))}
-        </Card>
         </div>
       </div>
 
