@@ -110,6 +110,13 @@ Relato: "la IA ya fabrica las estafas, y la IA de Meta las desarma". El veredict
   Lee también enlaces dentro de pantallazos. Si no hay enlaces ni imágenes, no se llama. ~13 s con enlaces.
 - **API:** `POST /api/investigate` (familia + agente en paralelo, cupo de 30 por IP y día) y `GET /api/campaigns`. El front lanza la investigación en paralelo con el veredicto; con nota de voz, después, con la transcripción. Lo que la gente revisa **no** se agrega a las familias.
 - **Desplegado (3-nov, OK de Mark)** en https://labs.muze.cl/ensayo/: `results/scam_campaigns.json` subido aparte a `/opt/ensayo/results/` (chown 1000). Verificado en vivo: familia correcta y el agente usó las dos herramientas (9 s, US$ 0,007).
+- **Bot de WhatsApp** (`ensayo/whatsapp.py`, desplegado el 3-nov con OK de Mark). Webhook `https://labs.muze.cl/ensayo/api/whatsapp`:
+  - GET verifica el verify token. POST exige la firma `X-Hub-Signature-256` (App Secret).
+  - Responde 200 de inmediato y revisa en segundo plano.
+  - Manda dos mensajes: el veredicto validado (citando el mensaje original) y después lo que revisó el agente más la familia.
+  - Acepta texto, pantallazos y notas de voz; 30 consultas por número y día; los registros solo guardan un hash del número.
+  - Las variables `WHATSAPP_*` están copiadas a `/opt/ensayo/.env`. **Falta `WHATSAPP_APP_SECRET`**: sin él se rechaza todo POST.
+  - Después, en el panel de Meta: Callback URL más verify token, y suscribir `messages`.
 - `ModelClient.chat_message` devuelve el mensaje completo (con `tool_calls`); `chat` lo usa por dentro.
 
 ## WhatsApp Cloud API (3-nov, OK de Mark)
