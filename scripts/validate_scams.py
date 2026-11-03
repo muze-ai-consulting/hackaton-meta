@@ -49,11 +49,11 @@ KEYWORDS = re.compile(
 )
 
 
-def load_posts() -> list[dict[str, Any]]:
+def load_posts(raw: Path = RAW) -> list[dict[str, Any]]:
     """Publicaciones posteriores al corte, con sus comentarios humanos (sin AutoModerator)."""
     posts: dict[str, dict[str, Any]] = {}
     comments: dict[str, list[dict[str, Any]]] = {}
-    for path in sorted(RAW.glob("*.json")):
+    for path in sorted(raw.glob("*.json")):
         for it in json.loads(path.read_text(encoding="utf-8")):
             if it.get("dataType") == "post" and it.get("createdAt", "") >= CUTOFF:
                 posts[it["id"]] = it
@@ -112,11 +112,23 @@ SHIELD_SYSTEM = (
 )
 
 
-def shield_messages(post: dict[str, Any], images: list[str]) -> list[dict[str, Any]]:
-    content: list[dict[str, Any]] = [{"type": "text", "text": f"Title: {post['title']}\n\n{post['body'][:3000] or '(no text)'}"}]
+# Intento 2 (3-nov): el intento 1 juzgaba si la publicación era engañosa; aquí se juzga la situación que la
+# persona describe, que es lo que responde la comunidad (y lo que hace el producto).
+SITUATION = (
+    "The person below describes something they ran into: a message, call, website, seller, job offer, charge or "
+    "transaction, sometimes with screenshots, sometimes after it already happened. Decide whether what they ran "
+    "into is a scam or fraud (someone deliberately deceiving them to take money, data or an account) or legitimate "
+    "(a genuine company or person, even if it is bad service, a mistake, a dispute or ordinary marketing spam)."
+)
+
+
+def shield_messages(post: dict[str, Any], images: list[str], round_: int = 1) -> list[dict[str, Any]]:
+    intro = f"{SITUATION}\n\n" if round_ == 2 else ""
+    question = "Is what they ran into a scam?" if round_ == 2 else "Is this a scam?"
+    content: list[dict[str, Any]] = [{"type": "text", "text": f"{intro}Title: {post['title']}\n\n{post['body'][:3000] or '(no text)'}"}]
     content += [{"type": "image_url", "image_url": {"url": u}} for u in images]
     content.append({"type": "text", "text": (
-        "Is this a scam? Give the probability that it is a scam (0-100), a verdict and the one thing the person "
+        f"{question} Give the probability that it is a scam (0-100), a verdict and the one thing the person "
         'should do now.\nFormat: {"scam_probability": 85, "verdict": "scam|legit", "reason": "max 20 words", '
         '"action": "max 15 words"}'
     )})
@@ -133,10 +145,10 @@ async def label_one(client: ModelClient, post: dict[str, Any]) -> str | None:
         return None
 
 
-async def predict_one(client: ModelClient, http: httpx.AsyncClient, post: dict[str, Any]) -> dict[str, Any] | None:
+async def predict_one(client: ModelClient, http: httpx.AsyncClient, post: dict[str, Any], round_: int = 1) -> dict[str, Any] | None:
     images = [u for i, url in enumerate(post["images"]) if (u := await image_uri(http, url, f"{post['id']}_{i}"))]
     try:
-        res = await client.chat(MODEL, shield_messages(post, images), phase="pruebas", max_tokens=150,
+        res = await client.chat(MODEL, shield_messages(post, images, round_), phase="pruebas", max_tokens=150,
                                 upcoming_usd=estimate_call_usd(MODEL, 4000, 400, 800 * len(images)), note=f"escudo {post['id']}")
         body = extract_json(res.text)
         return {"p": float(body["scam_probability"]) / 100, "verdict": body.get("verdict"), "reason": body.get("reason"),
@@ -178,7 +190,16 @@ def bootstrap_gap(rows: list[dict[str, Any]], a: str, b: str, n: int = 2000) -> 
 
 
 async def run(args: argparse.Namespace) -> None:
-    posts = load_posts()
+    global LABELS, PREDICTIONS
+    scored = RESULTS / "scam_scored.json"
+    if args.round == 2:
+        # Datos nuevos (data/raw/scams2) y archivos aparte; fuera todo lo que ya pasó por el intento 1.
+        used = set(json.loads(LABELS.read_text(encoding="utf-8")))
+        LABELS, PREDICTIONS = DATA / "scams" / "labels2.json", RESULTS / "scam_predictions2.json"
+        scored = RESULTS / "scam_scored2.json"
+        posts = [p for p in load_posts(DATA / "raw" / "scams2") if p["id"] not in used]
+    else:
+        posts = load_posts()
     if args.label:
         log.info(f"{len(posts)} publicaciones con comentarios · costo estimado US$ {len(posts) * 0.0006:.2f}")
         if not args.yes:
@@ -200,7 +221,7 @@ async def run(args: argparse.Namespace) -> None:
         client = ModelClient.from_env(concurrency=args.concurrency)
         client.effort = "low"
         async with httpx.AsyncClient(follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"}) as http:
-            preds = await asyncio.gather(*(predict_one(client, http, p) for p in posts))
+            preds = await asyncio.gather(*(predict_one(client, http, p, args.round) for p in posts))
         await client.aclose()
         blob = json.dumps({p["id"]: r for p, r in zip(posts, preds) if r}, sort_keys=True, ensure_ascii=False)
         digest = hashlib.sha256(blob.encode()).hexdigest()
@@ -224,7 +245,7 @@ async def run(args: argparse.Namespace) -> None:
         "false_alarm_at_most_0.30": s["false_alarm_legit"] <= 0.30,
     }
     out["rule"]["validated"] = all(out["rule"].values())
-    (RESULTS / "scam_scored.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
+    scored.write_text(json.dumps(out, indent=1), encoding="utf-8")
     log.info(json.dumps(out, indent=1))
 
 
@@ -235,6 +256,7 @@ def main() -> None:
     ap.add_argument("--label", action="store_true")
     ap.add_argument("--predict", action="store_true")
     ap.add_argument("--yes", action="store_true")
+    ap.add_argument("--round", type=int, default=1, choices=(1, 2))
     ap.add_argument("--concurrency", type=int, default=6)
     asyncio.run(run(ap.parse_args()))
 

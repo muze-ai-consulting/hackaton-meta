@@ -54,9 +54,8 @@ async def get(http: httpx.AsyncClient, path: str, params: dict[str, Any]) -> lis
     return []
 
 
-async def posts(http: httpx.AsyncClient, sub: str, before: str, want: int) -> list[dict[str, Any]]:
+async def posts(http: httpx.AsyncClient, sub: str, after: str, before: str, want: int) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
-    after = CUTOFF
     while len(out) < want:
         page = await get(http, "/posts/search", {"subreddit": sub, "after": after, "before": before, "limit": 100, "sort": "asc"})
         if not page:
@@ -77,11 +76,12 @@ async def comments(http: httpx.AsyncClient, sem: asyncio.Semaphore, post_id: str
 
 
 async def run(args: argparse.Namespace) -> None:
-    OUT.mkdir(parents=True, exist_ok=True)
+    out_dir = OUT.parent / args.out_dir
+    out_dir.mkdir(parents=True, exist_ok=True)
     sem = asyncio.Semaphore(4)
     async with httpx.AsyncClient(headers={"User-Agent": "ensayo-research/0.1 (hackathon validation)"}) as http:
-        for sub in SUBS:
-            found = await posts(http, sub, args.before, args.per_sub)
+        for sub in args.subs or SUBS:
+            found = await posts(http, sub, max(args.after, CUTOFF), args.before, args.per_sub)
             threads = await asyncio.gather(*(comments(http, sem, p["id"]) for p in found))
             items: list[dict[str, Any]] = []
             for p, com in zip(found, threads):
@@ -92,7 +92,7 @@ async def run(args: argparse.Namespace) -> None:
                     top = str(c.get("parent_id", "")).startswith("t3_")
                     items.append({"dataType": "comment", "postId": f"t3_{p['id']}", "username": c.get("author"),
                                   "body": c.get("body"), "upVotes": c.get("score") or 0, "depth": "0" if top else "1"})
-            path = OUT / f"arctic_{sub}.json"
+            path = out_dir / f"arctic_{sub}.json"
             path.write_text(json.dumps(items), encoding="utf-8")
             log.info(f"r/{sub}: {len(found)} publicaciones → {path}")
 
@@ -103,6 +103,9 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--per-sub", type=int, default=600)
     ap.add_argument("--before", default="2026-10-28")
+    ap.add_argument("--after", default=CUTOFF)
+    ap.add_argument("--subs", nargs="*")
+    ap.add_argument("--out-dir", default="scams", help="carpeta dentro de data/raw/ (scams2 = intento 2)")
     asyncio.run(run(ap.parse_args()))
 
 
