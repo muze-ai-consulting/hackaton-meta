@@ -84,6 +84,7 @@ Investigación de ganadores 2026 en `reports/Ganadores hackathons 2026.md`. Mark
   - **Datos nuevos, nunca vistos:** r/Scams del 24-sep al 28-oct (el intento 1 solo llegó al 23-sep) más r/scamsUK y r/ScamCenter del 3-sep al 28-oct, en `data/raw/scams2/`. Se excluye todo id del intento 1.
   - **Único cambio:** la pregunta. Ahora se le pide juzgar la situación que la persona describe (mensaje, llamada, sitio, vendedor, cobro), aunque ya haya pasado, y se aclara que mal servicio, disputas o spam comercial cuentan como legítimos (constante `SITUATION` en `scripts/validate_scams.py`, `--round 2`). Mismo modelo, mismas etiquetas de la comunidad, misma auditoría de 30, mismo umbral 0,5.
   - **Misma regla:** ≥ 30 legítimos; exactitud balanceada ≥ 0,80; ventaja ≥ 0,10 sobre palabras clave con IC 95 % sobre cero; falsas alarmas ≤ 30 %. Si falla, se pasa a "Ojos por voz" sin otro intento. El 0,787 del intento 1 se publica igual en el README.
+  - **Etiquetas (antes de predecir):** 1.189 publicaciones → 823 scam, 122 legit, 244 unclear. Auditoría a mano de 30 (semilla 30): 12/15 legit claras (3 dudosas: un bróker que "robó", un aviso de Barclays, un cheque de Capital One), 15/15 scam correctas.
 
 ## Fechas
 Entrega interna: miércoles 4-nov 18:00 Chile (cierre oficial 23:00 Chile). Hash de la prueba en vivo: antes del 3-nov 23:59.
