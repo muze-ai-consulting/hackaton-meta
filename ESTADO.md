@@ -78,6 +78,8 @@ Investigación de ganadores 2026 en `reports/Ganadores hackathons 2026.md`. Mark
 - **Rivales:** regla de palabras clave (≥3 términos típicos de estafa = estafa) y "siempre estafa".
 - **Regla de éxito (todas):** al menos 30 casos legítimos; exactitud balanceada del escudo ≥ 0,80; supera a la regla de palabras clave por ≥ 0,10 con el IC 95 % bootstrap sobre cero; falsas alarmas sobre casos legítimos ≤ 30 %. Si falla, se pasa a "Ojos por voz" (VizWiz).
 - **Etiquetas (3-nov, antes de predecir):** 1.547 publicaciones → 969 scam, 169 legit, 407 unclear, 2 fallidas. Auditoría a mano de 30 (15 legit + 15 scam, semilla 30): 13/15 legit claras (2 dudosas: producto defectuoso, yogur de larga duración), 15/15 scam correctas. Muchos "legit" son quejas de consumo que la gente llama estafa: casos difíciles a propósito.
+- **Resultado preregistrado (3-nov, hash 1665740b…): NO PASA.** 1.137 casos (968 scam, 169 legit). Escudo: exactitud balanceada **0,787** (regla ≥ 0,80), detecta 78,6 % de las estafas, falsa alarma 21,3 % (regla ≤ 30 %, pasa), AUC 0,85. Regla de palabras clave: 0,505; siempre estafa: 0,50. Ventaja sobre palabras clave +0,28 (IC 95 % 0,23–0,33, pasa). Cumple 3 de 4 condiciones.
+- **Diagnóstico posterior (exploratorio, no cambia el resultado):** muchas estafas perdidas son publicaciones donde la persona cuenta lo que le pasó ("me sacaron US$200 del cajero", "cómo bloqueo a un estafador") y el modelo juzgó si la *publicación* era engañosa, no si la *situación* era una estafa. Es un problema de cómo se formuló la pregunta.
 
 ## Fechas
 Entrega interna: miércoles 4-nov 18:00 Chile (cierre oficial 23:00 Chile). Hash de la prueba en vivo: antes del 3-nov 23:59.
