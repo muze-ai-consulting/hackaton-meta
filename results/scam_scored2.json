@@ -1,0 +1,34 @@
+{
+ "n": 945,
+ "scam": 823,
+ "legit": 122,
+ "shield": {
+  "balanced_accuracy": 0.801,
+  "recall_scam": 0.8396,
+  "false_alarm_legit": 0.2377,
+  "auc": 0.8774
+ },
+ "keywords": {
+  "balanced_accuracy": 0.517,
+  "recall_scam": 0.4848,
+  "false_alarm_legit": 0.4508,
+  "auc": 0.5159
+ },
+ "always_scam": {
+  "balanced_accuracy": 0.5,
+  "recall_scam": 1.0,
+  "false_alarm_legit": 1.0,
+  "auc": 0.5
+ },
+ "gap_vs_keywords_ci95": [
+  0.224,
+  0.3442
+ ],
+ "rule": {
+  "enough_legit": true,
+  "ba_at_least_0.80": true,
+  "beats_keywords_by_0.10": true,
+  "false_alarm_at_most_0.30": true,
+  "validated": true
+ }
+}
