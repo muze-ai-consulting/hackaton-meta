@@ -72,7 +72,7 @@ Para retomar sin perder contexto. Las reglas duras están en `CLAUDE.md`; el pla
 
 ## Pivote: escudo antiestafas (2-nov, decisión de Mark; regla fijada antes de correr)
 Investigación de ganadores 2026 en `reports/Ganadores hackathons 2026.md`. Mark eligió el escudo antiestafas: reenvías un mensaje, pantallazo o llamada y te dice si es estafa, por qué y qué hacer.
-- **Datos:** preguntas reales de r/Scams, r/isthisascam y r/IsThisAScamIndia posteriores al 3-sep-2026 (después de Spark 1.3), bajadas con Apify (`scripts/scam_reddit.py`, en `data/raw/scams/`, no se versiona).
+- **Datos:** preguntas reales de r/Scams, r/isthisascam y r/IsThisAScamIndia posteriores al 3-sep-2026 (después de Spark 1.3), bajadas sobre todo de Arctic Shift, archivo público y gratis (`scripts/scam_arctic.py`, publicaciones hasta el 28-oct para que los comentarios estén archivados), más un piloto con Apify (`scripts/scam_reddit.py`; cuatro de las cinco cuentas quedaron sin cupo). Todo en `data/raw/scams/`, que no se versiona.
 - **Etiqueta:** el veredicto de la comunidad, que Spark extrae leyendo solo los comentarios (scam/legit/unclear). Se descartan los "unclear". Se auditan a mano 30 etiquetas al azar antes de puntuar.
 - **Predicción:** Spark 1.3 contributor lee solo la publicación (título, texto, hasta 3 imágenes), nunca los comentarios. Predicciones y SHA-256 se commitean antes de puntuar (`scripts/validate_scams.py`).
 - **Rivales:** regla de palabras clave (≥3 términos típicos de estafa = estafa) y "siempre estafa".
