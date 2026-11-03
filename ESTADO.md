@@ -109,6 +109,7 @@ Relato: "la IA ya fabrica las estafas, y la IA de Meta las desarma". El veredict
   - `domain_registration`: fecha de registro y registrador por RDAP (rdap.org).
   Lee también enlaces dentro de pantallazos. Si no hay enlaces ni imágenes, no se llama. ~13 s con enlaces.
 - **API:** `POST /api/investigate` (familia + agente en paralelo, cupo de 30 por IP y día) y `GET /api/campaigns`. El front lanza la investigación en paralelo con el veredicto; con nota de voz, después, con la transcripción. Lo que la gente revisa **no** se agrega a las familias.
+- **Desplegado (3-nov, OK de Mark)** en https://labs.muze.cl/ensayo/: `results/scam_campaigns.json` subido aparte a `/opt/ensayo/results/` (chown 1000). Verificado en vivo: familia correcta y el agente usó las dos herramientas (9 s, US$ 0,007).
 - `ModelClient.chat_message` devuelve el mensaje completo (con `tool_calls`); `chat` lo usa por dentro.
 
 ## Fechas
