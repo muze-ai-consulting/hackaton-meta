@@ -1,0 +1,104 @@
+{
+ "round1": {
+  "scored": {
+   "n": 1137,
+   "scam": 968,
+   "legit": 169,
+   "shield": {
+    "balanced_accuracy": 0.7866,
+    "recall_scam": 0.7862,
+    "false_alarm_legit": 0.213,
+    "auc": 0.8519
+   },
+   "keywords": {
+    "balanced_accuracy": 0.5049,
+    "recall_scam": 0.4773,
+    "false_alarm_legit": 0.4675,
+    "auc": 0.5156
+   },
+   "always_scam": {
+    "balanced_accuracy": 0.5,
+    "recall_scam": 1.0,
+    "false_alarm_legit": 1.0,
+    "auc": 0.5
+   },
+   "gap_vs_keywords_ci95": [
+    0.2284,
+    0.3314
+   ],
+   "rule": {
+    "enough_legit": true,
+    "ba_at_least_0.80": false,
+    "beats_keywords_by_0.10": true,
+    "false_alarm_at_most_0.30": true,
+    "validated": false
+   }
+  },
+  "sha256": "1665740b0366a4a0fec151f16798a2ad77251c4254b5578cbf5357bdfff3d898",
+  "bands": {
+   "scam": {
+    "scam": 761,
+    "legit": 36
+   },
+   "careful": {
+    "scam": 123,
+    "legit": 45
+   },
+   "genuine": {
+    "scam": 84,
+    "legit": 88
+   }
+  }
+ },
+ "round2": {
+  "scored": {
+   "n": 945,
+   "scam": 823,
+   "legit": 122,
+   "shield": {
+    "balanced_accuracy": 0.801,
+    "recall_scam": 0.8396,
+    "false_alarm_legit": 0.2377,
+    "auc": 0.8774
+   },
+   "keywords": {
+    "balanced_accuracy": 0.517,
+    "recall_scam": 0.4848,
+    "false_alarm_legit": 0.4508,
+    "auc": 0.5159
+   },
+   "always_scam": {
+    "balanced_accuracy": 0.5,
+    "recall_scam": 1.0,
+    "false_alarm_legit": 1.0,
+    "auc": 0.5
+   },
+   "gap_vs_keywords_ci95": [
+    0.224,
+    0.3442
+   ],
+   "rule": {
+    "enough_legit": true,
+    "ba_at_least_0.80": true,
+    "beats_keywords_by_0.10": true,
+    "false_alarm_at_most_0.30": true,
+    "validated": true
+   }
+  },
+  "sha256": "38b435bbf148256572b84c27393b70edbd20757037b7d02abc3b15c481ecbb2c",
+  "bands": {
+   "scam": {
+    "scam": 691,
+    "legit": 29
+   },
+   "careful": {
+    "scam": 84,
+    "legit": 36
+   },
+   "genuine": {
+    "scam": 48,
+    "legit": 57
+   }
+  }
+ }
+}

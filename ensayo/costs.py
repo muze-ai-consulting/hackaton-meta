@@ -21,6 +21,9 @@ PRICES = {
     "muse-spark-1.3-contributor": (0.10, 0.002, 0.20),
 }
 IMAGE_PRICE = {"muse-image-1.0": 0.01}
+# Muse Voice Transcribe: US$ 0,18 por hora de audio (developer.meta.com/ai/models/muse-voice-transcribe).
+ASR_MODEL = "muse-voice-transcribe-1.0"
+ASR_PRICE_PER_HOUR = 0.18
 
 TOTAL_BUDGET = 150.0
 # Topes por fase; lo que sobra queda de reserva para repetir algo o para el demo.

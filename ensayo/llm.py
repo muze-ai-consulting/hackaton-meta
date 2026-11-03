@@ -18,7 +18,7 @@ import httpx
 from dotenv import load_dotenv
 
 from ensayo import RESULTS, ROOT
-from ensayo.costs import IMAGE_PRICE, PHASE_CAPS, Ledger, chat_cost
+from ensayo.costs import ASR_MODEL, ASR_PRICE_PER_HOUR, IMAGE_PRICE, PHASE_CAPS, Ledger, chat_cost
 
 log = logging.getLogger(__name__)
 
@@ -70,7 +70,7 @@ class ModelClient:
         effort: str = DEFAULT_EFFORT,
     ) -> None:
         self.effort = effort
-        headers = {"Content-Type": "application/json"}
+        headers = {}
         if key:
             headers["Authorization"] = f"Bearer {key}"
         self.ledger = ledger
@@ -123,10 +123,22 @@ class ModelClient:
         self.ledger.record(phase, model, usd, {"images": 1}, note=note)
         return body
 
-    async def _post(self, path: str, payload: dict[str, Any]) -> dict[str, Any]:
+    async def transcribe(self, wav: bytes, *, phase: str, note: str = "") -> str:
+        """Texto de un WAV con Muse Voice Transcribe (/asr/transcribe, multipart; detecta el idioma solo)."""
+        # 16 kHz mono de 16 bits: 32.000 bytes por segundo.
+        self.ledger.check(phase, len(wav) / 32_000 / 3600 * ASR_PRICE_PER_HOUR)
+        request = json.dumps({"model": ASR_MODEL, "audioEncoding": "WAV"})
+        files = {"request": (None, request, "application/json"), "audio": ("audio.wav", wav, "audio/wav")}
+        async with self._sem:
+            body = await self._post("/asr/transcribe", files=files)
+        seconds = float(body.get("audioDurationMs") or 0) / 1000
+        self.ledger.record(phase, ASR_MODEL, seconds / 3600 * ASR_PRICE_PER_HOUR, {"audio_seconds": seconds}, note=note)
+        return str(body.get("transcript") or "")
+
+    async def _post(self, path: str, payload: dict[str, Any] | None = None, *, files: dict[str, Any] | None = None) -> dict[str, Any]:
         for attempt in range(ATTEMPTS):
             try:
-                r = await self._http.post(path, json=payload)
+                r = await self._http.post(path, json=payload) if files is None else await self._http.post(path, files=files)
             except httpx.TransportError as exc:
                 if attempt == ATTEMPTS - 1:
                     raise

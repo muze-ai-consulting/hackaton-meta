@@ -29,6 +29,7 @@ from PIL import Image, UnidentifiedImageError
 
 from ensayo import DATA, RESULTS
 from ensayo.llm import ModelClient, estimate_call_usd, extract_json
+from ensayo.shield import shield_messages  # el mismo prompt que usa el producto
 
 log = logging.getLogger(__name__)
 
@@ -103,36 +104,6 @@ async def image_uri(http: httpx.AsyncClient, url: str, key: str) -> str | None:
         IMAGES.mkdir(parents=True, exist_ok=True)
         img.save(path, "JPEG", quality=85)
     return "data:image/jpeg;base64," + base64.b64encode(path.read_bytes()).decode()
-
-
-SHIELD_SYSTEM = (
-    "You are a scam shield inside a messaging app. People forward you a message, screenshot, call description or "
-    "offer and ask whether it is a scam. Judge it carefully: many real banks, couriers, employers and platforms send "
-    "messages that look alarming, and calling a genuine message a scam also hurts people."
-)
-
-
-# Intento 2 (3-nov): el intento 1 juzgaba si la publicación era engañosa; aquí se juzga la situación que la
-# persona describe, que es lo que responde la comunidad (y lo que hace el producto).
-SITUATION = (
-    "The person below describes something they ran into: a message, call, website, seller, job offer, charge or "
-    "transaction, sometimes with screenshots, sometimes after it already happened. Decide whether what they ran "
-    "into is a scam or fraud (someone deliberately deceiving them to take money, data or an account) or legitimate "
-    "(a genuine company or person, even if it is bad service, a mistake, a dispute or ordinary marketing spam)."
-)
-
-
-def shield_messages(post: dict[str, Any], images: list[str], round_: int = 1) -> list[dict[str, Any]]:
-    intro = f"{SITUATION}\n\n" if round_ == 2 else ""
-    question = "Is what they ran into a scam?" if round_ == 2 else "Is this a scam?"
-    content: list[dict[str, Any]] = [{"type": "text", "text": f"{intro}Title: {post['title']}\n\n{post['body'][:3000] or '(no text)'}"}]
-    content += [{"type": "image_url", "image_url": {"url": u}} for u in images]
-    content.append({"type": "text", "text": (
-        f"{question} Give the probability that it is a scam (0-100), a verdict and the one thing the person "
-        'should do now.\nFormat: {"scam_probability": 85, "verdict": "scam|legit", "reason": "max 20 words", '
-        '"action": "max 15 words"}'
-    )})
-    return [{"role": "system", "content": SHIELD_SYSTEM}, {"role": "user", "content": content}]
 
 
 async def label_one(client: ModelClient, post: dict[str, Any]) -> str | None:

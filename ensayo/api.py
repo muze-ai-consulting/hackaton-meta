@@ -1,4 +1,7 @@
-"""API y página del demo de Ensayo.
+"""API y página del demo: el escudo antiestafas (producto desde el 3-nov) y, detrás, los endpoints de Ensayo.
+
+- POST /api/check: veredicto del escudo para un mensaje, hasta 3 pantallazos y una nota de voz (ensayo.shield).
+- GET /api/evidence: la validación preregistrada del escudo (dos intentos, hashes y bandas; results/scam_bands.json).
 
 - POST /api/simulate: ensaya las variantes de un anuncio con una población sintética y el rival de llamada única.
 - POST /api/chat: una pregunta a una persona de la audiencia sobre su reacción a las variantes.
@@ -15,6 +18,8 @@ visitante tiene un tope diario de pedidos (REAL_DAILY_LIMITS); el tope total lo 
 Uso: uv run uvicorn ensayo.api:app --reload --port 8040
 """
 
+import base64
+import binascii
 import hashlib
 import json
 import logging
@@ -34,6 +39,8 @@ from ensayo.costs import BudgetExceeded
 from ensayo.images import MAX_VARIANTS, generate_variants
 from ensayo.llm import ModelClient
 from ensayo.population import build_population, spec_from_ad
+from ensayo.shield import MAX_IMAGES as SHIELD_MAX_IMAGES
+from ensayo.shield import check as shield_check
 from ensayo.simulate import simulate_batch, single_call_ranking
 
 log = logging.getLogger(__name__)
@@ -45,13 +52,14 @@ MAX_EXAMPLES = 20
 # Marcas que no se muestran como ejemplo en el demo (decisión de Mark, 2-nov: ropa interior de hombre en primer plano).
 HIDDEN_EXAMPLE_PAGES = {"Le Slip Français"}
 # Pedidos en modo real por visitante (IP) y por día. El gasto total lo limita la fase "demo" del Ledger.
-REAL_DAILY_LIMITS = {"simulate": 5, "variants": 3, "chat": 30}
+REAL_DAILY_LIMITS = {"simulate": 5, "variants": 3, "chat": 30, "check": 30}
 _real_usage: dict[tuple[str, str, str], int] = defaultdict(int)
 REAL_MODEL = "muse-spark-1.3"
 REAL_MAX_PERSONAS = 300
 MAX_IMAGE_CHARS = 4_000_000  # ~3 MB en base64
+MAX_AUDIO_CHARS = 14_000_000  # ~10 MB en base64 (una nota de voz de varios minutos)
 
-app = FastAPI(title="Ensayo para anuncios")
+app = FastAPI(title="Second Look")
 
 
 def real_allowed() -> bool:
@@ -115,6 +123,14 @@ class ChatIn(BaseModel):
     mode: Literal["mock", "real"] = "mock"
 
 
+class CheckIn(BaseModel):
+    text: str = Field("", max_length=6000)
+    note: str = Field("", max_length=500)
+    images: list[str] = Field(default_factory=list, max_length=SHIELD_MAX_IMAGES)
+    audio: str | None = Field(None, max_length=MAX_AUDIO_CHARS)
+    mode: Literal["mock", "real"] = "mock"
+
+
 def to_batch(req: SimulateIn) -> dict[str, Any]:
     """El pedido del demo con la misma forma que un lote de ensayo.batches."""
     ages = sorted((req.target.age_min, req.target.age_max))
@@ -174,6 +190,45 @@ async def simulate(req: SimulateIn, request: Request) -> dict[str, Any]:
         "population": sim,
         "single_call": single,
     }
+
+
+@app.post("/api/check")
+async def check(req: CheckIn, request: Request) -> dict[str, Any]:
+    if any(len(i) > MAX_IMAGE_CHARS for i in req.images):
+        raise HTTPException(413, "Each screenshot must be under 3 MB.")
+    try:
+        audio = base64.b64decode(req.audio.split(",", 1)[-1], validate=True) if req.audio else None
+    except (binascii.Error, ValueError) as exc:
+        raise HTTPException(422, "The voice note could not be read.") from exc
+    if not (req.text.strip() or req.note.strip() or req.images or audio):
+        raise HTTPException(422, "Paste a message, add a screenshot or a voice note.")
+    mock = req.mode == "mock"
+    if not mock:
+        guard_real(request, "check")
+    client = ModelClient.from_env(mock=mock)
+    spent_before = client.ledger.spent()
+    try:
+        out = await shield_check(
+            client, model=REAL_MODEL, phase="demo", text=req.text, note=req.note, images=req.images, audio=audio
+        )
+    except BudgetExceeded as exc:
+        raise HTTPException(402, "The demo has reached its spending cap. Try again tomorrow.") from exc
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    except (RuntimeError, KeyError, TypeError) as exc:
+        log.exception("Fallo del escudo")
+        raise HTTPException(502, f"The Model API returned an error: {exc}") from exc
+    finally:
+        await client.aclose()
+    return {"mode": req.mode, "model": REAL_MODEL, "usd": round(client.ledger.spent() - spent_before, 5), **out}
+
+
+@app.get("/api/evidence")
+def evidence() -> dict[str, Any]:
+    path = RESULTS / "scam_bands.json"
+    if not path.exists():
+        raise HTTPException(404, "No validation results yet.")
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 @app.post("/api/chat")

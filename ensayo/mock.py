@@ -107,10 +107,24 @@ def _conversation(messages: list[dict[str, Any]]) -> str:
     return f"(Placeholder answer from the mock server.) You're asking me \"{question}\". What I remember is how I reacted in the feed."
 
 
+SCAM_HINTS = re.compile(r"gift ?card|crypto|code|verify|urgent|locked|fee|prize|won|click|link|password|bank", re.I)
+
+
+def _shield(prompt: str) -> dict[str, Any]:
+    """Probabilidad de relleno según palabras sospechosas: el servidor falso no juzga nada de verdad."""
+    hits = len(SCAM_HINTS.findall(prompt.split("Title:", 1)[-1]))
+    p = min(95, 10 + 20 * hits)
+    return {"scam_probability": p, "verdict": "scam" if p >= 50 else "legit",
+            "reason": "Placeholder from the mock server, based only on suspicious words.",
+            "action": "Turn on real mode for a real verdict."}
+
+
 def respond(payload: dict[str, Any]) -> dict[str, Any]:
     messages = payload.get("messages") or []
     prompt, images = _flatten(messages)
-    if "Task: conversation" in prompt:
+    if "You are a scam shield" in prompt:
+        text = json.dumps(_shield(prompt))
+    elif "Task: conversation" in prompt:
         text = _conversation(messages)
     else:
         if "Task: creative_variants" in prompt:
@@ -135,6 +149,11 @@ def respond(payload: dict[str, Any]) -> dict[str, Any]:
 def _handler(request: httpx.Request) -> httpx.Response:
     if request.url.path.endswith("/chat/completions"):
         return httpx.Response(200, json=respond(json.loads(request.content)))
+    if request.url.path.endswith("/asr/transcribe"):
+        # WAV de 16 kHz mono: la duración sale del tamaño. El texto es de relleno.
+        seconds = max(0, len(request.content) - 44) / 32_000
+        return httpx.Response(200, json={"transcript": "Hello, this is your bank. Please read me the code we just sent you.",
+                                         "audioDurationMs": int(seconds * 1000), "turns": []})
     if request.url.path.endswith("/images/generations"):
         return httpx.Response(200, json=respond_image(json.loads(request.content)))
     return httpx.Response(404, json={"error": {"message": f"El servidor falso no implementa {request.url.path}"}})
