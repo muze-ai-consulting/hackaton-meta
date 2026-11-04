@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { AlertTriangle, Ban, Bell, Check as CheckIcon, Copy, FileText, Globe, ImagePlus, Link2, Mic, RotateCcw, Search, Send, Share2, ShieldAlert, ShieldCheck, Square, Upload, Users, Waypoints, X } from "lucide-react";
+import { AlertTriangle, Ban, Bell, Check as CheckIcon, Copy, FileText, Globe, ImagePlus, Link2, Mic, RotateCcw, Search, Send, Share2, ShieldAlert, ShieldQuestion, ShieldCheck, Square, Upload, Users, Waypoints, X } from "lucide-react";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Input, Textarea } from "@/components/ui/input";
 import PhoneDemo from "@/components/PhoneDemo";
@@ -54,7 +54,7 @@ const EXAMPLES: Example[] = [
 const BAND: Record<Band, { title: string; tone: string; bar: string; icon: typeof ShieldAlert }> = {
   scam: { title: "Likely a scam", tone: "bg-[#fdecec] text-[#9b1c1c]", bar: "bg-[#d64545]", icon: ShieldAlert },
   careful: { title: "Be careful", tone: "bg-[#fbf1dc] text-[#7a4b00]", bar: "bg-[#e0a030]", icon: AlertTriangle },
-  genuine: { title: "No clear signs of a scam", tone: "bg-ok-soft text-ok", bar: "bg-ok", icon: ShieldCheck },
+  genuine: { title: "No clear signs of a scam", tone: "bg-bg text-heading", bar: "bg-muted", icon: ShieldQuestion },
 };
 
 function blobToDataUrl(blob: Blob): Promise<string> {

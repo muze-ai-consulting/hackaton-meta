@@ -109,3 +109,45 @@ def test_persona_messages_use_demo_letters() -> None:
     )
     assert "Ad B: headline: Dos" in msgs[1]["content"] and "stopped to look at: B" in msgs[1]["content"]
     assert msgs[-2] == {"role": "assistant", "content": "antes"} and msgs[-1]["content"] == "¿y?"
+
+
+def test_spoofed_forwarded_for_does_not_reset_the_quota(monkeypatch) -> None:
+    from fastapi import HTTPException
+    from starlette.requests import Request
+
+    from ensayo import api
+
+    monkeypatch.setenv("ENSAYO_REAL", "1")
+    api._real_usage.clear()
+
+    def call(forwarded: str) -> None:
+        scope = {"type": "http", "headers": [(b"x-forwarded-for", forwarded.encode())], "client": ("10.0.0.1", 1)}
+        api.guard_real(Request(scope), "variants")
+
+    for fake in ("1.1.1.1, 9.9.9.9", "2.2.2.2, 9.9.9.9", "3.3.3.3, 9.9.9.9"):
+        call(fake)
+    try:
+        call("4.4.4.4, 9.9.9.9")
+    except HTTPException as exc:
+        assert exc.status_code == 429
+    else:
+        raise AssertionError("a made-up address got past the quota")
+    api._real_usage.clear()
+
+
+def test_missing_key_is_a_503_not_a_crash(monkeypatch) -> None:
+    from fastapi import HTTPException
+
+    from ensayo import api
+    from ensayo.llm import ModelClient
+
+    def no_key(**_: object) -> None:
+        raise SystemExit("no key")
+
+    monkeypatch.setattr(ModelClient, "from_env", no_key)
+    try:
+        api.model_client(False)
+    except HTTPException as exc:
+        assert exc.status_code == 503
+    else:
+        raise AssertionError("expected a 503")

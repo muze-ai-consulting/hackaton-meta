@@ -1,6 +1,6 @@
-"""Recompute every number we claim about the scam test, from the files in this repo.
+"""Recompute the main results of the scam test from the predictions and labels in this repo.
 
-No API key, no network and no dependencies beyond Python 3.12:
+No API key, no network and no dependencies beyond Python 3.12. The commit order needs a full git clone:
 
     python3 scripts/verify_results.py
 
@@ -10,8 +10,8 @@ It checks, for both attempts:
 - balanced accuracy, scams caught, false alarms and the answer bands, from predictions + labels;
 - the preregistered rule, and that the published score file says the same.
 
-The keyword baseline needs the raw Reddit posts, which are not versioned, so its score is read from the score
-file instead of being recomputed. Exits with 1 if anything doesn't match.
+The keyword baseline needs the raw Reddit posts, which are not versioned, so its score and the gap interval are read
+from the score file instead of being recomputed. Exits with 1 if anything doesn't match.
 """
 
 import hashlib
@@ -66,15 +66,19 @@ def bands(rows: list[tuple[str, float]]) -> list[tuple[str, int, int]]:
             for name, lo, hi in BANDS]
 
 
-def commit_order(first: str, second: str) -> str | None:
-    """Commit times if `first` is an ancestor of `second`, or None if history is unavailable or says otherwise."""
+def commit_order(first: str, second: str) -> tuple[bool, str]:
+    """Whether history contradicts the order, and what to show. Without git history (a ZIP download) it can't be checked."""
     try:
-        subprocess.run(["git", "merge-base", "--is-ancestor", first, second], cwd=ROOT, check=True, capture_output=True)
+        order = subprocess.run(["git", "merge-base", "--is-ancestor", first, second], cwd=ROOT, capture_output=True)
+        if order.returncode == 1:
+            return False, f"{first} is NOT before {second}"
+        if order.returncode != 0:
+            return True, "not checked: needs a full git clone"
         times = subprocess.run(["git", "show", "-s", "--format=%cI", first, second], cwd=ROOT, check=True,
                                capture_output=True, text=True).stdout.split()
     except (subprocess.CalledProcessError, FileNotFoundError):
-        return None
-    return f"{first} ({times[0]}) before {second} ({times[1]})"
+        return True, "not checked: needs git"
+    return True, f"{first} ({times[0]}) before {second} ({times[1]})"
 
 
 def check_round(number: int, spec: dict[str, Any]) -> list[str]:
@@ -89,10 +93,10 @@ def check_round(number: int, spec: dict[str, Any]) -> list[str]:
     if digest != recorded:
         failed.append("the predictions don't match their recorded hash")
 
-    order = commit_order(spec["hash_commit"], spec["score_commit"])
-    log.info(f"  commit order         {order or 'not available'}")
-    if order is None:
-        failed.append("couldn't confirm that the predictions were committed before the score")
+    in_order, order = commit_order(spec["hash_commit"], spec["score_commit"])
+    log.info(f"  commit order         {order}")
+    if not in_order:
+        failed.append("the predictions were not committed before the score")
 
     labels = load(spec["labels"])
     predictions = json.loads(blob)

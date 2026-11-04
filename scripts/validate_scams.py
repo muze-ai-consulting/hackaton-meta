@@ -171,6 +171,9 @@ async def run(args: argparse.Namespace) -> None:
         posts = [p for p in load_posts(DATA / "raw" / "scams2") if p["id"] not in used]
     else:
         posts = load_posts()
+    if not posts and (args.label or args.predict):
+        log.error("No hay publicaciones en data/raw: bájalas primero. No se sobrescribe nada.")
+        return
     if args.label:
         log.info(f"{len(posts)} publicaciones con comentarios · costo estimado US$ {len(posts) * 0.0006:.2f}")
         if not args.yes:

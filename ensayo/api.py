@@ -36,6 +36,7 @@ import time
 from collections import defaultdict
 from typing import Any, Literal
 
+import httpx
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
@@ -77,11 +78,22 @@ def real_allowed() -> bool:
     return os.environ.get("ENSAYO_REAL") == "1"
 
 
+def model_client(mock: bool) -> ModelClient:
+    """El cliente del modelo; sin key, un 503 en vez de botar el servidor."""
+    try:
+        return ModelClient.from_env(mock=mock)
+    except SystemExit as exc:
+        log.error("Modo real sin MODEL_API_KEY")
+        raise HTTPException(503, "Real mode is not configured on this server.") from exc
+
+
 def guard_real(request: Request, kind: str) -> None:
     """403 si el modo real está apagado; 429 si este visitante ya usó su cupo de hoy."""
     if not real_allowed():
         raise HTTPException(403, "Real mode is disabled on this server.")
-    ip = request.client.host if request.client else "?"
+    # El último valor es el que agregó nginx; los anteriores los puede inventar el cliente para saltarse el cupo.
+    forwarded = request.headers.get("x-forwarded-for", "").rsplit(",", 1)[-1].strip()
+    ip = forwarded or (request.client.host if request.client else "?")
     key = (time.strftime("%Y-%m-%d"), ip, kind)
     if _real_usage[key] >= REAL_DAILY_LIMITS[kind]:
         raise HTTPException(429, "Daily limit reached for this demo. Try the real-ad examples, or come back tomorrow.")
@@ -196,7 +208,7 @@ async def simulate(req: SimulateIn, request: Request) -> dict[str, Any]:
     personas = req.personas if mock else min(req.personas, REAL_MAX_PERSONAS)
     batch = to_batch(req)
     people = build_population(spec_from_ad(batch["target"]), n=personas)
-    client = ModelClient.from_env(mock=mock)
+    client = model_client(mock)
     spent_before = client.ledger.spent()
     try:
         sim = await simulate_batch(client, batch, people, model=REAL_MODEL, phase="demo", sample_size=8)
@@ -231,7 +243,7 @@ async def check(req: CheckIn, request: Request) -> dict[str, Any]:
     mock = req.mode == "mock"
     if not mock:
         guard_real(request, "check")
-    client = ModelClient.from_env(mock=mock)
+    client = model_client(mock)
     spent_before = client.ledger.spent()
     try:
         out = await shield_check(
@@ -241,7 +253,7 @@ async def check(req: CheckIn, request: Request) -> dict[str, Any]:
         raise HTTPException(402, "The demo has reached its spending cap. Try again tomorrow.") from exc
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
-    except (RuntimeError, KeyError, TypeError) as exc:
+    except (RuntimeError, KeyError, TypeError, httpx.HTTPError) as exc:
         log.exception("Fallo del escudo")
         raise HTTPException(502, f"The Model API returned an error: {exc}") from exc
     finally:
@@ -262,7 +274,7 @@ async def investigate(req: InvestigateIn, request: Request) -> dict[str, Any]:
     mock = req.mode == "mock"
     if not mock:
         guard_real(request, "investigate")
-    client = ModelClient.from_env(mock=mock)
+    client = model_client(mock)
     client.effort = "low"
     spent_before = client.ledger.spent()
     data = campaigns.load()
@@ -298,7 +310,7 @@ async def act_on(req: ActIn, request: Request) -> dict[str, Any]:
     mock = req.mode == "mock"
     if not mock and req.verdict.get("band") != "genuine":
         guard_real(request, "act")
-    client = ModelClient.from_env(mock=mock)
+    client = model_client(mock)
     client.effort = "low"
     spent_before = client.ledger.spent()
     try:
@@ -306,7 +318,7 @@ async def act_on(req: ActIn, request: Request) -> dict[str, Any]:
                                 family=req.family, clues=req.clues)
     except BudgetExceeded as exc:
         raise HTTPException(402, "The demo has reached its spending cap. Try again tomorrow.") from exc
-    except (RuntimeError, KeyError, TypeError) as exc:
+    except (RuntimeError, KeyError, TypeError, httpx.HTTPError) as exc:
         log.exception("Fallo del agente de respuesta")
         raise HTTPException(502, f"The Model API returned an error: {exc}") from exc
     finally:
@@ -379,7 +391,7 @@ async def chat(req: ChatIn, request: Request) -> dict[str, Any]:
         {"ad_id": f"v{i + 1}", "title": v.title, "body": v.body, "image_url": v.image_url or None}
         for i, v in enumerate(req.variants)
     ]
-    client = ModelClient.from_env(mock=mock)
+    client = model_client(mock)
     spent_before = client.ledger.spent()
     try:
         answer = await ask_persona(
@@ -412,7 +424,7 @@ async def variants(req: VariantsIn, request: Request) -> dict[str, Any]:
     mock = req.mode == "mock"
     if not mock:
         guard_real(request, "variants")
-    client = ModelClient.from_env(mock=mock)
+    client = model_client(mock)
     spent_before = client.ledger.spent()
     try:
         out = await generate_variants(

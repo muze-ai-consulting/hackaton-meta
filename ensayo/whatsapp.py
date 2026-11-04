@@ -69,7 +69,9 @@ def valid_signature(body: bytes, header: str | None) -> bool:
 
 
 def who(number: str) -> str:
-    return hashlib.sha256(number.encode()).hexdigest()[:10]
+    """Identificador para registros y cupos. Con clave: un hash simple de un teléfono se revierte por fuerza bruta."""
+    key = os.environ.get("WHATSAPP_APP_SECRET", "").encode()
+    return hmac.new(key, number.encode(), hashlib.sha256).hexdigest()[:10]
 
 
 def first_time(message_id: str) -> bool:
@@ -139,7 +141,7 @@ def verdict_text(out: dict[str, Any]) -> str:
                       "through its official app or number._"]
     if out.get("transcript"):
         lines += ["", f"_I heard:_ \"{out['transcript'][:300]}\""]
-    lines += ["", "_Second Look · Muse Spark 1.3 · tested on 945 real cases: 96% of \"Likely a scam\" answers were scams._"]
+    lines += ["", "_Second Look · Muse Spark 1.3 · tested on 945 real cases: 96% of \"Likely a scam\" answers were scams, in a set where 87% were._"]
     return "\n".join(lines)
 
 
@@ -148,7 +150,7 @@ def step_line(step: dict[str, Any]) -> str:
     if tool == "inspect_link":
         if r.get("error"):
             return f"🔗 Followed {step['input'].get('url')}: {r['error']}"
-        return "🔗 Followed the link without opening it: " + " → ".join(h["domain"] for h in r.get("hops", []))
+        return "🔗 Checked where the link goes, without opening it for you: " + " → ".join(h["domain"] for h in r.get("hops", []))
     if tool == "domain_registration":
         if r.get("error"):
             return f"🌐 Couldn't read the registration of {r.get('domain')}"

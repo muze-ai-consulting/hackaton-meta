@@ -121,7 +121,8 @@ async def check(
         p = max(0.0, min(1.0, float(out["scam_probability"]) / 100))
     except (ValueError, KeyError, TypeError) as exc:
         # RuntimeError: es falla del modelo, no del pedido (la API la responde como 502, no 422).
-        raise RuntimeError(f"unreadable answer: {res.text[:200]!r}") from exc
+        # Solo el largo: el texto del modelo puede citar el mensaje de la persona.
+        raise RuntimeError(f"unreadable answer ({len(res.text)} characters)") from exc
     return {
         "probability": round(p, 3),
         "band": band(p),

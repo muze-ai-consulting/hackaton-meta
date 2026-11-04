@@ -105,7 +105,7 @@ export default function Evidence({ evidence, onBack }: { evidence: EvidenceData 
           <Rule round={r1} />
           <p className="m-0 text-sm leading-normal text-muted">
             It missed the bar by 0.013. The question asked whether the post was deceptive, not whether what the person ran into was a scam. We fixed the
-            question, wrote the rule again and ran it on new posts, without touching the attempt 1 data.
+            question, wrote the rule again and ran it on new posts, without touching the attempt 1 data. The sample changed too: attempt 2 added r/ScamCenter and r/scamsUK and left out r/isthisascam and r/IsThisAScamIndia, the two lowest scores in attempt 1. On r/Scams, the one community in both, the score went from 0.816 to 0.803, so we can't credit the pass to the new question.
           </p>
           <code className="break-all text-xs text-muted">SHA-256 {r1.sha256}</code>
         </Card>

@@ -35,7 +35,7 @@ const LINK = /((?:https?:\/\/)?(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/\S*)?)/gi;
 const BAND = {
   scam: { title: "Likely a scam", line: "border-[#d64545]", tone: "bg-[#fdecec] text-[#9b1c1c]" },
   careful: { title: "Be careful", line: "border-[#e0a030]", tone: "bg-[#fbf1dc] text-[#7a4b00]" },
-  genuine: { title: "No clear signs of a scam", line: "border-transparent", tone: "bg-ok-soft text-ok" },
+  genuine: { title: "No clear signs of a scam", line: "border-line", tone: "bg-bg text-heading" },
 } as const;
 
 function Sim({ children }: { children: React.ReactNode }) {
