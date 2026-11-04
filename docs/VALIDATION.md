@@ -16,7 +16,7 @@ People post messages, screenshots and calls on Reddit and ask "is this a scam?",
 
 | Step | What we did | Where |
 |---|---|---|
-| **Cases** | Posts published **after 3 September 2026**, when Muse Spark 1.3 was released, so the model can't have memorized them. Attempt 1: r/Scams to 23 September, r/isthisascam, r/IsThisAScamIndia. Attempt 2: r/Scams from 24 September, r/ScamCenter, r/scamsUK. | `scripts/scam_arctic.py`, `scripts/scam_reddit.py` |
+| **Cases** | Posts published **from 3 September 2026 on**, the day after Muse Spark 1.3 was released, so the model can't have memorized them. Attempt 1: r/Scams to 23 September, r/isthisascam, r/IsThisAScamIndia, plus 40 posts from an Apify pilot, most of them from r/Scams and up to 2 November. Attempt 2: r/Scams from 24 September, r/ScamCenter, r/scamsUK, leaving out every post from attempt 1. | `scripts/scam_arctic.py`, `scripts/scam_reddit.py` |
 | **Answer key** | Muse Spark 1.3 reads **only the replies** and extracts the community's verdict: scam, legit or unclear. Unclear threads are dropped. | `data/scams/labels*.json` |
 | **Audit** | We read 30 random labels by hand before scoring. | Results below |
 | **Prediction** | Muse Spark 1.3 reads **only the post**: title, text and up to 3 images. It never sees the replies. | `scripts/validate_scams.py` |
@@ -104,7 +104,7 @@ We'd rather you hear these from us.
 - **How close those commits are:** 38 and 36 seconds apart. They show the predictions weren't changed after that point, and they can't show that we hadn't scored them on the side first.
 - **No hidden third run in the ledger:** [`results/costs.jsonl`](../results/costs.jsonl) logs 2,083 prediction calls, one per case that reached the model in the two attempts.
 - **What you can't check from git alone:** commit dates are set by the author, and the repository was private during the event, so no third party saw the hash at that moment.
-- **The labels were committed later.** They were produced before the predictions, as the script requires, but `labels2.json` only reached git in `f45c833`, about 11 hours after the score. So you can't rule out from git alone that they were edited in between.
+- **The labels were committed later.** They were produced before the predictions, as the script requires, but `labels.json` and `labels2.json` only reached git in `f45c833`, about 13 and 11 hours after their scores. So you can't rule out from git alone that they were edited in between. The ledger committed with each hash does log the labeling calls finishing before the first prediction (23:17, then 23:18 in attempt 1; 00:54, then 00:55 in attempt 2), but it doesn't record the labels themselves.
 - **The raw posts aren't in the repository.** We don't redistribute Reddit text. The post IDs are the keys in `results/scam_predictions*.json`, so anyone can pull the public threads and compare them to our labels.
 
 The strongest check remains an independent test on new posts. `scripts/validate_scams.py` reproduces attempts 1 and 2 for a few dollars of model credits (see the README, and note that it overwrites the published files). It has no mode for a third sample yet, so a new test would need its own paths and a new rule.

@@ -109,7 +109,7 @@ def build_batches(ads: list[dict[str, Any]], today: date) -> list[dict[str, Any]
                 "title": " ".join(a.get("ad_creative_link_titles") or []),
                 "platforms": a.get("publisher_platforms") or [],
                 "snapshot_url": strip_token(a.get("ad_snapshot_url")),
-                # Solo los anuncios bajados con Apify traen la imagen; con la API oficial queda None.
+                # Solo los anuncios bajados con un scraper traían la imagen; con la API oficial queda None.
                 "image_url": a.get("image_url"),
             }
             for a in unique

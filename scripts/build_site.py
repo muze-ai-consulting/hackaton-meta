@@ -1,5 +1,7 @@
 """Convierte los informes de reports/ en páginas HTML dentro de site/informes/.
 
+Herramienta interna: reports/ y site/ son notas de trabajo que no están en el repo público.
+
 Uso: uv run --with markdown scripts/build_site.py
 """
 

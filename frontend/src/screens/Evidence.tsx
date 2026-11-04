@@ -76,8 +76,8 @@ export default function Evidence({ evidence, onBack }: { evidence: EvidenceData 
         <CardTitle>The test</CardTitle>
         <ol className="m-0 flex flex-col gap-2 pl-5 text-[15px] leading-normal">
           <li>
-            People post messages, screenshots and calls on Reddit (r/Scams, r/isthisascam and others) and ask "is this a scam?". We took posts from{" "}
-            <strong>after 3 September 2026</strong>, after Muse Spark 1.3 was released, so the model could not have memorized them.
+            People post messages, screenshots and calls on Reddit (r/Scams, r/isthisascam and others) and ask "is this a scam?". We took posts{" "}
+            <strong>from 3 September 2026 on</strong>, after Muse Spark 1.3 was released, so the model could not have memorized them.
           </li>
           <li>The answer key is the community's verdict, read only from the replies. Unclear threads were left out.</li>
           <li>Second Look read only the post (title, text and up to 3 screenshots), never the replies.</li>

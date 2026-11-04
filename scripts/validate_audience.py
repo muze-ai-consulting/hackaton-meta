@@ -299,16 +299,16 @@ async def run(args: argparse.Namespace) -> None:
     for h in "AB":
         part = [r for r in rows if half(r["page_id"]) == h]
         summary[f"half_{h}"] = {k: within_page(part, k, perms=1000) for k in TARGETS}
-    out = {"model": MODEL, "personas": args.personas, "ads": len(rows), "failed": len(ads) - len(rows), "summary": summary, "rows": public_rows(rows)}
+    out = {"model": MODEL, "personas": args.personas, "ads": len(rows), "failed": len(ads) - len(rows), "summary": summary, "rows": [public_row(r) for r in rows]}
     path = RESULTS / f"audience_validation{'_' + args.tag if args.tag else ''}.json"
     path.write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
     log.info(json.dumps(summary, indent=1))
     log.info(f"Guardado {path.name}")
 
 
-def public_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Las filas que se publican: sin el texto, la imagen ni la segmentación de cada anuncio, que son de terceros."""
-    return [{k: v for k, v in r.items() if k not in ("body", "title", "image_url", "target")} for r in rows]
+def public_row(row: dict[str, Any]) -> dict[str, Any]:
+    """Lo que se publica de cada anuncio: sin su texto, su imagen ni su segmentación, que son de terceros."""
+    return {k: row[k] for k in ("ad_id", "page_id", "page_name", "truth", "pred") if k in row}
 
 
 def score_holdout() -> None:
@@ -318,7 +318,7 @@ def score_holdout() -> None:
     summary = {k: within_page(rows, k) for k in TARGETS}
     passed = sum(1 for k in TARGETS if summary[k].get("within_r", 0) > 0 and summary[k].get("p_perm", 1) < 0.05)
     summary["rule"] = {"passed_metrics": passed, "validated": passed >= 2}
-    out = {"model": MODEL, "ads": len(rows), "summary": summary, "rows": public_rows(rows)}
+    out = {"model": MODEL, "ads": len(rows), "summary": summary, "rows": [public_row(r) for r in rows]}
     (RESULTS / "holdout_scored.json").write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
     log.info(json.dumps(summary, indent=1))
 
