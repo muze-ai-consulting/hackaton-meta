@@ -486,7 +486,7 @@ def dev_predictions() -> dict[str, dict[str, Any]]:
 
 
 def ad_image_url(ad_id: str, remote: str | None) -> str | None:
-    """La copia local si existe (ruta relativa: funciona bajo /secondlook/); si no, la URL original."""
+    """La copia local si existe (ruta relativa: funciona bajo cualquier ruta); si no, la URL original."""
     return f"api/ad-image/{ad_id}" if (AD_IMAGES / f"{ad_id}.jpg").exists() else remote
 
 
