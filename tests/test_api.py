@@ -155,3 +155,10 @@ def test_local_ad_images(tmp_path, monkeypatch) -> None:
     assert c.get("/api/ad-image/..%2F..%2Fetc").status_code == 404
     assert api.ad_image_url("123", "https://x") == "api/ad-image/123"
     assert api.ad_image_url("999", "https://x") == "https://x"
+
+
+def test_security_headers_on_every_response(tmp_path, monkeypatch) -> None:
+    res = client(tmp_path, monkeypatch).get("/health")
+    assert res.headers["x-content-type-options"] == "nosniff"
+    assert res.headers["x-frame-options"] == "DENY"
+    assert res.headers["referrer-policy"] == "no-referrer"

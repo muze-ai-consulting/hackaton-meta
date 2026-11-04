@@ -36,11 +36,12 @@ import logging
 import os
 import time
 from collections import defaultdict
+from collections.abc import Awaitable, Callable
 from typing import Any, Literal
 
 import httpx
 from fastapi import Depends, FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, PlainTextResponse
+from fastapi.responses import FileResponse, PlainTextResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -61,7 +62,7 @@ log = logging.getLogger(__name__)
 
 WEB = ROOT / "web"  # build de frontend/ (npm run build)
 DEV_BATCHES = DATA / "batches" / "dev.json"
-AD_IMAGES = DATA / "images"  # scripts/download_images.py: copia local porque las URLs de fbcdn vencen
+AD_IMAGES = DATA / "images"  # copia local de la idea anterior, fuera del repo
 MAX_EXAMPLES = 20
 # Pedidos en modo real por visitante (IP) y por día. El gasto total lo limita la fase "demo" del Ledger.
 REAL_DAILY_LIMITS = {"check": 30, "investigate": 30, "act": 30}
@@ -73,6 +74,14 @@ MAX_AUDIO_CHARS = 14_000_000  # ~10 MB en base64 (una nota de voz de varios minu
 
 # Sin /docs, /redoc ni /openapi.json: el sitio público no necesita publicar el catálogo de la API.
 app = FastAPI(title="Second Look", docs_url=None, redoc_url=None, openapi_url=None)
+SECURITY_HEADERS = {"X-Content-Type-Options": "nosniff", "X-Frame-Options": "DENY", "Referrer-Policy": "no-referrer"}
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
+    response = await call_next(request)
+    response.headers.update(SECURITY_HEADERS)
+    return response
 
 
 def real_allowed() -> bool:

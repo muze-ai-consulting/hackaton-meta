@@ -79,7 +79,7 @@ export default function Evidence({ evidence, onBack }: { evidence: EvidenceData 
             People post messages, screenshots and calls on Reddit (r/Scams, r/isthisascam and others) and ask "is this a scam?". We took posts{" "}
             <strong>from 3 September 2026 on</strong>, after Muse Spark 1.3 was released, so the model could not have memorized them.
           </li>
-          <li>The answer key is the community's verdict, read only from the replies. Unclear threads were left out.</li>
+          <li>The answer key is the community's verdict, which Muse Spark read only from the replies. Unclear threads were left out.</li>
           <li>Second Look read only the post (title, text and up to 3 screenshots), never the replies.</li>
           <li>
             We committed the predictions' SHA-256 hash <strong>before</strong> scoring them, and compared against two rivals: a keyword filter and
@@ -144,7 +144,7 @@ export default function Evidence({ evidence, onBack }: { evidence: EvidenceData 
         <ul className="m-0 flex flex-col gap-2 pl-5 text-[15px] leading-normal">
           <li>Balanced accuracy of 0.801, with a 95% interval of 0.76 to 0.84: the 0.80 bar sits inside it, so we only claim "about 8 in 10".</li>
           <li>The answer key is a Reddit community, not a fraud investigator. Mostly English, mostly UK, US and India.</li>
-          <li>About 1 in 4 genuine cases got a false alarm, mostly consumer disputes people already call "scams".</li>
+          <li>About 1 in 4 genuine cases got a false alarm. By our rough reading, about half are consumer disputes.</li>
           <li>Voice notes were not part of the test: they are transcribed by Muse Voice Transcribe and judged like text.</li>
           <li>The product adds one line to the tested prompt so it answers in the person's language.</li>
         </ul>

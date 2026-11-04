@@ -9,8 +9,20 @@ import { api, radar, shield, type Campaigns as CampaignsData, type Evidence as E
 
 type Screen = "native" | "check" | "evidence" | "campaigns" | "network";
 
+const SCREENS: Screen[] = ["native", "check", "evidence", "campaigns", "network"];
+
+function screenFromHash(): Screen {
+  const hash = window.location.hash.slice(1) as Screen;
+  return SCREENS.includes(hash) ? hash : "native";
+}
+
+// The screen lives in the URL, so the browser's back button works and each page can be linked.
+function setScreen(screen: Screen) {
+  window.location.hash = screen === "native" ? "" : screen;
+}
+
 export default function App() {
-  const [screen, setScreen] = useState<Screen>("native");
+  const [screen, setCurrent] = useState<Screen>(screenFromHash);
   const [mode, setMode] = useState<Mode>("mock");
   const [evidence, setEvidence] = useState<EvidenceData | null>(null);
   const [campaigns, setCampaigns] = useState<CampaignsData | null>(null);
@@ -19,6 +31,12 @@ export default function App() {
     api.config().then((c) => setMode(c.real_allowed ? "real" : "mock")).catch(() => undefined);
     shield.evidence().then(setEvidence).catch(() => undefined);
     radar.campaigns().then(setCampaigns).catch(() => undefined);
+  }, []);
+
+  useEffect(() => {
+    const onHashChange = () => setCurrent(screenFromHash());
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
   useEffect(() => {

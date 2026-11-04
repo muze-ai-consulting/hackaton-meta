@@ -104,10 +104,10 @@ flowchart LR
 | **Abuse** | 30 checks a day per IP and per WhatsApp number, input size limits. Client-supplied forwarding headers can't reset the quota. Our earlier idea's endpoints and the API docs are off in production | [`ensayo/api.py`](ensayo/api.py), [`ensayo/whatsapp.py`](ensayo/whatsapp.py) |
 | **Following a scammer's link** | A GET from our server that reads only the status and redirect headers, never the body, so the site sees our server and not the person. http(s) on ports 80 and 443 only; private and reserved addresses rejected at every redirect | [`ensayo/investigate.py`](ensayo/investigate.py) |
 | **Webhooks** | HMAC signature check on every WhatsApp call, duplicate deliveries ignored, a fast 200 with processing in the background | [`ensayo/whatsapp.py`](ensayo/whatsapp.py) |
-| **Privacy** | Our code doesn't store user messages, logs keep only a keyed hash of the number, and user data never goes through the contributor endpoint. Web server logs keep visitors' IPs. [Privacy policy](https://secondlook.muze.cl/privacy) | [`ensayo/whatsapp.py`](ensayo/whatsapp.py), [`ensayo/shield.py`](ensayo/shield.py) |
+| **Privacy** | Our code doesn't store user messages, logs keep only a keyed hash of the number, and user data never goes through the contributor endpoint. Web server logs keep visitors' IPs. While we run on Meta's free hackathon credits, Meta's billing page says content may be used for product improvement, so real users should run on a paid balance. [Privacy policy](https://secondlook.muze.cl/privacy) | [`ensayo/whatsapp.py`](ensayo/whatsapp.py), [`ensayo/shield.py`](ensayo/shield.py) |
 | **Agent limits** | Capped turns; no model call for the response agent if there are no signs of a scam; simulated actions always labeled | [`ensayo/act.py`](ensayo/act.py) |
 | **Failures** | Spending cap, model errors, timeouts and a missing key return clear HTTP errors instead of a crash | [`ensayo/api.py`](ensayo/api.py) |
-| **Tests** | 79 tests in [CI](.github/workflows/test.yml), a mock model server for running without a key, and a test confirming the product sends the same prompt we measured | [`tests/`](tests) |
+| **Tests** | 80 tests in [CI](.github/workflows/test.yml), a mock model server for running without a key, and a test confirming the product sends the same prompt we measured | [`tests/`](tests) |
 
 **Speed, in our runs:** the verdict takes 5 to 8 seconds, and the prepared actions about 20 seconds. With voice on the server, 10 to 20 seconds.
 
@@ -123,6 +123,13 @@ flowchart LR
 | **WhatsApp Cloud API** | The bot, with reply buttons for the actions the agent prepares. |
 
 We built the agent's tools ourselves because it needs specific checks: following a link's redirects without reading the page, and looking up who registered the domain. We don't use Meta's built-in web search yet; finding official warnings about the imitated brand is the natural next tool. The product runs only on Meta's models.
+
+### What we found about the model
+
+- **It reads what people actually receive.** One call takes the text and the screenshots together: 237 of the 945 test cases had images. The agent also pulls links out of screenshots and investigates them.
+- **Its confidence is useful on its own.** Attempt 2 reached an AUC of 0.88. "Likely a scam" answers were scams 96% of the time, against 46% for "No clear signs", and that table is why the product gives three answers and never says "safe".
+- **The contributor tier made the test possible.** It ran 2,083 predictions across two attempts, and the whole project cost under US$ 10 in model credits.
+- **What cost us time:** reasoning tokens count against `max_tokens`, so a tight limit returned too little until we set `reasoning_effort` and added a margin. `web_search` returns 400 on Chat Completions and works through the Responses API.
 
 ## Where this goes
 
@@ -142,7 +149,7 @@ We built the agent's tools ourselves because it needs specific checks: following
 ```bash
 python3 scripts/verify_results.py              # recompute the test's main results; needs only Python 3.12
 uv sync --group dev
-uv run --group dev pytest                      # 79 tests, mock server, no network
+uv run --group dev pytest                      # 80 tests, mock server, no network
 uv run uvicorn ensayo.api:app --port 8040      # mock mode, no key needed
 ENSAYO_REAL=1 uv run uvicorn ensayo.api:app --port 8041   # real mode: needs MODEL_API_KEY in .env
 cd frontend && npm install && npm run build    # rebuilds web/

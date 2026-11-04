@@ -23,7 +23,7 @@ export function Header({
 }) {
   return (
     <header className="relative border-b border-white/40 bg-white/70 backdrop-blur-md">
-      <div className="mx-auto flex min-h-16 max-w-[1180px] flex-wrap items-center justify-between gap-4 px-6">
+      <div className="mx-auto flex min-h-16 max-w-[1180px] flex-wrap items-center justify-between gap-x-4 gap-y-2 px-6 py-3">
         <button type="button" onClick={onHome} className="cursor-pointer" aria-label="Home">
           <Logo />
         </button>
