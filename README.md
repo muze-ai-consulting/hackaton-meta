@@ -26,7 +26,7 @@ The phone is a labeled concept and its actions are simulated. The model's output
 
 ## The problem
 
-Americans reported losing [US$ 15.9 billion to fraud in 2025](https://www.spokesman.com/stories/2026/apr/03/americans-lost-a-record-159-billion-to-scams-in-20), according to the FTC, and social media was the [contact method with the highest losses](https://www.techwalla.com/13779374/ftc-social-media-scams-2025-21-billion-in-us-losses).
+Americans reported losing [US$ 15.9 billion to fraud in 2025](https://www.spokesman.com/stories/2026/apr/03/americans-lost-a-record-159-billion-to-scams-in-20), according to the FTC, and for every age group under 80, social media was the [contact method with the highest losses](https://www.techwalla.com/13779374/ftc-social-media-scams-2025-21-billion-in-us-losses).
 
 Scams work through pressure: pay in two hours, or your account is locked. Most checkers ask people to stop, leave the chat and paste the message into a website, at the moment they're least likely to do that. Asking other people is slower: on the Reddit threads in our data, the first reply took a median of 7.4 minutes, and 1 in 8 waited more than an hour ([data](results/scam_response_time.json), threads that got a reply). Second Look answers in 5 to 8 seconds, and goes on to prepare what the person should do.
 
@@ -101,13 +101,13 @@ flowchart LR
 |---|---|---|
 | **Runs live** | Docker Compose behind nginx, restart policy and health check, real mode on | [`docker-compose.yml`](docker-compose.yml), [`Dockerfile`](Dockerfile) |
 | **Spending** | Every model call passes through a ledger with a cap per phase, and is logged | [`ensayo/costs.py`](ensayo/costs.py), [`ensayo/llm.py`](ensayo/llm.py) |
-| **Abuse** | 30 checks a day per IP and per WhatsApp number, input size limits. Client-supplied forwarding headers can't reset the quota | [`ensayo/api.py`](ensayo/api.py), [`ensayo/whatsapp.py`](ensayo/whatsapp.py) |
+| **Abuse** | 30 checks a day per IP and per WhatsApp number, input size limits. Client-supplied forwarding headers can't reset the quota. Our earlier idea's endpoints only run in mock mode | [`ensayo/api.py`](ensayo/api.py), [`ensayo/whatsapp.py`](ensayo/whatsapp.py) |
 | **Following a scammer's link** | A GET from our server that reads only the status and redirect headers, never the body, so the site sees our server and not the person. http(s) on ports 80 and 443 only; private and reserved addresses rejected at every redirect | [`ensayo/investigate.py`](ensayo/investigate.py) |
 | **Webhooks** | HMAC signature check on every WhatsApp call, duplicate deliveries ignored, a fast 200 with processing in the background | [`ensayo/whatsapp.py`](ensayo/whatsapp.py) |
 | **Privacy** | Our code doesn't store user messages, logs keep only a keyed hash of the number, and user data never goes through the contributor endpoint. Web server logs keep visitors' IPs | [`ensayo/whatsapp.py`](ensayo/whatsapp.py), [`ensayo/shield.py`](ensayo/shield.py) |
 | **Agent limits** | Capped turns; no model call for the response agent if there are no signs of a scam; simulated actions always labeled | [`ensayo/act.py`](ensayo/act.py) |
 | **Failures** | Spending cap, model errors, timeouts and a missing key return clear HTTP errors instead of a crash | [`ensayo/api.py`](ensayo/api.py) |
-| **Tests** | 81 tests in [CI](.github/workflows/test.yml), a mock model server for running without a key, and a test confirming the product sends the same prompt we measured | [`tests/`](tests) |
+| **Tests** | 77 tests in [CI](.github/workflows/test.yml), a mock model server for running without a key, and a test confirming the product sends the same prompt we measured | [`tests/`](tests) |
 
 **Speed, in our runs:** the verdict takes 5 to 8 seconds, and the prepared actions about 20 seconds. With voice on the server, 10 to 20 seconds.
 
@@ -118,7 +118,7 @@ flowchart LR
 | Model or API | Where |
 |---|---|
 | **Muse Spark 1.3** (standard) | The verdict, including screenshots; both agents, through function calling with our own tools; family matching. All user data goes here. |
-| **Muse Spark 1.3 contributor** | Public data only: labeling Reddit threads, running the tests and building the families. |
+| **Muse Spark 1.3 contributor** | Public data only: labeling Reddit threads, running the tests and building the families. Meta can use what's sent to this endpoint, which here includes public Reddit posts and their screenshots, and those can contain personal details. That's why user data never goes through it. |
 | **Muse Voice Transcribe 1.0** | Voice notes and recorded calls. |
 | **WhatsApp Cloud API** | The bot, with reply buttons for the actions the agent prepares. |
 
@@ -142,7 +142,7 @@ We built the agent's tools ourselves because it needs specific checks: following
 ```bash
 python3 scripts/verify_results.py              # recompute the test's main results; needs only Python 3.12
 uv sync --group dev
-uv run --group dev pytest                      # 81 tests, mock server, no network
+uv run --group dev pytest                      # 77 tests, mock server, no network
 uv run uvicorn ensayo.api:app --port 8040      # mock mode, no key needed
 ENSAYO_REAL=1 uv run uvicorn ensayo.api:app --port 8041   # real mode: needs MODEL_API_KEY in .env
 cd frontend && npm install && npm run build    # rebuilds web/
@@ -183,7 +183,7 @@ data/scams/  Labels and model-written descriptions, no raw posts
 docs/        Validation protocol
 ```
 
-**The earlier idea.** We started with Ensayo, synthetic audiences predicting which ad variant would win. In its backtest it beat neither chance nor a single prompt, so we dropped it and pivoted. Its code, unused endpoints and results are still here (`population.py`, `simulate.py`, `results/backtest_*`, `results/holdout_*`), because we think failed tests should stay visible.
+**The earlier idea.** We started with Ensayo, synthetic audiences predicting which ad variant would win. In its backtest it beat neither chance nor a single prompt, so we dropped it and pivoted. We think failed tests should stay visible, so what's left is still here: its code (`population.py`, `simulate.py`, `chat.py`, `images.py`, `batches.py`), unused screens (`Audience`, `RealAd`, `Result`, `Versions`), endpoints that only run in mock mode, its list of advertisers (`results/eu_advertisers*`, `results/holdout_advertisers.csv`, `data/*_candidates.csv`) and its scores (`results/backtest_*`, `results/holdout_*`, `results/audience_validation_*`). We removed the ads' text and image links from those results, and the ad scraper from the tree; earlier versions of both remain in git history.
 
 **Language.** The product is in English. Code comments and commit messages are in Spanish, as we work in Chile. Internal planning notes were kept out of the current tree, but remain in git history, which we kept because the preregistration commits live there.
 
@@ -191,10 +191,11 @@ docs/        Validation protocol
 
 - **Built during the event:** the first commit is from 27 October 2026.
 - **Coding tools:** built with Claude Code (Anthropic) as the coding assistant. The product runs only on Meta's models.
-- **Reddit data:** public posts from the [Arctic Shift](https://arctic-shift.photon-reddit.com) archive and, for the first pilot, an Apify scraper. We use post text, public image links and replies. The families page shows model-written summaries without names, numbers or links, plus links to the original threads.
+- **Reddit data:** public posts from the [Arctic Shift](https://arctic-shift.photon-reddit.com) archive and, for the first pilot, an Apify scraper through residential proxies. 40 of attempt 1's 1,137 scored cases came from that pilot. Reddit's User Agreement requires written consent for scraping, so this data supports the test and the families, and would need a license for commercial use. We use post text, public image links and replies. The families page shows model-written summaries without names, numbers or links, plus links to the original threads.
 - **Ad data (earlier idea):** Meta Ad Library pages through an Apify scraper, because we didn't get an official API token in time.
+- **Design:** the site's first palette and typeface were taken from [zenith.chat](https://zenith.chat), an earlier hackathon project, and some of those choices remain.
 - **Fraud figures:** FTC Consumer Sentinel 2025, through the press coverage linked above.
 
 ## License
 
-[MIT](LICENSE). Built by [Muze AI](https://muze.cl), Chile.
+The code is [MIT](LICENSE). That doesn't cover third-party data or names in this repo, such as Reddit post links and advertisers' names. Built by [Muze AI](https://muze.cl), Chile.

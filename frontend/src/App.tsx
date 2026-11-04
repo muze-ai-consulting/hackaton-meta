@@ -41,6 +41,10 @@ export default function App() {
         {screen === "network" && <Network onCheck={() => setScreen("check")} />}
         {screen === "evidence" && <Evidence evidence={evidence} onBack={() => setScreen("check")} />}
       </main>
+      <footer className="relative mx-auto flex max-w-[1180px] flex-wrap gap-5 px-4 pb-8 text-sm text-muted sm:px-6">
+        <a href="https://labs.muze.cl/hackaton-meta/privacy.html" target="_blank" rel="noreferrer">Privacy</a>
+        <a href="https://github.com/muze-ai-consulting/hackaton-meta" target="_blank" rel="noreferrer">Source code</a>
+      </footer>
     </div>
   );
 }

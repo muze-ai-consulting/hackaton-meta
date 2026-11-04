@@ -9,25 +9,18 @@ Para cada candidato de data/advertisers_candidates.csv:
 Lee META_ACCESS_TOKEN desde .env. Respuestas crudas en data/raw/ad_library/ (fuera del repo).
 Salida: results/eu_advertisers.csv.
 
-Con --apify usa el actor de Apify en vez de la API oficial (ver ensayo/apify.py) y APIFY_TOKEN en vez de
-META_ACCESS_TOKEN. Las respuestas del actor quedan en data/raw/apify/ y los anuncios convertidos en
-data/raw/ad_library/apify_<page_id>.json, que es lo que lee `python -m ensayo.batches`. Sin --yes solo muestra
-el costo estimado.
-
-Con varias cuentas de Apify (APIFY_TOKEN, APIFY_TOKEN_2, _3…) pasa a la siguiente cuando una se queda sin crédito.
+Los CSV de results/ se generaron con un scraper de Apify porque no alcanzamos a tener el token oficial (README, "What we
+declare"). Ese código ya no está en el árbol; queda en el historial de git.
 
 Uso: uv run python scripts/eu_advertisers.py [--limit N]
-     uv run python scripts/eu_advertisers.py --apify [--limit N] [--max-ads 300] [--yes]
 """
 
 import argparse
-import contextlib
 import csv
 import hashlib
 import json
 import logging
 import os
-import re
 import time
 from collections import Counter, defaultdict
 from datetime import date, datetime
@@ -37,14 +30,11 @@ from typing import Any
 import httpx
 from dotenv import load_dotenv
 
-from ensayo import apify
-
 ROOT = Path(__file__).resolve().parent.parent
 GRAPH = "https://graph.facebook.com/v26.0/ads_archive"
 CUTOFF = date(2026, 9, 2)  # lanzamiento de Muse Spark 1.3
 DELIVERY_MIN = "2026-09-03"
 RAW = ROOT / "data" / "raw" / "ad_library"
-RAW_APIFY = ROOT / "data" / "raw" / "apify"
 FIELDS = ",".join([
     "id", "page_id", "page_name", "ad_delivery_start_time", "ad_delivery_stop_time",
     "ad_creative_bodies", "ad_creative_link_titles", "publisher_platforms", "eu_total_reach",
@@ -142,35 +132,6 @@ def score_page(ads: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def cached_actor(client: httpx.Client, name: str, run_input: dict[str, Any]) -> list[dict[str, Any]]:
-    """Corre el actor de Apify una sola vez por entrada: la respuesta queda en data/raw/apify/."""
-    key = hashlib.sha256(json.dumps(run_input, sort_keys=True).encode()).hexdigest()[:12]
-    cache = RAW_APIFY / f"{name}-{key}.json"
-    if cache.exists():
-        return json.loads(cache.read_text(encoding="utf-8"))
-    items = apify.run_actor(client, run_input)
-    cache.write_text(json.dumps(items, ensure_ascii=False), encoding="utf-8")
-    return items
-
-
-def apify_page(client: httpx.Client, c: dict[str, str], max_ads: int) -> tuple[tuple[str, str] | None, list[dict[str, Any]]]:
-    """Página y anuncios de un candidato vía Apify, con los campos de ads_archive."""
-    found = cached_actor(client, "search", apify.search_input(c["query"], c["country"], DELIVERY_MIN))
-    needle = c["query"].lower().split()[0]
-    counts = Counter(
-        (str(i.get("page_id")), i.get("page_name") or "")
-        for i in found
-        if i.get("page_id") and needle in (i.get("page_name") or "").lower()
-    )
-    if not counts:
-        return None, []
-    page_id, page_name = counts.most_common(1)[0][0]
-    items = cached_actor(client, f"page-{page_id}", apify.page_ads_input(page_id, DELIVERY_MIN, max_ads))
-    ads = [ad for ad in (apify.to_ads_archive(i) for i in items) if ad and ad["page_id"] == page_id]
-    (RAW / f"apify_{page_id}.json").write_text(json.dumps({"data": ads}, ensure_ascii=False), encoding="utf-8")
-    return (page_id, page_name), ads
-
-
 def official_page(client: httpx.Client, token: str, c: dict[str, str]) -> tuple[tuple[str, str] | None, list[dict[str, Any]]]:
     page = resolve_page(client, token, c["query"], c["country"])
     if not page:
@@ -184,40 +145,10 @@ def official_page(client: httpx.Client, token: str, c: dict[str, str]) -> tuple[
     return page, ads
 
 
-def apify_tokens() -> list[str]:
-    """APIFY_TOKEN y luego APIFY_TOKEN_2, _3…, en orden."""
-    numbered = sorted(
-        (int(m.group(1)), v) for k, v in os.environ.items() if (m := re.fullmatch(r"APIFY_TOKEN_(\d+)", k)) and v
-    )
-    first = [os.environ["APIFY_TOKEN"]] if os.environ.get("APIFY_TOKEN") else []
-    return first + [v for _, v in numbered]
-
-
-def rotating_fetch(clients: list[httpx.Client], max_ads: int):  # noqa: ANN201
-    """Baja un candidato con la cuenta actual y pasa a la siguiente cuando se queda sin crédito."""
-    state = {"i": 0}
-
-    def fetch(c: dict[str, str]) -> tuple[tuple[str, str] | None, list[dict[str, Any]]]:
-        while True:
-            try:
-                return apify_page(clients[state["i"]], c, max_ads)
-            except apify.OutOfCredit as exc:
-                log.warning(f"Cuenta {state['i'] + 1} sin crédito ({exc}); paso a la siguiente")
-                state["i"] += 1
-                if state["i"] >= len(clients):
-                    raise RuntimeError("Todas las cuentas de Apify sin crédito") from exc
-
-    return fetch
-
-
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--limit", type=int, default=0, help="procesar solo los primeros N candidatos")
     parser.add_argument("--skip", type=int, default=0, help="saltar los primeros N candidatos")
-    parser.add_argument("--from-account", type=int, default=1, help="con --apify: empezar por la cuenta N (1 = APIFY_TOKEN)")
-    parser.add_argument("--apify", action="store_true", help="usar el actor de Apify en vez de la API oficial")
-    parser.add_argument("--max-ads", type=int, default=300, help="con --apify: tope de anuncios por página")
-    parser.add_argument("--yes", action="store_true", help="con --apify: confirmar el gasto en Apify")
     parser.add_argument("--holdout", action="store_true", help="marcas nuevas para validar fuera de muestra (data/raw/holdout/)")
     args = parser.parse_args()
     global RAW
@@ -234,34 +165,15 @@ def main() -> None:
     if args.limit:
         candidates = candidates[: args.limit]
 
-    if args.apify:
-        tokens = apify_tokens()[max(0, args.from_account - 1) :]
-        if not tokens:
-            raise SystemExit("Falta APIFY_TOKEN en .env (ver .env.example).")
-        RAW_APIFY.mkdir(parents=True, exist_ok=True)
-        estimate = len(candidates) * (2 * apify.USD_PER_RUN + (50 + args.max_ads) * apify.USD_PER_AD)
-        log.info(f"{len(candidates)} anunciantes, hasta {args.max_ads} anuncios cada uno: como máximo US$ {estimate:.2f} en Apify")
-        if not args.yes:
-            log.info("No se corrió nada. Para correrlo: agrega --yes")
-            return
-        clients = [apify.client_from_token(t) for t in tokens]
-        log.info(f"{len(clients)} cuenta(s) de Apify")
-        fetch = rotating_fetch(clients, args.max_ads)
-    else:
-        token = os.environ.get("META_ACCESS_TOKEN")
-        if not token:
-            raise SystemExit("Falta META_ACCESS_TOKEN en .env (ver .env.example). Sin token: --apify")
-        client = httpx.Client(timeout=60)
-        clients = [client]
-        fetch = lambda c: official_page(client, token, c)  # noqa: E731
+    token = os.environ.get("META_ACCESS_TOKEN")
+    if not token:
+        raise SystemExit("Falta META_ACCESS_TOKEN en .env (ver .env.example).")
 
     out: list[dict[str, Any]] = []
-    with contextlib.ExitStack() as stack:
-        for cl in clients:
-            stack.enter_context(cl)
+    with httpx.Client(timeout=60) as client:
         for c in candidates:
             try:
-                page, ads = fetch(c)
+                page, ads = official_page(client, token, c)
             except (RuntimeError, httpx.HTTPError) as exc:
                 log.warning(f"{c['brand']}: {exc}")
                 out.append({**c, "page_id": "", "page_name": "", "note": f"error: {exc}"[:120]})

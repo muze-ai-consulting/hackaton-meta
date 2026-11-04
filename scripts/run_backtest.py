@@ -54,7 +54,7 @@ def load_batches(source: str) -> list[dict[str, Any]]:
     if not path.exists():
         raise SystemExit(f"Falta {path}. Corre antes: uv run python -m ensayo.batches")
     batches = json.loads(path.read_text(encoding="utf-8"))
-    log.info(f"{use_local_images(batches)} imágenes desde data/images (scripts/download_images.py)")
+    log.info(f"{use_local_images(batches)} imágenes desde data/images")
     return batches
 
 

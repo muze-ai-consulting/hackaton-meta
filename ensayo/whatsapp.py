@@ -279,7 +279,7 @@ async def handle(message: dict[str, Any], client: ModelClient | None = None, htt
         await offer_actions(http, sender, plan["actions"])
         log.info(f"whatsapp {who(sender)} {kind} → {verdict['band']} (US$ {client.ledger.spent() - spent_before:.4f})")
     except BudgetExceeded:
-        await send_text(http, sender, "The demo has reached its spending cap. Try again tomorrow.", mid)
+        await send_text(http, sender, "The demo has reached its spending cap.", mid)
     except (ValueError, httpx.HTTPError) as exc:
         log.warning(f"whatsapp {who(sender)} {kind}: {exc}")
         await send_text(http, sender, f"Sorry, I couldn't read that. {exc if isinstance(exc, ValueError) else ''}".strip(), mid)

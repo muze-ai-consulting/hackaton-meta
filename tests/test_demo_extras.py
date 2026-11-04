@@ -118,11 +118,12 @@ def test_spoofed_forwarded_for_does_not_reset_the_quota(monkeypatch) -> None:
     from ensayo import api
 
     monkeypatch.setenv("ENSAYO_REAL", "1")
+    monkeypatch.setitem(api.REAL_DAILY_LIMITS, "check", 3)
     api._real_usage.clear()
 
     def call(forwarded: str) -> None:
         scope = {"type": "http", "headers": [(b"x-forwarded-for", forwarded.encode())], "client": ("10.0.0.1", 1)}
-        api.guard_real(Request(scope), "variants")
+        api.guard_real(Request(scope), "check")
 
     for fake in ("1.1.1.1, 9.9.9.9", "2.2.2.2, 9.9.9.9", "3.3.3.3, 9.9.9.9"):
         call(fake)

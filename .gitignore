@@ -19,7 +19,7 @@ results/costs_mock.jsonl
 *.tsbuildinfo
 data/images/
 
-# Notas internas de trabajo: siguen en disco, pero no van en el repo público. Última versión: tag notas-internas-pre-publicacion
+# Notas internas de trabajo: siguen en disco, pero no van en el repo público. Sus versiones anteriores están en el historial.
 /CLAUDE.md
 /ESTADO.md
 /PLAN.md

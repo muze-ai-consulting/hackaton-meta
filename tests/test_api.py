@@ -84,9 +84,23 @@ def test_examples_empty_without_batches(tmp_path, monkeypatch) -> None:
 
 def test_real_daily_limit(tmp_path, monkeypatch) -> None:
     monkeypatch.setenv("ENSAYO_REAL", "1")
-    monkeypatch.setitem(api.REAL_DAILY_LIMITS, "simulate", 0)
-    res = client(tmp_path, monkeypatch).post("/api/simulate", json=request(mode="real"))
+    monkeypatch.setitem(api.REAL_DAILY_LIMITS, "check", 0)
+    res = client(tmp_path, monkeypatch).post("/api/check", json={"text": "hola", "mode": "real"})
     assert res.status_code == 429
+
+
+def test_earlier_idea_never_runs_real(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("ENSAYO_REAL", "1")
+    c = client(tmp_path, monkeypatch)
+    assert c.post("/api/simulate", json=request(mode="real")).status_code == 403
+    assert c.post("/api/variants", json={"brief": "x", "mode": "real"}).status_code == 403
+    chat = {"persona": "P", "variants": [{"title": "Uno"}], "question": "¿Por qué?", "mode": "real"}
+    assert c.post("/api/chat", json=chat).status_code == 403
+
+
+def test_api_docs_are_not_public(tmp_path, monkeypatch) -> None:
+    c = client(tmp_path, monkeypatch)
+    assert [c.get(p).status_code for p in ("/docs", "/redoc", "/openapi.json")] == [404, 404, 404]
 
 
 def test_examples_carry_real_dev_prediction(tmp_path, monkeypatch) -> None:

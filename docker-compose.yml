@@ -11,10 +11,6 @@ services:
         required: false
     volumes:
       - ./results:/app/results
-      # Solo dev.json (ejemplos reales del demo). El set sellado nunca se sube al VPS.
-      - ./data/batches:/app/data/batches:ro
-      # Copias locales de las imágenes de dev (scripts/download_images.py): las URLs de fbcdn vencen.
-      - ./data/images:/app/data/images:ro
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8040/health', timeout=3)"]
       interval: 30s
