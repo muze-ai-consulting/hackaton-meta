@@ -7,7 +7,7 @@ Second Look is a scam-stopping agent built on Meta's models. It gives a verdict 
 | | |
 |---|---|
 | **Live demo** | https://secondlook.muze.cl/ (real model, daily quota per visitor) |
-| **Demo video** | Linked in our submission |
+| **Demo video** | https://youtu.be/_Fz53YScgck |
 | **The test** | On Reddit posts judged by the community: 84% of scams caught with 24% false alarms, 0.801 balanced accuracy, against 0.517 for a simple keyword filter. [Full protocol and limits](docs/VALIDATION.md) |
 | **Check our numbers** | `python3 scripts/verify_results.py`: no API key, no network, no dependencies. Also runs in [CI](.github/workflows/test.yml) |
 | **Cost** | About US$ 0.02 per check, agents included ([ledger](results/costs.jsonl)) |
