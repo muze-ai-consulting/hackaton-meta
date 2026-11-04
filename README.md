@@ -205,4 +205,4 @@ docs/        Validation protocol
 
 ## License
 
-The code is [MIT](LICENSE). The license doesn't cover third-party data in this repository or its git history, such as Reddit links and labels, advertisers' names and ad content. Built by [Muze AI](https://muze.cl), Chile.
+The code is [MIT](LICENSE). The license doesn't cover third-party data in this repository or its git history, such as Reddit links and labels, advertisers' names and ad content. Built by Marco Chávez, [Muze AI](https://muze.cl), Chile. Contact: marco@muze.cl.
