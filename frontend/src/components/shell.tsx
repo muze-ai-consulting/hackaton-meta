@@ -5,17 +5,7 @@ import type { Backtest } from "@/lib/api";
 import { cn, pct } from "@/lib/utils";
 
 export function Logo() {
-  return (
-    <div className="flex items-center gap-2.5">
-      <div className="brand-gradient grid size-9 place-items-center rounded-[10px]">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z" />
-          <path d="M9 12l2 2 4-4" />
-        </svg>
-      </div>
-      <span className="text-xl font-extrabold tracking-[-0.3px] text-heading">Second Look</span>
-    </div>
-  );
+  return <img src="static/brand/second-look-wordmark-light-bg.svg" alt="Second Look" className="h-[30px] w-auto" />;
 }
 
 export function Header({
