@@ -161,7 +161,7 @@ export default function Native({ mode, onCheck, onEvidence, onNetwork }: { mode:
               aria-label="Your own message"
               className="min-w-0 flex-1 rounded-lg border border-line bg-white px-3 py-2 text-sm"
             />
-            <Button size="sm" disabled={!own.trim()}>
+            <Button type="submit" size="sm" disabled={!own.trim()}>
               Send
             </Button>
           </form>
