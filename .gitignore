@@ -18,3 +18,18 @@ results/*_mock*
 results/costs_mock.jsonl
 *.tsbuildinfo
 data/images/
+
+# Notas internas de trabajo: siguen en disco, pero no van en el repo público. Última versión: tag notas-internas-pre-publicacion
+/CLAUDE.md
+/ESTADO.md
+/PLAN.md
+/ENTREGA.md
+/reports/
+/research_notes/
+/site/
+/video/
+/.claude/
+/data/scams/voz/
+/results/probe_muse_image.png
+/.hallmark/
+/docs/plan-diseno.dc.html

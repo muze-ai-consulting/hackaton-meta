@@ -1,5 +1,4 @@
-# Demo en labs.muze.cl/ensayo (nginx → 127.0.0.1:8040). Modo real apagado: para encenderlo, ENSAYO_REAL=1 y
-# MODEL_API_KEY en .env junto a este archivo (env_file), solo con OK de Mark.
+# Second Look behind nginx (127.0.0.1:8040). Real mode needs ENSAYO_REAL=1 and MODEL_API_KEY in .env (env_file).
 services:
   ensayo:
     build: .

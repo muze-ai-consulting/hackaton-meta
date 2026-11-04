@@ -2,133 +2,187 @@
 
 **A scam lands in your WhatsApp. An agent flags it, checks it and steps in, right there in the chat.**
 
-Second Look is a scam-stopping agent built on Meta's models. The home page is a **concept prototype** of how it could work inside WhatsApp: the message arrives, its link is locked, the verdict appears in the chat, and if you try to open the link anyway the agent alerts someone you trust. The verdict, checks and agent's choices are real model output; the phone and its actions are simulated, and Second Look is not a WhatsApp feature.
+Second Look is a scam-stopping agent built on Meta's models. It gives a verdict that passed a preregistered test on 945 real cases, investigates links with tools it picks itself, and prepares what to do next. It runs today as a bot on the WhatsApp Cloud API and as a website. Our home page shows where it goes next: the same agent working natively inside WhatsApp.
 
-**What works today:** a bot on the WhatsApp Cloud API (forward the text, screenshot or voice note) and a web check. Every answer comes in layers:
+| | |
+|---|---|
+| **Live demo** | https://labs.muze.cl/ensayo/ (real model, daily quota per visitor) |
+| **Demo video** | Linked in our submission |
+| **The test** | 84% of scams caught, 0.801 balanced accuracy, against 0.517 for a keyword filter. [Full protocol and limits](docs/VALIDATION.md) |
+| **Check our numbers** | `python3 scripts/verify_results.py`: no API key, no network, no dependencies |
+| **Cost** | About US$ 0.02 per check, agents included |
+| **Track** | Startup · Meta Global AI Developer Hackathon 2026 · [Muze AI](https://muze.cl), Chile |
 
-1. **A verdict that was measured before it was shipped.** It is "Likely a scam", "Be careful" or "No clear signs of a scam", with a one-line reason and the next step. The prompt is the one that passed a preregistered test on 945 real cases.
-2. **An agent that investigates.** Muse Spark 1.3 with function calling chooses its own checks: it follows links without opening the page and looks up who registered the domain (RDAP). It reads links inside screenshots and points at the exact words in the message that give the scam away.
-3. **"You're not the first."** The message is matched against 20 families built from 1,902 scams that people asked about on Reddit and that the community confirmed. For example: "Delivery Fee Texts: 39 people reported this since September, rising."
-4. **An agent that prepares what to do next.** Function calling again: it decides whether to alert a trusted contact, write a report to the bank or the imitated company, block the sender and warn others. If the person says they already paid, the report goes to their bank's fraud team. Every action waits for approval, except alerting the trusted contact when the person already paid or shared their details. **In this demo the actions are simulated and labeled as such: nothing is sent, blocked or published.** The written report is real: the person copies it and sends it themselves.
+![The concept prototype: the message arrives, its link is locked, and the verdict and the agent's checks appear in the chat](docs/images/verdict.jpg)
 
-And one screen shows where this goes: **Early warning**, a simulation that replays real public reports day by day, as if they had reached Second Look, to show how a network would flag a campaign and warn people first. That network doesn't exist yet.
+## Try it in 60 seconds
 
-- **Live demo:** https://labs.muze.cl/ensayo/ (real mode; capped per visitor)
-- **WhatsApp:** runs on the WhatsApp Cloud API test number, so only verified recipients can message it. The video shows it.
-- **Track:** Startup · Meta Global AI Developer Hackathon 2026 · built by [Muze AI](https://muze.cl) (Chile)
+1. **Open the [live demo](https://labs.muze.cl/ensayo/) and tap "Bank alert".** The verdict appears in about 5 seconds, followed by the agent's checks.
+2. **Tap the crossed-out link, then "Open anyway".** The agent warns the person's trusted contact.
+3. **Write your own message,** as if a stranger sent it. "GP appointment" shows a message that isn't a scam.
+4. **Go to "Check a message" and pick "Already paid".** The agent changes its plan and writes to the bank's fraud team.
 
-## Why trust it: the test
+The phone is a labeled concept and its actions are simulated. The model's output is real and live. The WhatsApp bot runs on Meta's test number, which only reaches verified recipients, so the video shows it working.
 
-We wanted a scam checker we could prove, not one that only sounds confident. On Reddit (r/Scams, r/isthisascam, r/IsThisAScamIndia, r/ScamCenter, r/scamsUK), people post a message, screenshot or call and ask "is this a scam?", and the community answers in the replies. We used that as ground truth.
+## The problem
 
-- **No memorization.** Only posts published **after 3 September 2026**, when Muse Spark 1.3 was released.
-- **Separate answer key.** The label is the community's verdict, extracted from the replies only. Unclear threads were dropped. Second Look sees only the post (title, text, up to 3 screenshots), never the replies.
-- **Rule written first.** Pass = balanced accuracy ≥ 0.80, beats a keyword filter by ≥ 0.10 with the 95% interval above zero, false alarms on genuine cases ≤ 30%, and at least 30 genuine cases.
-- **Preregistered.** The SHA-256 of all predictions was committed **before** scoring.
-- **Two baselines.** A keyword filter and "always say scam".
+Americans reported losing [US$ 15.9 billion to fraud in 2025](https://www.spokesman.com/stories/2026/apr/03/americans-lost-a-record-159-billion-to-scams-in-20), according to the FTC, and social media was the [contact method with the highest losses](https://www.techwalla.com/13779374/ftc-social-media-scams-2025-21-billion-in-us-losses).
 
-| | Attempt 1 (2 Nov) | Attempt 2 (3 Nov) |
+Scams work through pressure: pay in two hours, or your account is locked. Most checkers ask people to stop, leave the chat and paste the message into a website, at the moment they're least likely to do that. Asking other people is slower: on the Reddit threads in our data, the first reply took a median of 7.4 minutes, and 1 in 8 waited more than an hour ([data](results/scam_response_time.json), threads that got a reply). Second Look answers in about 5 seconds, and goes on to prepare what the person should do.
+
+## What it does
+
+| Layer | What happens | Status |
 |---|---|---|
-| Cases (scam / genuine) | 1,137 (968 / 169) | 945 (823 / 122) |
-| Balanced accuracy | 0.787: **did not pass** | **0.801** (95% CI 0.759–0.839): **passed** |
+| **Verdict** | "Likely a scam", "Be careful" or "No clear signs of a scam", with a one-line reason and the next step. Reads text and screenshots, and transcribes voice notes. | **Real.** Text and screenshots tested on 945 cases; voice not tested |
+| **Investigating agent** | Function calling: the model picks its own checks, following links without opening the page and looking up who registered the domain. It marks the words that give the scam away. | **Real** |
+| **"You're not the first"** | Matches the message against 20 families built from 1,902 community-confirmed scams. For example: "Delivery Fee Texts: 39 people reported this since September." | **Real** |
+| **Response agent** | Function calling: the model decides what would protect this person and writes it, whether that's alerting a trusted contact, reporting to the bank or the imitated company, blocking the sender or warning others. If they already paid, the contact alert doesn't wait for a tap. | **Real decisions and text; simulated execution.** Nothing is sent, and it's labeled as such. The written report is real: the person copies and sends it |
+| **WhatsApp bot** | Forward a text, screenshot or voice note to the bot on the Cloud API, and get all of the above in the chat, with reply buttons for the actions. | **Real,** on the test number |
+| **Native WhatsApp** | The home page: the message arrives, the link locks, the verdict appears, and the agent steps in if you try to open it anyway. | **Concept.** Live model output on a simulated phone. This is not a WhatsApp feature |
+| **Early warning** | Replays public reports day by day to show how a network could flag a campaign and warn people first. | **Simulation.** The network doesn't exist yet |
+
+<table>
+<tr>
+<td><img src="docs/images/warning.jpg" alt="If the person taps the locked link, a sheet warns them that it looks dangerous"></td>
+<td><img src="docs/images/alert.jpg" alt="If they open it anyway, the agent tells their trusted contact, marked as simulated"></td>
+</tr>
+</table>
+
+## Why trust it
+
+We wanted a scam checker we could prove. On Reddit, people post what they received and ask "is this a scam?", and the community answers in the replies. Second Look sees only the post, and the answer key comes only from the replies. We used only posts published after Muse Spark 1.3 came out, wrote the pass rule first, and committed the SHA-256 of all predictions before scoring.
+
+| | Attempt 1 | Attempt 2 |
+|---|---|---|
+| Cases (scams / genuine) | 1,137 (968 / 169) | 945 (823 / 122) |
+| Balanced accuracy (the rule required 0.80) | 0.787: **did not pass** | **0.801: passed** (95% CI 0.759 to 0.839) |
 | Scams caught | 78.6% | **84.0%** |
 | False alarms on genuine cases | 21.3% | 23.8% |
-| Keyword filter, balanced accuracy | 0.505 | 0.517 (catches 48.5% of scams) |
-| Predictions hash | `1665740b…d898`, commit `4de2c5f` | `38b435bb…b2c`, commit `be7ec95` |
+| Keyword filter, balanced accuracy | 0.505 | 0.517 |
 
-**What happened between the attempts.** Attempt 1 asked whether the *post* was deceptive, when the community answers whether *what the person ran into* was a scam. We fixed the question, wrote the rule again and ran it on **new** posts, without touching attempt 1's data. Both attempts are published, including the one that failed.
+When it says "Likely a scam", 96% of 720 cases were scams.
 
-**What each answer means (attempt 2):**
+**The first attempt failed, and we publish it.** It asked whether the *post* was deceptive, when the community answers whether *what the person ran into* was a scam. We changed the question, kept the rule and ran it on new posts only.
 
-| Answer | Share that were scams |
-|---|---|
-| "Likely a scam" (≥ 50%) | 96% of 720 |
-| "Be careful" (20–49%) | 70% of 120 |
-| "No clear signs" (< 20%) | 46% of 105 |
+**Where this falls short:**
 
-The lowest band never says "safe". People post when something already worries them, so even there about half were scams.
+- We passed at the edge, so we claim "about 8 in 10", not more.
+- The answer key is a Reddit community read by a model, not fraud investigators.
+- About 1 in 4 genuine cases gets a false alarm, mostly consumer disputes that people already call scams.
+- Even "No clear signs" was a scam 46% of the time, so the product never says "safe".
+- Voice notes and the agents weren't part of the test.
+- The two attempts are less clean than a single shot, and commit dates alone can't prove when the hash was made.
 
-**Limits.** 0.80 sits inside the confidence interval, so we claim "about 8 in 10", not more. The answer key is a Reddit community, not fraud investigators, and the posts are mostly English, from the UK, US and India. About 1 in 4 genuine cases got a false alarm, mostly consumer disputes that people already call scams. Voice notes were not part of the test: they are transcribed and judged like text. The product adds one line to the tested prompt so it answers in the person's language. The agent and the families are shown as clues apart from the score, and they never change it.
+[docs/VALIDATION.md](docs/VALIDATION.md) has all of it.
 
-Code: [`scripts/validate_scams.py`](scripts/validate_scams.py) · results in [`results/scam_scored.json`](results/scam_scored.json), [`results/scam_scored2.json`](results/scam_scored2.json), [`results/scam_bands.json`](results/scam_bands.json).
+## Built to run
 
-## Meta models and APIs used
+The Startup track asks whether this holds up in production, so here's what's there and where to find it.
 
-| What | Where |
-|---|---|
-| **Muse Spark 1.3** (standard endpoint) | The verdict, the investigating agent (function calling with our own tools) and family matching for user messages. User data only goes through the standard endpoint. |
-| **Muse Spark 1.3 contributor** | Public data only: labeling Reddit threads, running the preregistered tests and building the scam families. |
-| **Muse Voice Transcribe 1.0** | Voice notes and recorded calls (`POST /v1/asr/transcribe`, WAV; ffmpeg converts anything else). |
-| **WhatsApp Cloud API** | The bot: webhook with signature check, then the verdict, the agent's clues and family, and the prepared actions as reply buttons (simulated). |
-
-| **Function calling (response agent)** | `alert_contact`, `draft_report`, `block_sender` and `share_pattern`. The model really chooses and writes them; running them is simulated. |
-
-The Model API has function calling but no web search, so the agent's tools are ours. `inspect_link` follows redirects without downloading the page; it only allows http(s) on ports 80/443 and never private or reserved addresses, checked at every hop. `domain_registration` reads public RDAP records.
-
-**Cost:** about US$ 0.02 per check, with the verdict, investigation, family match and prepared actions. The whole project, including both tests and the families, cost under US$ 10 of model credits.
-
-## Architecture
-
-```
-WhatsApp / web ──▶ FastAPI (ensayo/api.py)
-                    ├─ /api/check        ensayo/shield.py       verdict (validated prompt) · voice → Muse Voice Transcribe
-                    ├─ /api/investigate  ensayo/investigate.py  agent: Spark 1.3 + inspect_link + domain_registration
-                    │                    ensayo/campaigns.py    nearest scam family
-                    ├─ /api/act          ensayo/act.py          response agent: prepares actions (simulated)
-                    ├─ /api/campaigns    results/scam_campaigns.json
-                    ├─ /api/network      results/scam_network.json  early warning replay
-                    ├─ /api/evidence     results/scam_bands.json
-                    └─ /api/whatsapp     ensayo/whatsapp.py     Cloud API webhook
+```mermaid
+flowchart LR
+    W[WhatsApp Cloud API] -->|signed webhook| A[FastAPI]
+    B[Website] --> A
+    A --> V[Voice Transcribe 1.0]
+    A --> S[Spark 1.3: verdict]
+    S --> I[Investigating agent]
+    S --> R[Response agent]
+    I --> T[inspect_link, domain_registration]
+    I --> F[Scam families]
+    R --> X[Simulated actions, written report]
 ```
 
-- **Cost and safety rails.** Every model call goes through `ensayo/costs.py:Ledger` (per-phase caps, logged to `results/costs.jsonl`). Real mode has a daily quota per IP and per WhatsApp number. User messages are not stored on disk, and WhatsApp logs keep only a hash of the number. Prepared actions stay in memory for one hour to answer the WhatsApp buttons.
-- **Front end.** React + Vite + Tailwind in `frontend/`, built into `web/`.
-- **Deploy.** Docker Compose behind nginx on a VPS.
+| Concern | What we did | Code |
+|---|---|---|
+| **Runs live** | Docker Compose behind nginx, restart policy and health check, real mode on | [`docker-compose.yml`](docker-compose.yml) |
+| **Spending** | Every model call passes through a ledger with a cap per phase, and is logged | [`ensayo/costs.py`](ensayo/costs.py), [`ensayo/llm.py`](ensayo/llm.py) |
+| **Abuse** | Daily quota per IP and per WhatsApp number, input size limits | [`ensayo/api.py`](ensayo/api.py), [`ensayo/whatsapp.py`](ensayo/whatsapp.py) |
+| **Following a scammer's link** | No download of the page; http(s) on ports 80 and 443 only; private and reserved addresses rejected at every redirect | [`ensayo/investigate.py`](ensayo/investigate.py) |
+| **Fake webhooks** | HMAC signature check on every WhatsApp call | [`ensayo/whatsapp.py`](ensayo/whatsapp.py) |
+| **Privacy** | User messages aren't stored on disk, logs keep only a hash of the number, and user data never goes through the contributor endpoint | [`ensayo/whatsapp.py`](ensayo/whatsapp.py), [`ensayo/shield.py`](ensayo/shield.py) |
+| **Agent limits** | Capped turns; no model call for the response agent if there are no signs of a scam; simulated actions always labeled | [`ensayo/act.py`](ensayo/act.py) |
+| **Failures** | Spending cap and model errors return clear messages instead of a crash | [`ensayo/api.py`](ensayo/api.py) |
+| **Tests** | 79 tests, a mock model server for running without a key, and a test confirming the product sends the same prompt we measured | [`tests/`](tests) |
 
-### Scam families
+**Speed, in our runs:** the verdict takes 5 to 8 seconds, and the prepared actions about 20 seconds. With voice on the server, 10 to 20 seconds.
 
-[`scripts/scam_campaigns.py`](scripts/scam_campaigns.py) works in three steps:
+**Not there yet:** this is a hackathon deployment, with one server and no load test. Quotas and prepared actions live in memory and reset on restart.
 
-1. Spark 1.3 describes each confirmed case: channel, brand used as bait, what the scammer wanted, whether AI was involved, and a hook rewritten without names, numbers or links.
-2. It groups the descriptions into about 20 families.
-3. It assigns every case to one family.
+## How we use Meta's models
 
-The trend compares September with October as a share of all reports, and it is only shown for families with at least 30 cases. Brands count as a "campaign" from 3 cases. One finding we did **not** expect: only 46 of the 1,902 cases (2.4%) say AI was used. The other numbers: 16% of cases with a known channel reached people on WhatsApp, Instagram, Facebook, Messenger or Marketplace, and fake job offers grew 35% in October.
+| Model or API | Where |
+|---|---|
+| **Muse Spark 1.3** (standard) | The verdict, including screenshots; both agents, through function calling with our own tools; family matching. All user data goes here. |
+| **Muse Spark 1.3 contributor** | Public data only: labeling Reddit threads, running the tests and building the families. |
+| **Muse Voice Transcribe 1.0** | Voice notes and recorded calls. |
+| **WhatsApp Cloud API** | The bot, with reply buttons for the actions the agent prepares. |
 
-### Early warning (simulation)
+The Model API has function calling but no web search, so we built the agent's tools ourselves. The product runs only on Meta's models.
 
-[`scripts/scam_network.py`](scripts/scam_network.py) replays the cases by date, with no model calls. A campaign is one imitated brand within one family, flagged at 3 reports in 14 days. Result: 15 campaigns flagged from 478 reports that name a brand, and 34 later reports that came after the flag (median 22.5 days later). This is an illustration, not a test: we chose the rule while looking at these same reports, and nobody received an alert. A few Reddit communities are a tiny sample, so we don't claim what a real network would catch.
+## Where this goes
 
-## What's next
+**The hard part of going native is privacy.** WhatsApp chats are end-to-end encrypted, so a server can't read them. A native version would have to be opt-in and keep that promise, for example with the first check on the device and the deeper check only when the person allows it. We haven't built or tested that.
 
-**The hard part of going native is privacy.** WhatsApp chats are end-to-end encrypted, so a server can't read them. A native version would have to be opt-in and work without breaking that promise, for example with the first check on the device and the deeper check only when the person allows it. We haven't built or tested that.
+**Who pays (our hypothesis, not yet tested with a buyer).** Banks, telcos and insurers already carry the cost of fraud. At about US$ 0.02 per check, they could offer this to their customers inside the app where scams arrive.
 
-- Make the actions real, with consent: alerts to a trusted contact and direct reports to banks and platforms.
-- Build the opt-in network from forwards, sharing only anonymous descriptions of each scam.
-- A public weekly scoreboard: score new cases every week, commit the hash first, and publish the result even in bad weeks.
-- Business verification with Meta, so anyone can message the WhatsApp number.
+**Next:**
+
+1. Make the actions real, with consent: alerts to a trusted contact, and direct reports to banks and platforms.
+2. Complete business verification with Meta, so anyone can message the bot.
+3. Build the opt-in network from forwards, sharing only anonymous descriptions of each scam.
+4. Publish a weekly scoreboard: score new cases, commit the hash first, and publish the bad weeks too.
 
 ## Run it
 
 ```bash
+python3 scripts/verify_results.py              # recompute every published number; needs only Python 3.12
 uv sync --group dev
-uv run --group dev pytest                      # 75 tests, mock server, no network
-uv run uvicorn ensayo.api:app --port 8040      # mock mode (no key needed)
+uv run --group dev pytest                      # 79 tests, mock server, no network
+uv run uvicorn ensayo.api:app --port 8040      # mock mode, no key needed
 ENSAYO_REAL=1 uv run uvicorn ensayo.api:app --port 8041   # real mode: needs MODEL_API_KEY in .env
 cd frontend && npm install && npm run build    # rebuilds web/
 ```
 
-`.env.example` lists the variables: `MODEL_API_KEY`, plus `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_VERIFY_TOKEN` and `WHATSAPP_APP_SECRET` for the bot.
+[`.env.example`](.env.example) lists the variables.
 
-Reproduce the test: `uv run python scripts/validate_scams.py --round 2 --label|--predict|--score --yes`. Rebuild the families: `uv run python scripts/scam_campaigns.py --describe|--taxonomy|--assign --yes`, then run it without flags to aggregate.
+Rerun the test (a few dollars of credits; needs the Reddit posts, downloaded by `scripts/scam_arctic.py`):
 
-## Data and tools we declare
+```bash
+uv run python scripts/validate_scams.py --round 2 --label --yes
+uv run python scripts/validate_scams.py --round 2 --predict --yes
+uv run python scripts/validate_scams.py --round 2 --score
+```
 
-- **Reddit posts.** Public, from the [Arctic Shift](https://arctic-shift.photon-reddit.com) archive and, for the first pilot, the Apify Reddit scraper. Only post text, public image links and reply text are used. The families page shows model-written summaries without names, numbers or links, plus links to the original threads.
-- **Earlier pivot.** The repo also contains **Ensayo**, our first idea: synthetic audiences predicting which ad variant wins, with Meta Ad Library data via Apify. In its backtest the synthetic audience beat neither chance nor a single prompt. A narrower follow-up, predicting which gender Meta delivers an ad to, passed an out-of-sample test (within-brand r = 0.385 on 133 new ads), but we moved to the scam shield for impact. Its code and results stay in the repo (`ensayo/simulate.py`, `results/holdout_*`).
-- **Coding tools.** Built with **Claude Code** (Anthropic) as the coding assistant. The product itself runs only on Meta's models.
-- **Fraud figures in the video.** FTC Consumer Sentinel 2025: US$ 15.9 billion reported lost, with social media the contact method with the highest losses.
+## What's in this repo
 
-## Team
+```
+ensayo/      Backend. The package keeps the name of our first idea.
+  shield.py        Verdict: the prompt that passed the test
+  investigate.py   Investigating agent and its tools
+  act.py           Response agent
+  campaigns.py     Scam families
+  whatsapp.py      WhatsApp bot
+  api.py           FastAPI
+scripts/     The test, the families, early warning, verify_results.py
+frontend/    React + Vite + Tailwind; builds into web/
+results/     Predictions, hashes, scores, spending ledger
+data/scams/  Labels and model-written descriptions, no raw posts
+docs/        Validation protocol
+```
 
-[Muze AI](https://muze.cl), Chile.
+**The earlier idea.** We started with Ensayo, synthetic audiences predicting which ad variant would win. In its backtest it beat neither chance nor a single prompt, so we dropped it and pivoted. Its code, unused endpoints and results are still here (`population.py`, `simulate.py`, `results/backtest_*`, `results/holdout_*`), because we think failed tests should stay visible.
+
+**Language.** The product is in English. Code comments and commit messages are in Spanish, as we work in Chile. Internal planning notes were kept out of the current tree, but remain in git history, which we kept because the preregistration commits live there.
+
+## What we declare
+
+- **Built during the event:** the first commit is from 27 October 2026.
+- **Coding tools:** built with Claude Code (Anthropic) as the coding assistant. The product runs only on Meta's models.
+- **Reddit data:** public posts from the [Arctic Shift](https://arctic-shift.photon-reddit.com) archive and, for the first pilot, an Apify scraper. We use post text, public image links and replies. The families page shows model-written summaries without names, numbers or links, plus links to the original threads.
+- **Ad data (earlier idea):** Meta Ad Library pages through an Apify scraper, because we didn't get an official API token in time.
+- **Fraud figures:** FTC Consumer Sentinel 2025, through the press coverage linked above.
+
+## License
+
+[MIT](LICENSE). Built by [Muze AI](https://muze.cl), Chile.

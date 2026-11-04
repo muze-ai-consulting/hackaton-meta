@@ -216,7 +216,7 @@ export default function Native({ mode, onCheck, onEvidence, onNetwork }: { mode:
               )}
 
               {message && (
-                <div className={cn("max-w-[90%] self-start overflow-hidden rounded-2xl rounded-bl-md border-2 bg-white", verdict ? BAND[verdict.band].line : "border-transparent")}>
+                <div className={cn("max-w-[90%] shrink-0 self-start overflow-hidden rounded-2xl rounded-bl-md border-2 bg-white", verdict ? BAND[verdict.band].line : "border-transparent")}>
                   <p className="m-0 px-3 py-2 text-[13px] leading-snug text-[#16181d]">
                     {parts.map((p, i) =>
                       i % 2 === 0 ? (
