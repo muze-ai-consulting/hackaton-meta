@@ -6,7 +6,7 @@ Second Look is a scam-stopping agent built on Meta's models. It gives a verdict 
 
 | | |
 |---|---|
-| **Live demo** | https://labs.muze.cl/ensayo/ (real model, daily quota per visitor) |
+| **Live demo** | https://labs.muze.cl/secondlook/ (real model, daily quota per visitor) |
 | **Demo video** | Linked in our submission |
 | **The test** | On Reddit posts judged by the community: 84% of scams caught with 24% false alarms, 0.801 balanced accuracy, against 0.517 for a simple keyword filter. [Full protocol and limits](docs/VALIDATION.md) |
 | **Check our numbers** | `python3 scripts/verify_results.py`: no API key, no network, no dependencies. Also runs in [CI](.github/workflows/test.yml) |
@@ -17,7 +17,7 @@ Second Look is a scam-stopping agent built on Meta's models. It gives a verdict 
 
 ## Try it in 60 seconds
 
-1. **Open the [live demo](https://labs.muze.cl/ensayo/) and tap "Bank alert".** The verdict appears in 5 to 8 seconds, followed by the agent's checks.
+1. **Open the [live demo](https://labs.muze.cl/secondlook/) and tap "Bank alert".** The verdict appears in 5 to 8 seconds, followed by the agent's checks.
 2. **Tap the crossed-out link, then "Open anyway".** The page shows the alert the agent wrote for the person's trusted contact. If the agent hasn't finished yet (about 20 seconds), it shows a template instead.
 3. **Write your own message,** as if a stranger sent it. "GP appointment" shows a message that isn't a scam.
 4. **Go to "Check a message", pick "Already paid" and press "Check it".** The agent changes its plan and writes to the bank's fraud team.
