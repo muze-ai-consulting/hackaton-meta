@@ -11,7 +11,7 @@ Second Look is a scam-stopping agent built on Meta's models. It gives a verdict 
 | **The test** | On Reddit posts judged by the community: 84% of scams caught with 24% false alarms, 0.801 balanced accuracy, against 0.517 for a simple keyword filter. [Full protocol and limits](docs/VALIDATION.md) |
 | **Check our numbers** | `python3 scripts/verify_results.py`: no API key, no network, no dependencies. Also runs in [CI](.github/workflows/test.yml) |
 | **Cost** | About US$ 0.02 per check, agents included ([ledger](results/costs.jsonl)) |
-| **Track** | Startup · Meta Global AI Developer Hackathon 2026 · [Muze AI](https://muze.cl), Chile |
+| **Track** | Startup · Build for Your World · Meta Global AI Developer Hackathon 2026 · [Muze AI](https://muze.cl), Chile |
 
 ![The concept prototype: the message arrives, its link is locked, and the verdict and the agent's checks appear in the chat](docs/images/verdict.jpg)
 
@@ -122,7 +122,7 @@ flowchart LR
 | **Muse Voice Transcribe 1.0** | Voice notes and recorded calls. |
 | **WhatsApp Cloud API** | The bot, with reply buttons for the actions the agent prepares. |
 
-The Model API has function calling but no web search, so we built the agent's tools ourselves. The product runs only on Meta's models.
+We built the agent's tools ourselves because it needs specific checks: following a link's redirects without reading the page, and looking up who registered the domain. We don't use Meta's built-in web search yet; finding official warnings about the imitated brand is the natural next tool. The product runs only on Meta's models.
 
 ## Where this goes
 

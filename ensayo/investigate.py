@@ -1,7 +1,8 @@
 """Agente investigador: Spark 1.3 con herramientas revisa los enlaces y dominios de lo que la persona reenvió.
 
 Va aparte del veredicto (ensayo/shield.py), que sale solo del prompt validado: esto agrega pistas comprobables, no
-cambia el puntaje. La Model API acepta function calling pero no búsqueda web, así que las herramientas son nuestras:
+cambia el puntaje. Usa Chat Completions con function calling; la búsqueda web de Meta solo responde por la Responses API
+y no la usamos. Las herramientas son nuestras:
 
 - inspect_link: sigue las redirecciones de un enlace sin descargar la página. Solo http(s) a puertos 80/443 y nunca a
   direcciones privadas, de loopback o reservadas (se revisa cada salto), con tiempo límite.
