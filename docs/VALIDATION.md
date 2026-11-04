@@ -115,4 +115,4 @@ The strongest check remains an independent test on new posts. `scripts/validate_
 
 ## Cost of the whole project
 
-The ledger in [`results/costs.jsonl`](../results/costs.jsonl) records every model call we made from this machine: under US$ 10 in total, including both attempts and the families. The server keeps its own ledger for live traffic.
+The ledger in [`results/costs.jsonl`](../results/costs.jsonl) records every model call we made from this machine, including both attempts and the families: US$ 5.85. The server keeps its own ledger for live traffic, under US$ 1 when we submitted. So the whole project cost under US$ 10.

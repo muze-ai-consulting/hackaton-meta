@@ -43,7 +43,6 @@ export function Header({
   );
 }
 
-const STEPS = ["Your versions", "Your audience", "Result"];
 
 export function PageTitle({ title, lead, big = false }: { title: string; lead: string; big?: boolean }) {
   return (
@@ -56,7 +55,6 @@ export function PageTitle({ title, lead, big = false }: { title: string; lead: s
   );
 }
 
-/** The trust line: how often Ensayo picks the winner vs the rivals. Hidden until there is a real backtest. */
 export function ErrorNote({ message }: { message: string }) {
   return (
     <p role="alert" className="m-0 rounded-xl bg-[#fdecec] px-4 py-3 text-sm text-[#9b1c1c]">
