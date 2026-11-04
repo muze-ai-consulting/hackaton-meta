@@ -119,10 +119,25 @@ def _shield(prompt: str) -> dict[str, Any]:
             "action": "Turn on real mode for a real verdict."}
 
 
+def _response_calls() -> list[dict[str, Any]]:
+    """Acciones de relleno del agente de respuesta, con la misma forma que las del modelo."""
+    calls = {"alert_contact": {"message": "Placeholder alert from the mock server.", "why": "Placeholder."},
+             "draft_report": {"recipient": "The company being imitated", "subject": "Report of a scam",
+                              "body": "Placeholder report from the mock server.", "why": "Placeholder."},
+             "share_pattern": {"pattern": "Placeholder pattern from the mock server.", "why": "Placeholder."}}
+    return [{"id": f"mock{i}", "type": "function", "function": {"name": name, "arguments": json.dumps(args)}}
+            for i, (name, args) in enumerate(calls.items())]
+
+
 def respond(payload: dict[str, Any]) -> dict[str, Any]:
     messages = payload.get("messages") or []
     prompt, images = _flatten(messages)
-    if "You are a scam shield" in prompt:
+    calls = None
+    if "You are the response agent" in prompt:
+        # Primera vuelta: prepara las acciones. Con los resultados de vuelta, termina.
+        calls = None if any(m.get("role") == "tool" for m in messages) else _response_calls()
+        text = "Done."
+    elif "You are a scam shield" in prompt:
         text = json.dumps(_shield(prompt))
     elif "You are the investigator" in prompt:
         # Sin herramientas en el modo falso: responde de una vez, sin revisar nada.
@@ -148,7 +163,7 @@ def respond(payload: dict[str, Any]) -> dict[str, Any]:
         "id": "mock",
         "object": "chat.completion",
         "model": payload.get("model"),
-        "choices": [{"index": 0, "message": {"role": "assistant", "content": text}, "finish_reason": "stop"}],
+        "choices": [{"index": 0, "message": {"role": "assistant", "content": text, **({"tool_calls": calls} if calls else {})}, "finish_reason": "stop"}],
         "usage": usage,
     }
 

@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { AlertTriangle, Globe, ImagePlus, Link2, Mic, RotateCcw, Search, Send, Share2, ShieldAlert, ShieldCheck, Square, Upload, Users, X } from "lucide-react";
+import { AlertTriangle, Ban, Bell, Check as CheckIcon, Copy, FileText, Globe, ImagePlus, Link2, Mic, RotateCcw, Search, Send, Share2, ShieldAlert, ShieldCheck, Square, Upload, Users, Waypoints, X } from "lucide-react";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Input, Textarea } from "@/components/ui/input";
 import PhoneDemo from "@/components/PhoneDemo";
 import { Button, ErrorNote, PageTitle } from "@/components/shell";
-import { radar, shield, type Band, type CheckOut, type Evidence, type Clue, type InvestigateOut, type Mode, type ToolStep } from "@/lib/api";
+import { radar, shield, type Band, type CheckOut, type Evidence, type Clue, type ActOut, type AgentAction, type InvestigateOut, type Mode, type ToolStep } from "@/lib/api";
 import { cn, fileToDataUrl, pct } from "@/lib/utils";
 
 const MAX_IMAGES = 3;
@@ -25,6 +25,12 @@ const EXAMPLES: Example[] = [
     label: "Parcel fee text",
     kind: "SMS",
     text: "Royal Mail: Your parcel could not be delivered due to an unpaid shipping fee of £1.45. Pay now to rebook your delivery: royalmail-redelivery-uk.com",
+  },
+  {
+    label: "Already paid",
+    kind: "SMS",
+    text: "HSBC-Alert: Your account is locked. Verify your card details now at hsbc-secure-login.top to restore access.",
+    note: "I already paid the fee and typed my card number",
   },
   {
     label: "Marketplace buyer",
@@ -71,11 +77,13 @@ export default function Check({
   evidence,
   onEvidence,
   onCampaigns,
+  onNetwork,
 }: {
   mode: Mode;
   evidence: Evidence | null;
   onEvidence: () => void;
   onCampaigns: () => void;
+  onNetwork: () => void;
 }) {
   const [text, setText] = useState("");
   const [note, setNote] = useState("");
@@ -87,6 +95,8 @@ export default function Check({
   const [result, setResult] = useState<CheckOut | null>(null);
   const [probe, setProbe] = useState<InvestigateOut | null>(null);
   const [probing, setProbing] = useState(false);
+  const [plan, setPlan] = useState<ActOut | null>(null);
+  const [planning, setPlanning] = useState(false);
   const [checked, setChecked] = useState(""); // the text as it was when the person pressed "Check it"
   const recorder = useRef<MediaRecorder | null>(null);
   const imageInput = useRef<HTMLInputElement | null>(null);
@@ -96,6 +106,27 @@ export default function Check({
   useEffect(() => {
     if (result) resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [result]);
+
+  // Once the verdict and the investigation are in, the response agent prepares what it could do. Nothing runs by itself.
+  const agentContext = useRef("");
+  const planned = useRef<CheckOut | null>(null);
+  useEffect(() => {
+    if (!result || busy || probing || planned.current === result || result.band === "genuine") return;
+    planned.current = result;
+    setPlanning(true);
+    radar
+      .act({
+        text: agentContext.current || result.transcript || "",
+        images,
+        verdict: { band: result.band, probability: result.probability, reason: result.reason, action: result.action },
+        family: probe?.family ?? null,
+        clues: probe?.investigation?.clues ?? [],
+        mode,
+      })
+      .then(setPlan)
+      .catch(() => setPlan(null))
+      .finally(() => setPlanning(false));
+  }, [result, busy, probing, probe, images, mode]);
 
   const ready = Boolean(text.trim() || note.trim() || images.length || audio);
   const p = precision(evidence);
@@ -145,6 +176,7 @@ export default function Check({
   async function loadExample(ex: Example) {
     setResult(null);
     setProbe(null);
+    setPlan(null);
     setError("");
     setText(ex.text ?? "");
     setNote(ex.note ?? "");
@@ -159,6 +191,7 @@ export default function Check({
     setAudio(null);
     setResult(null);
     setProbe(null);
+    setPlan(null);
     setError("");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -181,12 +214,15 @@ export default function Check({
     setError("");
     setBusy(true);
     setProbe(null);
+    setPlan(null);
     setChecked(text);
     const context = [note, text].filter((s) => s.trim()).join("\n\n");
+    agentContext.current = context;
     const early = audio ? null : investigate(context);
     try {
       const out = await shield.check({ text, note, images, audio, mode });
       setResult(out);
+      if (audio) agentContext.current = [context, out.transcript].filter((s) => s.trim()).join("\n\n");
       if (audio) void investigate([context, out.transcript].filter((s) => s.trim()).join("\n\n"));
     } catch (err) {
       setError((err as Error).message);
@@ -324,6 +360,9 @@ export default function Check({
           <div className="mt-6">
             <Investigation probe={probe} probing={probing} message={checked} onCampaigns={onCampaigns} />
           </div>
+          <div className="mt-6">
+            <AgentActions plan={plan} planning={planning} onNetwork={onNetwork} />
+          </div>
         </div>
       )}
 
@@ -422,6 +461,108 @@ function Result({
           )}
         </p>
       </div>
+    </Card>
+  );
+}
+
+const ACTION_ICON = { alert_contact: Bell, draft_report: FileText, block_sender: Ban, share_pattern: Waypoints } as const;
+
+function doneLine(a: AgentAction): string {
+  if (a.tool === "alert_contact") return `Simulated: alert delivered to ${a.to}. Nothing was really sent.`;
+  if (a.tool === "block_sender") return "Simulated: sender blocked. Nothing was changed.";
+  if (a.tool === "share_pattern")
+    return `Simulated: added to the network${a.report_number ? ` as report #${a.report_number} of ${a.family}` : ""}. Nobody was contacted.`;
+  return "Marked as done. We never send it for you: copy it and send it yourself.";
+}
+
+function ActionCard({ action, done, onDo }: { action: AgentAction; done: boolean; onDo: () => void }) {
+  const Icon = ACTION_ICON[action.tool];
+  const [copied, setCopied] = useState(false);
+  const report = action.tool === "draft_report";
+  async function copy() {
+    await navigator.clipboard.writeText(`${action.subject}\n\n${action.body}`);
+    setCopied(true);
+  }
+  return (
+    <li className={cn("flex flex-col gap-3 rounded-xl border p-4", done ? "border-ok bg-ok-soft" : "border-line bg-white")}>
+      <div className="flex items-start gap-3">
+        <Icon className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
+        <div className="min-w-0">
+          <div className="font-semibold text-heading">{action.title}</div>
+          <p className="m-0 text-sm text-muted">{action.why}</p>
+        </div>
+      </div>
+      {report && action.subject && <div className="text-sm font-semibold">Subject: {action.subject}</div>}
+      <p className="m-0 whitespace-pre-wrap rounded-lg bg-bg px-3 py-2 text-sm leading-normal">{action.body}</p>
+      {done && action.heads_up && (
+        <div className="rounded-lg bg-white px-3 py-2 text-sm leading-normal">
+          <div className="text-xs font-semibold text-muted">In production, people who haven't seen it yet would get</div>
+          {action.heads_up}
+        </div>
+      )}
+      {done ? (
+        <div className="flex flex-col gap-2">
+          <p className="m-0 flex gap-1.5 text-sm font-semibold text-ok" role="status">
+            <CheckIcon className="mt-0.5 size-4 shrink-0" aria-hidden="true" /> {doneLine(action)}
+          </p>
+          {report && (
+            <Button size="sm" variant="outline" className="self-start" onClick={copy}>
+              <Copy /> {copied ? "Copied" : "Copy report"}
+            </Button>
+          )}
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {report && (
+            <Button size="sm" variant="outline" onClick={copy}>
+              <Copy /> {copied ? "Copied" : "Copy report"}
+            </Button>
+          )}
+          <Button size="sm" onClick={onDo}>
+            {report ? "Mark as done" : "Approve (simulated)"}
+          </Button>
+        </div>
+      )}
+    </li>
+  );
+}
+
+function AgentActions({ plan, planning, onNetwork }: { plan: ActOut | null; planning: boolean; onNetwork: () => void }) {
+  const [done, setDone] = useState<number[]>([]);
+  useEffect(() => setDone([]), [plan]);
+  if (planning) {
+    return (
+      <Card className="flex items-center gap-3 p-5 text-sm text-muted sm:p-7" aria-live="polite">
+        <ShieldCheck className="size-5 animate-pulse" aria-hidden="true" /> The agent is preparing what it could do for you…
+      </Card>
+    );
+  }
+  if (!plan?.actions.length) return null;
+  const all = plan.actions.map((_, i) => i);
+  return (
+    <Card className="flex flex-col gap-4 p-5 sm:p-7" aria-live="polite">
+      <div className="flex flex-wrap items-center gap-3">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <ShieldCheck className="size-5" aria-hidden="true" /> What the agent prepared for you
+        </CardTitle>
+        <span className="rounded-full bg-[#fbf1dc] px-2.5 py-1 text-xs font-semibold text-[#7a4b00]">Demo: simulated, nothing is really sent</span>
+        {done.length < all.length && (
+          <Button size="sm" variant="outline" className="sm:ml-auto" onClick={() => setDone(all)}>
+            Approve all
+          </Button>
+        )}
+      </div>
+      <ul className="m-0 grid list-none gap-3 p-0 lg:grid-cols-2">
+        {plan.actions.map((a, i) => (
+          <ActionCard key={a.tool} action={a} done={done.includes(i)} onDo={() => setDone((d) => [...d, i])} />
+        ))}
+      </ul>
+      <p className="m-0 text-xs text-muted">
+        An agent on Muse Spark 1.3 chose these with function calling, and each one waits for your approval. Ana is a made-up contact.{" "}
+        <button type="button" onClick={onNetwork} className="cursor-pointer underline">
+          See how early warning would work
+        </button>
+      </p>
     </Card>
   );
 }

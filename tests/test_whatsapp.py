@@ -71,6 +71,32 @@ def test_text_gets_verdict_then_clues(tmp_path, monkeypatch) -> None:
     assert "What I checked" in sent[1]["text"]["body"]
 
 
+def test_scam_offers_actions_and_button_answers(tmp_path, monkeypatch) -> None:
+    env(monkeypatch)
+    monkeypatch.setattr(llm, "RESULTS", tmp_path)
+    number = "447700900124"
+    sent: list[dict] = []
+
+    async def go() -> None:
+        async with fake_graph(sent) as http:
+            client = ModelClient.from_env(mock=True)
+            await whatsapp.handle({"from": number, "id": "wamid.a", "type": "text", "text": {
+                "body": "URGENT your bank account is locked, verify now at https://secure-bank-verify.top"}}, client=client, http=http)
+            await whatsapp.handle({"from": number, "id": "wamid.b", "type": "interactive", "interactive": {
+                "type": "button_reply", "button_reply": {"id": "act:0", "title": "Alert Ana"}}}, client=client, http=http)
+    asyncio.run(go())
+    buttons = [s for s in sent if s.get("type") == "interactive"]
+    assert len(buttons) == 1 and "simulated" in buttons[0]["interactive"]["body"]["text"]
+    assert len(buttons[0]["interactive"]["action"]["buttons"]) == 3
+    assert "Simulated" in sent[-1]["text"]["body"] and "Nothing was sent" in sent[-1]["text"]["body"]
+
+
+def test_expired_button(tmp_path, monkeypatch) -> None:
+    env(monkeypatch)
+    sent = run({"from": "9", "id": "wamid.c", "type": "interactive", "interactive": {"button_reply": {"id": "act:0"}}}, tmp_path, monkeypatch)
+    assert "expired" in sent[0]["text"]["body"]
+
+
 def test_short_hello_gets_welcome(tmp_path, monkeypatch) -> None:
     env(monkeypatch)
     sent = run({"from": "1", "id": "wamid.2", "type": "text", "text": {"body": "hi"}}, tmp_path, monkeypatch)

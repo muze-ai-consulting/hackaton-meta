@@ -120,6 +120,12 @@ Relato: "la IA ya fabrica las estafas, y la IA de Meta las desarma". El veredict
   - Un teléfono animado (`PhoneDemo.tsx`) muestra el flujo en WhatsApp con las respuestas reales del ejemplo del paquete.
   - Las pistas del agente traen la cita exacta y la web la marca en el mensaje. El agente ahora corre también sin enlaces, si el texto tiene 40 caracteres o más.
   - Ejemplo nuevo con pantallazo de un chat de Marketplace (`frontend/example-sources/` → PNG).
+- **El agente actúa y alerta temprana, simulados (4-nov, pedido de Mark: "que sea funcional, pero no lo haga realmente"). Sin desplegar hasta su OK.** Todo se rotula como simulado en pantalla y en el bot.
+  - **Agente de respuesta** (`ensayo/act.py`, `POST /api/act`, cupo de 30): después del veredicto, Spark 1.3 con function calling elige entre `alert_contact`, `draft_report`, `block_sender` y `share_pattern`. El modelo elige y redacta de verdad; ejecutar está simulado. Si la persona ya pagó, el informe va al equipo de fraude del banco (probado). Con "No clear signs" no llama al modelo. Ana es un contacto inventado. El informe sí sirve: se copia y lo envía la persona. ~US$ 0,005 por vuelta, máx. 2.
+  - **Web:** tarjeta "What the agent prepared for you", con aprobar por acción o todas, y ejemplo nuevo "Already paid".
+  - **WhatsApp:** tercer mensaje con botones (máx. 3; bloquear queda fuera si hay 4). Los toques no llaman al modelo. Las acciones quedan solo en memoria, una hora. **Falta probar los botones en un teléfono real.**
+  - **Alerta temprana** (`scripts/scam_network.py` → `results/scam_network.json`, `GET /api/network`, pantalla Early warning): repite los casos reales por fecha. Campaña = marca dentro de una familia, marcada con 3 reportes en 14 días: 15 campañas de 478 reportes con marca y 34 reportes posteriores (mediana 22,5 días). Es ilustración, no prueba: el umbral se fijó mirando estos datos, y con pocos datos no se puede decir qué atraparía una red real. `results/scam_network.json` se sube aparte a `/opt/ensayo/results/` (chown 1000).
+  - Costo total por consulta: ~US$ 0,02.
 - `ModelClient.chat_message` devuelve el mensaje completo (con `tool_calls`); `chat` lo usa por dentro.
 
 ## WhatsApp Cloud API (3-nov, OK de Mark)

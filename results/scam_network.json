@@ -1,0 +1,416 @@
+{
+ "source": "public Reddit reports, replayed by date",
+ "rule": {
+  "min_reports": 3,
+  "window_days": 14
+ },
+ "reports": 1902,
+ "branded_reports": 478,
+ "flagged": 15,
+ "warned": 34,
+ "median_days_ahead": 22.5,
+ "campaigns": [
+  {
+   "id": "phishing_account_theft:apple",
+   "name": "Fake Apple messages",
+   "family": "Phishing and Account Theft",
+   "what": "Fake emails, texts, or support agents trick you into sharing codes or access.",
+   "spot": [
+    "Link to verify account or order",
+    "Asks for OTP password or access",
+    "Fake support or ban warning"
+   ],
+   "do": "Never share codes; open official app",
+   "flagged_on": "2026-09-12",
+   "flag_index": 2,
+   "warned": 11,
+   "reports": [
+    {
+     "date": "2026-09-09",
+     "hook": "Text warning of fraudulent payment activity urging call to resolve",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/Scams/comments/1wbaj0d/us_apple_pay_fraudulent_transactions/"
+    },
+    {
+     "date": "2026-09-10",
+     "hook": "recent store purchase requiring confirmation if unauthorized",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/Scams/comments/1wczplv/us_nearly_fell_for_this_till_the_scammer_messed_up/"
+    },
+    {
+     "date": "2026-09-12",
+     "hook": "Apple fraud alert call after suspicious login attempt",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/Scams/comments/1wdys2l/spainworldwide_they_tried_to_get_my_apple_id/"
+    },
+    {
+     "date": "2026-09-16",
+     "hook": "Messages asking to unlock sold phone for insurance claim",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/Scams/comments/1whw32d/walmart_kiosk_machine_us/"
+    },
+    {
+     "date": "2026-09-28",
+     "hook": "Resize photo then dispute hefty fee via in-app support call",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1wsg99u/determining_next_steps_to_help_my_step_mother_who/"
+    },
+    {
+     "date": "2026-10-01",
+     "hook": "Unverified payment alert urging urgent call to unblock account",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/Scams/comments/1wv4hft/us_i_think_i_know_the_answer_but/"
+    },
+    {
+     "date": "2026-10-05",
+     "hook": "Urgent security alert about unauthorized large purchase needing immediate call",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1wybf8g/text_scam_from_apple/"
+    },
+    {
+     "date": "2026-10-06",
+     "hook": "support message from ordinary mobile number claiming account issue",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/ScamCenter/comments/1wz42p1/i_think_this_is_a_scam_text_but_not_entirely_sure/"
+    },
+    {
+     "date": "2026-10-07",
+     "hook": "Urgent notice of incomplete large charge from unknown device awaiting review",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1x002k2/just_received_this_scam/"
+    },
+    {
+     "date": "2026-10-11",
+     "hook": "Repeated account verification codes arriving without requesting them",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1x329gk/apple_log_in_codes_keep_popping_up/"
+    },
+    {
+     "date": "2026-10-12",
+     "hook": "Sudden platform security warning redirect without clicking ads",
+     "channel": "website",
+     "url": "https://www.reddit.com/r/Scams/comments/1x3q2pl/i_got_this_on_a_site_that_i_usually_dont_get_pop/"
+    },
+    {
+     "date": "2026-10-17",
+     "hook": "Store pickup order confirmation for expensive purchase you didn't place",
+     "channel": "website",
+     "url": "https://www.reddit.com/r/Scams/comments/1x8fyzn/us_apple_fraud_purchase_of_1300/"
+    },
+    {
+     "date": "2026-10-19",
+     "hook": "Sponsored search result mimicking official support page for billing charges",
+     "channel": "website",
+     "url": "https://www.reddit.com/r/Scams/comments/1xa9m2r/eerily_similar_to_the_real_thing_scam_website/"
+    },
+    {
+     "date": "2026-10-30",
+     "hook": "security notification about suspicious payment pre-authorization requiring immediate support call",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1xjcgu2/is_this_some_type_of_scam/"
+    }
+   ]
+  },
+  {
+   "id": "phishing_account_theft:amazon",
+   "name": "Fake Amazon messages",
+   "family": "Phishing and Account Theft",
+   "what": "Fake emails, texts, or support agents trick you into sharing codes or access.",
+   "spot": [
+    "Link to verify account or order",
+    "Asks for OTP password or access",
+    "Fake support or ban warning"
+   ],
+   "do": "Never share codes; open official app",
+   "flagged_on": "2026-09-16",
+   "flag_index": 2,
+   "warned": 6,
+   "reports": [
+    {
+     "date": "2026-09-05",
+     "hook": "Fake order email urging to click to view order",
+     "channel": "email",
+     "url": "https://www.reddit.com/r/Scams/comments/1w7o1i9/us_amazon_scam_right_after_support_call/"
+    },
+    {
+     "date": "2026-09-06",
+     "hook": "Unexpected COD then prepaid parcels needing OTP to cancel or receive",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/IsThisAScamIndia/comments/1w8pvqg/amazon_order_call/"
+    },
+    {
+     "date": "2026-09-16",
+     "hook": "Unknown orders for streaming add-ons appeared then debt collection",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/Scams/comments/1wi09zf/uk_someone_accessed_my_amazonde_account_and_added/"
+    },
+    {
+     "date": "2026-09-24",
+     "hook": "post-delivery call about issue needing verification code",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/Scams/comments/1wp8q7u/india_possible_amazon_delivery_otp_scam_has/"
+    },
+    {
+     "date": "2026-10-02",
+     "hook": "Linked rewards points available to spend at checkout",
+     "channel": "email",
+     "url": "https://www.reddit.com/r/Scams/comments/1wvgk6v/usa_someone_used_up_my_chase_sapphire_points_on/"
+    },
+    {
+     "date": "2026-10-09",
+     "hook": "Request to share OTP to help with order refund",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/IsThisAScamIndia/comments/1x1skw4/someone_got_into_my_friends_amazon_account_need/"
+    },
+    {
+     "date": "2026-10-22",
+     "hook": "Expensive watches ordered on compromised account for delivery elsewhere",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/Scams/comments/1xc6dr1/my_amazon_got_hacked_and_the_items_are_being/"
+    },
+    {
+     "date": "2026-10-24",
+     "hook": "Expensive electronics ordered from third-party sellers to nearby address",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/Scams/comments/1xe1t46/fraudulent_amazon_purchases_all_from_third_party/"
+    },
+    {
+     "date": "2026-10-28",
+     "hook": "Official help page showing support number in banner",
+     "channel": "website",
+     "url": "https://www.reddit.com/r/Scams/comments/1xhx65c/us_kindle_phone_support_scam/"
+    }
+   ]
+  },
+  {
+   "id": "phishing_account_theft:reddit",
+   "name": "Fake Reddit messages",
+   "family": "Phishing and Account Theft",
+   "what": "Fake emails, texts, or support agents trick you into sharing codes or access.",
+   "spot": [
+    "Link to verify account or order",
+    "Asks for OTP password or access",
+    "Fake support or ban warning"
+   ],
+   "do": "Never share codes; open official app",
+   "flagged_on": "2026-09-08",
+   "flag_index": 2,
+   "warned": 4,
+   "reports": [
+    {
+     "date": "2026-09-03",
+     "hook": "Accused of phishing, told to contact support to appeal ban",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1w5tbq2/phishing_scam_messages/"
+    },
+    {
+     "date": "2026-09-08",
+     "hook": "mistakenly reported account must be validated urgently through representative",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1wamm4k/i_accidentally_reported_you_reddit_to_discord/"
+    },
+    {
+     "date": "2026-09-08",
+     "hook": "Told someone impersonated you and support needed your email to verify",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1wazbei/us_is_this_a_reddit_scam/"
+    },
+    {
+     "date": "2026-09-08",
+     "hook": "Someone accidentally reported your account, contact support to resolve it",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1wb22h5/uk_just_had_one_attempted_on_me/"
+    },
+    {
+     "date": "2026-09-10",
+     "hook": "Told account mistakenly reported for impersonation needs fix",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1wcfa4i/someone_tried_to_scam_me/"
+    },
+    {
+     "date": "2026-09-10",
+     "hook": "Accused of spamming and urged to call support to appeal",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1wcqlok/us_is_this_a_reddit_scam/"
+    },
+    {
+     "date": "2026-10-04",
+     "hook": "Account flagged for ticket fraud, contact admin to appeal",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1wx1wft/is_this_trouble/"
+    }
+   ]
+  },
+  {
+   "id": "delivery_fee_texts:fedex",
+   "name": "Fake FedEx messages",
+   "family": "Delivery Fee Texts",
+   "what": "Texts claim unpaid parcel, customs, traffic, or toll fee with malicious payment link.",
+   "spot": [
+    "Unexpected fee text with link",
+    "Shortened or odd website address",
+    "Small payment to release package"
+   ],
+   "do": "Do not click; check official site directly",
+   "flagged_on": "2026-09-29",
+   "flag_index": 2,
+   "warned": 4,
+   "reports": [
+    {
+     "date": "2026-09-15",
+     "hook": "delivery issue needing small fee to reroute",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1wgoi9q/fed_ex_shipping/"
+    },
+    {
+     "date": "2026-09-18",
+     "hook": "Failed delivery needs redelivery scheduled for a small fee",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/Scams/comments/1wjr166/us_fedex_delivery_reschedule_scam_and_website/"
+    },
+    {
+     "date": "2026-09-29",
+     "hook": "Pay labeling and tracking fees to release shipped purchase",
+     "channel": "email",
+     "url": "https://www.reddit.com/r/Scams/comments/1wt1hyb/us_fedex_scam_after_facebook_purchase/"
+    },
+    {
+     "date": "2026-10-03",
+     "hook": "Package address problem, update info by today or returned",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1wwuhpx/why_is_a_texas_calling_me_for_fedex/"
+    },
+    {
+     "date": "2026-10-06",
+     "hook": "Delivery notification warned of address issue needing verification or package returned",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/Scams/comments/1wzacpw/fedexydcom_delivery_scam/"
+    },
+    {
+     "date": "2026-10-10",
+     "hook": "Missed delivery requiring signature confirmation and fee to reschedule delivery",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1x2r55a/is_this_a_scam_text/"
+    },
+    {
+     "date": "2026-10-21",
+     "hook": "Failed delivery notice requiring small fee to redeliver package",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/Scams/comments/1xbrg86/how_did_they_know_i_had_packages_coming_today/"
+    }
+   ]
+  },
+  {
+   "id": "phishing_account_theft:google",
+   "name": "Fake Google messages",
+   "family": "Phishing and Account Theft",
+   "what": "Fake emails, texts, or support agents trick you into sharing codes or access.",
+   "spot": [
+    "Link to verify account or order",
+    "Asks for OTP password or access",
+    "Fake support or ban warning"
+   ],
+   "do": "Never share codes; open official app",
+   "flagged_on": "2026-09-26",
+   "flag_index": 2,
+   "warned": 4,
+   "reports": [
+    {
+     "date": "2026-09-21",
+     "hook": "Urgent security warning about suspicious account login attempts",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/Scams/comments/1wmohqx/google_scam_watch_out/"
+    },
+    {
+     "date": "2026-09-26",
+     "hook": "Security team warning lawyer tried to access account with death certificate",
+     "channel": "phone_call",
+     "url": "https://www.reddit.com/r/Scams/comments/1wqex24/google_account_phished_kraken_accessed/"
+    },
+    {
+     "date": "2026-09-26",
+     "hook": "Phone alert warned of virus needing urgent action",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/Scams/comments/1wqnmb2/uk_my_grandma_has_been_getting_emails_or/"
+    },
+    {
+     "date": "2026-09-26",
+     "hook": "confirm scheduling interview by verifying account login",
+     "channel": "email",
+     "url": "https://www.reddit.com/r/Scams/comments/1wqyv4e/us_recruiting_calendly_link_phishing/"
+    },
+    {
+     "date": "2026-09-29",
+     "hook": "Repeated emails about payment records and storage issues",
+     "channel": "email",
+     "url": "https://www.reddit.com/r/IsThisAScamIndia/comments/1wte6vd/i_got_this_email_consecutively_3_times_yesterday/"
+    },
+    {
+     "date": "2026-09-30",
+     "hook": "App password security alert urging immediate call to support line",
+     "channel": "email",
+     "url": "https://www.reddit.com/r/isthisascam/comments/1wufav8/is_this_email_from_google_a_scam/"
+    },
+    {
+     "date": "2026-10-21",
+     "hook": "verification code to prove active number for purchase",
+     "channel": "sms",
+     "url": "https://www.reddit.com/r/Scams/comments/1xbt7xw/us_i_know_this_guy_is_a_scammer_and_ive_tried/"
+    }
+   ]
+  },
+  {
+   "id": "gambling_betting_scams:mrbeast",
+   "name": "Fake MrBeast messages",
+   "family": "Gambling and Betting Scams",
+   "what": "Tipsters or casinos promise sure wins but rig games or demand withdrawal fees.",
+   "spot": [
+    "Guaranteed tips or rigged bonuses",
+    "Fee to withdraw winnings",
+    "Unlicensed site or Telegram group"
+   ],
+   "do": "Do not deposit; leave site",
+   "flagged_on": "2026-09-15",
+   "flag_index": 2,
+   "warned": 3,
+   "reports": [
+    {
+     "date": "2026-09-05",
+     "hook": "Celebrity crypto casino offering instant withdrawable signup bonus",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1w81dy3/usmy_friend_sent_me_a_scam_i_think/"
+    },
+    {
+     "date": "2026-09-09",
+     "hook": "Free money for signing up on new online casino",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1wbgzd1/fr_casino_en_ligne_mrbest_pehowincom/"
+    },
+    {
+     "date": "2026-09-15",
+     "hook": "celebrity giveaway free balance for registering with promo code",
+     "channel": "other_app",
+     "url": "https://www.reddit.com/r/Scams/comments/1whcpgj/mrbeast_2500_scamers/"
+    },
+    {
+     "date": "2026-09-28",
+     "hook": "fake celebrity gambling promotion promising winnings",
+     "channel": "facebook",
+     "url": "https://www.reddit.com/r/ScamCenter/comments/1wsb39q/meta_delete_the_scams_philippines/"
+    },
+    {
+     "date": "2026-10-13",
+     "hook": "Celebrity-backed casino signup bonus shared by trusted friend",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/Scams/comments/1x4qs6s/i_fell_for_an_online_casino_scam_and_im_worried/"
+    },
+    {
+     "date": "2026-10-29",
+     "hook": "Celebrity-backed casino promising easy winnings after small deposit",
+     "channel": "unknown",
+     "url": "https://www.reddit.com/r/Scams/comments/1xiapag/scamed_by_mrbeast_casino_trap_lost_50/"
+    }
+   ]
+  }
+ ]
+}

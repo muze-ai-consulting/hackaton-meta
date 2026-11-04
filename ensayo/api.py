@@ -5,6 +5,8 @@
   agente que revisa enlaces y dominios con herramientas (ensayo.investigate). No cambia el puntaje del escudo.
 - GET/POST /api/whatsapp: webhook de la WhatsApp Cloud API (ensayo.whatsapp): verificación con el verify token y
   mensajes firmados con el App Secret; responde por WhatsApp en segundo plano.
+- POST /api/act: el agente de respuesta prepara acciones para la persona (ensayo.act). Simuladas: nada se envía.
+- GET /api/network: repetición de alerta temprana con los casos públicos de Reddit (results/scam_network.json).
 - GET /api/campaigns: qué está circulando, desde los casos públicos de Reddit (results/scam_campaigns.json).
 - GET /api/evidence: la validación preregistrada del escudo (dos intentos, hashes y bandas; results/scam_bands.json).
 
@@ -40,7 +42,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from ensayo import DATA, RESULTS, ROOT
-from ensayo import campaigns, whatsapp
+from ensayo import act, campaigns, whatsapp
 from ensayo.chat import ask_persona
 from ensayo.costs import BudgetExceeded
 from ensayo.images import MAX_VARIANTS, generate_variants
@@ -61,7 +63,7 @@ MAX_EXAMPLES = 20
 # Marcas que no se muestran como ejemplo en el demo (decisión de Mark, 2-nov: ropa interior de hombre en primer plano).
 HIDDEN_EXAMPLE_PAGES = {"Le Slip Français"}
 # Pedidos en modo real por visitante (IP) y por día. El gasto total lo limita la fase "demo" del Ledger.
-REAL_DAILY_LIMITS = {"simulate": 5, "variants": 3, "chat": 30, "check": 30, "investigate": 30}
+REAL_DAILY_LIMITS = {"simulate": 5, "variants": 3, "chat": 30, "check": 30, "investigate": 30, "act": 30}
 _real_usage: dict[tuple[str, str, str], int] = defaultdict(int)
 REAL_MODEL = "muse-spark-1.3"
 REAL_MAX_PERSONAS = 300
@@ -143,6 +145,15 @@ class CheckIn(BaseModel):
 class InvestigateIn(BaseModel):
     text: str = Field("", max_length=12000)  # el mensaje más la transcripción de la nota de voz, si hubo
     images: list[str] = Field(default_factory=list, max_length=SHIELD_MAX_IMAGES)
+    mode: Literal["mock", "real"] = "mock"
+
+
+class ActIn(BaseModel):
+    text: str = Field("", max_length=12000)
+    images: list[str] = Field(default_factory=list, max_length=SHIELD_MAX_IMAGES)
+    verdict: dict[str, Any]
+    family: dict[str, Any] | None = None
+    clues: list[dict[str, Any]] = Field(default_factory=list, max_length=10)
     mode: Literal["mock", "real"] = "mock"
 
 
@@ -276,6 +287,33 @@ async def investigate(req: InvestigateIn, request: Request) -> dict[str, Any]:
     }
 
 
+@app.post("/api/act")
+async def act_on(req: ActIn, request: Request) -> dict[str, Any]:
+    if any(len(i) > MAX_IMAGE_CHARS for i in req.images):
+        raise HTTPException(413, "Each screenshot must be under 3 MB.")
+    try:
+        pics = [shrink_image(u) for u in req.images]
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    mock = req.mode == "mock"
+    if not mock and req.verdict.get("band") != "genuine":
+        guard_real(request, "act")
+    client = ModelClient.from_env(mock=mock)
+    client.effort = "low"
+    spent_before = client.ledger.spent()
+    try:
+        out = await act.respond(client, model=REAL_MODEL, phase="demo", verdict=req.verdict, text=req.text, images=pics,
+                                family=req.family, clues=req.clues)
+    except BudgetExceeded as exc:
+        raise HTTPException(402, "The demo has reached its spending cap. Try again tomorrow.") from exc
+    except (RuntimeError, KeyError, TypeError) as exc:
+        log.exception("Fallo del agente de respuesta")
+        raise HTTPException(502, f"The Model API returned an error: {exc}") from exc
+    finally:
+        await client.aclose()
+    return {"mode": req.mode, "usd": round(client.ledger.spent() - spent_before, 5), **out}
+
+
 async def _none() -> None:
     return None
 
@@ -314,6 +352,14 @@ def campaigns_view() -> dict[str, Any]:
     if not data:
         raise HTTPException(404, "No campaign data yet.")
     return data
+
+
+@app.get("/api/network")
+def network_view() -> dict[str, Any]:
+    path = RESULTS / "scam_network.json"
+    if not path.exists():
+        raise HTTPException(404, "No network replay yet.")
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 @app.get("/api/evidence")

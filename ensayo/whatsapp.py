@@ -1,11 +1,13 @@
 """Second Look en WhatsApp: la persona reenvía el mensaje, pantallazo o nota de voz al número y recibe la respuesta ahí.
 
-Webhook de la WhatsApp Cloud API (Graph API). Dos respuestas por consulta:
+Webhook de la WhatsApp Cloud API (Graph API). Tres respuestas por consulta:
 1. el veredicto del escudo (ensayo.shield, el prompt validado), apenas está;
-2. las pistas del agente investigador y la familia a la que se parece (ensayo.investigate y ensayo.campaigns).
+2. las pistas del agente investigador y la familia a la que se parece (ensayo.investigate y ensayo.campaigns);
+3. las acciones que preparó el agente de respuesta, con botones (ensayo.act). Son simuladas: nada se envía.
 
-Los mensajes son datos de usuarios: van por muse-spark-1.3 estándar (fase "demo") y no se guardan ni se registran;
-en los logs solo queda un hash del número. Cada aviso de Meta se verifica con la firma X-Hub-Signature-256 (App
+Los mensajes son datos de usuarios: van por muse-spark-1.3 estándar (fase "demo") y no se guardan en disco ni se
+registran; las acciones preparadas quedan solo en memoria, por una hora, para responder los botones. En los logs solo
+queda un hash del número. Cada aviso de Meta se verifica con la firma X-Hub-Signature-256 (App
 Secret). Variables en .env: WHATSAPP_TOKEN, WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_VERIFY_TOKEN, WHATSAPP_APP_SECRET.
 """
 
@@ -22,7 +24,7 @@ from typing import Any
 import httpx
 from dotenv import load_dotenv
 
-from ensayo import ROOT, campaigns
+from ensayo import ROOT, act, campaigns
 from ensayo.costs import BudgetExceeded
 from ensayo.investigate import investigate
 from ensayo.llm import ModelClient
@@ -35,6 +37,9 @@ GRAPH = "https://graph.facebook.com/v23.0"
 MODEL = "muse-spark-1.3"
 DAILY_LIMIT = 30
 MAX_MEDIA_BYTES = 10 * 1024 * 1024
+MAX_BUTTONS = 3  # lo que permite WhatsApp en un mensaje
+BUTTON_CHARS = 20
+PENDING_SECONDS = 3600
 BAND_LINE = {"scam": "🔴 *Likely a scam*", "careful": "🟠 *Be careful*", "genuine": "🟢 *No clear signs of a scam*"}
 SIGNAL = {"risky": "⚠️", "reassuring": "✅", "neutral": "•"}
 WELCOME = (
@@ -44,6 +49,7 @@ WELCOME = (
 
 _seen: OrderedDict[str, None] = OrderedDict()  # ids ya procesados: Meta reintenta los avisos
 _usage: dict[tuple[str, str], int] = defaultdict(int)
+_pending: dict[str, tuple[float, list[dict[str, Any]]]] = {}  # acciones por número (con hash), para responder los botones
 
 
 def env(name: str) -> str:
@@ -98,6 +104,15 @@ async def send_text(http: httpx.AsyncClient, to: str, text: str, reply_to: str |
     r = await http.post(f"{GRAPH}/{env('WHATSAPP_PHONE_NUMBER_ID')}/messages", json=payload)
     if r.status_code >= 400:
         log.error(f"WhatsApp send {r.status_code}: {r.text[:300]}")
+
+
+async def send_buttons(http: httpx.AsyncClient, to: str, text: str, buttons: list[tuple[str, str]]) -> None:
+    payload = {"messaging_product": "whatsapp", "to": to, "type": "interactive", "interactive": {
+        "type": "button", "body": {"text": text[:1024]},
+        "action": {"buttons": [{"type": "reply", "reply": {"id": i, "title": t[:BUTTON_CHARS]}} for i, t in buttons]}}}
+    r = await http.post(f"{GRAPH}/{env('WHATSAPP_PHONE_NUMBER_ID')}/messages", json=payload)
+    if r.status_code >= 400:
+        log.error(f"WhatsApp buttons {r.status_code}: {r.text[:300]}")
 
 
 async def mark_read(http: httpx.AsyncClient, message_id: str) -> None:
@@ -162,6 +177,49 @@ def clues_text(family: dict[str, Any] | None, inv: dict[str, Any] | None) -> str
     return "\n\n".join(parts)
 
 
+BUTTON_LABEL = {"alert_contact": f"Alert {act.CONTACT}", "draft_report": "Write my report", "block_sender": "Block sender",
+                "share_pattern": "Warn others"}
+
+
+async def offer_actions(http: httpx.AsyncClient, sender: str, actions: list[dict[str, Any]]) -> None:
+    """Las acciones del agente, con un botón por cada una. WhatsApp permite 3: bloquear es la primera en quedar fuera."""
+    shown = [a for a in actions if a["tool"] != "block_sender"][:MAX_BUTTONS] if len(actions) > MAX_BUTTONS else actions
+    if not shown:
+        return
+    now = time.time()
+    for k in [k for k, (t, _) in _pending.items() if now - t > PENDING_SECONDS]:
+        del _pending[k]
+    _pending[who(sender)] = (now, shown)
+    lines = ["🛡️ *I can act on this for you.* You choose.", "_Demo: these are simulated. Nothing is really sent._", ""]
+    lines += [f"• *{BUTTON_LABEL[a['tool']]}:* {a['why']}" for a in shown]
+    await send_buttons(http, sender, "\n".join(lines), [(f"act:{i}", BUTTON_LABEL[a["tool"]]) for i, a in enumerate(shown)])
+
+
+def action_reply(action: dict[str, Any]) -> str:
+    tool = action["tool"]
+    if tool == "alert_contact":
+        return f"✅ *Simulated:* {act.CONTACT} would get this. Nothing was sent.\n\n\"{action['body']}\""
+    if tool == "draft_report":
+        return (f"📝 *Your report to {action['to']}.* I didn't send it: copy it and send it yourself.\n\n"
+                f"*Subject:* {action['subject']}\n\n{action['body']}")
+    if tool == "block_sender":
+        return f"✅ *Simulated:* {action['body']} Nothing was changed on your phone."
+    number = f" as report #{action['report_number']} of {action['family']}" if action.get("report_number") else ""
+    return (f"✅ *Simulated:* your anonymous pattern joins the network{number}. Nobody was contacted.\n\n"
+            f"In production, people who haven't seen it yet would get:\n\"{action['heads_up']}\"")
+
+
+async def handle_button(http: httpx.AsyncClient, sender: str, message: dict[str, Any]) -> None:
+    """Un toque en un botón de acción. No llama al modelo: la respuesta ya está preparada."""
+    button = (message.get("interactive") or {}).get("button_reply") or {}
+    _, actions = _pending.get(who(sender), (0, []))
+    index = str(button.get("id", "")).removeprefix("act:")
+    if not index.isdigit() or int(index) >= len(actions):
+        await send_text(http, sender, "That action has expired. Forward the message again and I'll prepare it again.")
+        return
+    await send_text(http, sender, action_reply(actions[int(index)]), message.get("id"))
+
+
 async def handle(message: dict[str, Any], client: ModelClient | None = None, http: httpx.AsyncClient | None = None) -> None:
     """Responde un mensaje entrante. Nunca levanta: los errores se le cuentan a la persona."""
     sender, mid, kind = message.get("from", ""), message.get("id", ""), message.get("type")
@@ -173,6 +231,9 @@ async def handle(message: dict[str, Any], client: ModelClient | None = None, htt
     spent_before = client.ledger.spent()
     try:
         text, images, audio = "", [], None
+        if kind == "interactive":
+            await handle_button(http, sender, message)
+            return
         if kind == "text":
             text = (message.get("text") or {}).get("body", "")
         elif kind == "image":
@@ -205,6 +266,9 @@ async def handle(message: dict[str, Any], client: ModelClient | None = None, htt
         extra = clues_text(None if isinstance(family, BaseException) else family, None if isinstance(inv, BaseException) else inv)
         if extra:
             await send_text(http, sender, extra)
+        fam, clues = None if isinstance(family, BaseException) else family, [] if isinstance(inv, BaseException) else inv.get("clues", [])
+        plan = await act.respond(client, model=MODEL, phase="demo", verdict=verdict, text=content, images=images, family=fam, clues=clues)
+        await offer_actions(http, sender, plan["actions"])
         log.info(f"whatsapp {who(sender)} {kind} → {verdict['band']} (US$ {client.ledger.spent() - spent_before:.4f})")
     except BudgetExceeded:
         await send_text(http, sender, "The demo has reached its spending cap. Try again tomorrow.", mid)

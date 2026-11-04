@@ -213,7 +213,55 @@ export interface Campaigns {
   families: Family[];
 }
 
+// What the response agent prepared. Everything here is simulated: nothing is sent, blocked or published.
+export interface AgentAction {
+  tool: "alert_contact" | "draft_report" | "block_sender" | "share_pattern";
+  title: string;
+  why: string;
+  to: string;
+  body: string;
+  subject?: string;
+  heads_up?: string;
+  report_number?: number | null;
+  family?: string | null;
+}
+
+export interface ActOut {
+  mode: Mode;
+  usd: number;
+  actions: AgentAction[];
+  simulated: true;
+  skipped?: boolean;
+}
+
+export interface NetworkCampaign {
+  id: string;
+  name: string;
+  family: string;
+  what: string;
+  spot: string[];
+  do: string;
+  flagged_on: string;
+  flag_index: number;
+  warned: number;
+  reports: { date: string; hook: string; channel: string; url: string | null }[];
+}
+
+export interface Network {
+  source: string;
+  rule: { min_reports: number; window_days: number };
+  reports: number;
+  branded_reports: number;
+  flagged: number;
+  warned: number;
+  median_days_ahead: number;
+  campaigns: NetworkCampaign[];
+}
+
 export const radar = {
   investigate: (req: { text: string; images: string[]; mode: Mode }) => call<InvestigateOut>("investigate", req),
+  act: (req: { text: string; images: string[]; verdict: Pick<CheckOut, "band" | "probability" | "reason" | "action">; family: unknown; clues: Clue[]; mode: Mode }) =>
+    call<ActOut>("act", req),
+  network: () => call<Network>("network"),
   campaigns: () => call<Campaigns>("campaigns"),
 };
