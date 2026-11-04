@@ -126,6 +126,12 @@ Relato: "la IA ya fabrica las estafas, y la IA de Meta las desarma". El veredict
   - **WhatsApp:** tercer mensaje con botones (máx. 3; bloquear queda fuera si hay 4). Los toques no llaman al modelo. Las acciones quedan solo en memoria, una hora. **Falta probar los botones en un teléfono real.**
   - **Alerta temprana** (`scripts/scam_network.py` → `results/scam_network.json`, `GET /api/network`, pantalla Early warning): repite los casos reales por fecha. Campaña = marca dentro de una familia, marcada con 3 reportes en 14 días: 15 campañas de 478 reportes con marca y 34 reportes posteriores (mediana 22,5 días). Es ilustración, no prueba: el umbral se fijó mirando estos datos, y con pocos datos no se puede decir qué atraparía una red real. `results/scam_network.json` se sube aparte a `/opt/ensayo/results/` (chown 1000).
   - Costo total por consulta: ~US$ 0,02.
+- **Portada nueva: prototipo dentro de WhatsApp (4-nov, idea de Mark: un agente que actúa solo, no una web para pegar mensajes).** `frontend/src/screens/Native.tsx`. Sin desplegar hasta su OK.
+  - Llega el mensaje, el enlace queda bloqueado, el veredicto aparece en el chat (5–8 s) y el agente prepara acciones (~20 s). Si la persona toca "Open anyway", el agente le avisa a Ana.
+  - Real: veredicto, revisión de enlaces, familia y lo que el agente elige y redacta. Simulado: el teléfono y cada acción. Se rotula "Concept prototype. Not a WhatsApp feature".
+  - La API de WhatsApp no permite leer chats personales, y el cifrado de extremo a extremo es lo difícil de una versión nativa: no está resuelto, y la portada y el README lo dicen.
+  - El formulario anterior pasó a "Check a message".
+  - **Bot real:** si la persona ya pagó o entregó datos, el agente avisa a Ana (simulado) sin esperar el botón (`urgent` en `alert_contact`).
 - `ModelClient.chat_message` devuelve el mensaje completo (con `tool_calls`); `chat` lo usa por dentro.
 
 ## WhatsApp Cloud API (3-nov, OK de Mark)

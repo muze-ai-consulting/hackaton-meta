@@ -1,13 +1,15 @@
 # Second Look
 
-**Forward a message that feels off. In seconds you know whether it looks like a scam, why, and the one thing to do now.**
+**A scam lands in your WhatsApp. An agent flags it, checks it and steps in, right there in the chat.**
 
-Second Look is a scam shield built on Meta's models. It works on WhatsApp (forward the text, screenshot or voice note to the bot) and on the web. Every answer comes in layers:
+Second Look is a scam-stopping agent built on Meta's models. The home page is a **concept prototype** of how it could work inside WhatsApp: the message arrives, its link is locked, the verdict appears in the chat, and if you try to open the link anyway the agent alerts someone you trust. The verdict, checks and agent's choices are real model output; the phone and its actions are simulated, and Second Look is not a WhatsApp feature.
+
+**What works today:** a bot on the WhatsApp Cloud API (forward the text, screenshot or voice note) and a web check. Every answer comes in layers:
 
 1. **A verdict that was measured before it was shipped.** It is "Likely a scam", "Be careful" or "No clear signs of a scam", with a one-line reason and the next step. The prompt is the one that passed a preregistered test on 945 real cases.
 2. **An agent that investigates.** Muse Spark 1.3 with function calling chooses its own checks: it follows links without opening the page and looks up who registered the domain (RDAP). It reads links inside screenshots and points at the exact words in the message that give the scam away.
 3. **"You're not the first."** The message is matched against 20 families built from 1,902 scams that people asked about on Reddit and that the community confirmed. For example: "Delivery Fee Texts: 39 people reported this since September, rising."
-4. **An agent that prepares what to do next.** Function calling again: it decides whether to alert a trusted contact, write a report to the bank or the imitated company, block the sender and warn others. If the person says they already paid, the report goes to their bank's fraud team. Every action waits for approval. **In this demo the actions are simulated and labeled as such: nothing is sent, blocked or published.** The written report is real: the person copies it and sends it themselves.
+4. **An agent that prepares what to do next.** Function calling again: it decides whether to alert a trusted contact, write a report to the bank or the imitated company, block the sender and warn others. If the person says they already paid, the report goes to their bank's fraud team. Every action waits for approval, except alerting the trusted contact when the person already paid or shared their details. **In this demo the actions are simulated and labeled as such: nothing is sent, blocked or published.** The written report is real: the person copies it and sends it themselves.
 
 And one screen shows where this goes: **Early warning**, a simulation that replays real public reports day by day, as if they had reached Second Look, to show how a network would flag a campaign and warn people first. That network doesn't exist yet.
 
@@ -98,6 +100,8 @@ The trend compares September with October as a share of all reports, and it is o
 [`scripts/scam_network.py`](scripts/scam_network.py) replays the cases by date, with no model calls. A campaign is one imitated brand within one family, flagged at 3 reports in 14 days. Result: 15 campaigns flagged from 478 reports that name a brand, and 34 later reports that came after the flag (median 22.5 days later). This is an illustration, not a test: we chose the rule while looking at these same reports, and nobody received an alert. A few Reddit communities are a tiny sample, so we don't claim what a real network would catch.
 
 ## What's next
+
+**The hard part of going native is privacy.** WhatsApp chats are end-to-end encrypted, so a server can't read them. A native version would have to be opt-in and work without breaking that promise, for example with the first check on the device and the deeper check only when the person allows it. We haven't built or tested that.
 
 - Make the actions real, with consent: alerts to a trusted contact and direct reports to banks and platforms.
 - Build the opt-in network from forwards, sharing only anonymous descriptions of each scam.

@@ -18,7 +18,19 @@ export function Logo() {
   );
 }
 
-export function Header({ onHome, onCampaigns, onNetwork, onEvidence }: { onHome: () => void; onCampaigns: () => void; onNetwork: () => void; onEvidence: () => void }) {
+export function Header({
+  onHome,
+  onCheck,
+  onCampaigns,
+  onNetwork,
+  onEvidence,
+}: {
+  onHome: () => void;
+  onCheck: () => void;
+  onCampaigns: () => void;
+  onNetwork: () => void;
+  onEvidence: () => void;
+}) {
   return (
     <header className="relative border-b border-white/40 bg-white/70 backdrop-blur-md">
       <div className="mx-auto flex min-h-16 max-w-[1180px] flex-wrap items-center justify-between gap-4 px-6">
@@ -26,6 +38,9 @@ export function Header({ onHome, onCampaigns, onNetwork, onEvidence }: { onHome:
           <Logo />
         </button>
         <nav aria-label="Main" className="flex flex-wrap items-center gap-5 text-[15px] font-semibold">
+          <button type="button" onClick={onCheck} className="cursor-pointer hover:text-heading">
+            Check a message
+          </button>
           <button type="button" onClick={onCampaigns} className="cursor-pointer hover:text-heading">
             What's going around
           </button>
@@ -35,7 +50,6 @@ export function Header({ onHome, onCampaigns, onNetwork, onEvidence }: { onHome:
           <button type="button" onClick={onEvidence} className="cursor-pointer hover:text-heading">
             How we measured it
           </button>
-          <Badge className="hidden sm:inline-flex">Built on Muse Spark 1.3 and Muse Voice Transcribe</Badge>
         </nav>
       </div>
     </header>

@@ -35,8 +35,8 @@ Estructura: **gancho con el producto (0–15 s) → problema con cifra → demo 
 ### 1 · Gancho (0:00–0:15) — producto primero
 | Imagen | En pantalla | Voz (inglés) |
 |---|---|---|
-| Teléfono en WhatsApp. Llega el SMS de Royal Mail: "unpaid shipping fee of £1.45". Mantener presionado → **Reenviar** → **Second Look**. | — | "You get this text. It looks real. Before you tap anything…" |
-| A los 4–6 s aparece: **🔴 Likely a scam · 99%**, el porqué y qué hacer. | **Forward it. Get a second look.** | "…forward it to Second Look on WhatsApp. Seconds later, you know." |
+| Portada, teléfono del prototipo en grande. Botón **Parcel fee**: llega el mensaje, con el enlace ya bloqueado y "Second Look is checking…". | **Concept: Second Look built into WhatsApp** | "Imagine this were built into WhatsApp. A scam arrives. The link is locked before you can tap it." |
+| A los 5–8 s aparece en el mismo chat: **Likely a scam · 99%**, el porqué y qué hacer. Cortar la espera en edición, sin ocultar los segundos que muestra. | **Nothing to paste. Nothing to forward.** | "Seconds later, an agent has flagged it, right there in the chat." |
 
 ### 2 · El problema, con cifra (0:15–0:27)
 | Imagen | En pantalla | Voz |
@@ -46,7 +46,7 @@ Estructura: **gancho con el producto (0–15 s) → problema con cifra → demo 
 ### 3 · El agente investiga (0:27–0:55) — el momento wow
 | Imagen | En pantalla | Voz |
 |---|---|---|
-| Teléfono: llega el **segundo mensaje** de Second Look: "🔎 What I checked", con el enlace seguido, el dominio sin registro, que imita a Royal Mail y "👥 Seen before: Delivery Fee Texts · 39 people reported this". | **An agent on Muse Spark 1.3 picks its own tools** | "Then an agent built on Muse Spark 1.3 investigates. It decides which tools to use: it follows the link without opening the page, and looks up who registered the domain. Here, the domain doesn't even exist, and it imitates Royal Mail." |
+| Teléfono: llega el **segundo mensaje** de Second Look: "🔎 What I checked", con el enlace seguido, el dominio sin registro, que imita a Royal Mail y "👥 Seen before: Delivery Fee Texts · 39 people reported this". | **An agent on Muse Spark 1.3 picks its own tools** | "This part works today, on real WhatsApp: forward any message, and an agent built on Muse Spark 1.3 investigates. It decides which tools to use: it follows the link without opening the page, and looks up who registered the domain. Here, the domain doesn't even exist, and it imitates Royal Mail." |
 | Reenviar la **nota de voz** del "banco". Aparece el veredicto con "I heard: …". | **Voice notes → Muse Voice Transcribe** | "Scam calls and voice notes work too: Muse Voice Transcribe turns them into text first." |
 | Web: botón de ejemplo **"Marketplace buyer"** (pantallazo) → resultado → "What we checked" muestra que leyó el enlace **dentro de la imagen** y lo revisó. | **It reads links inside screenshots** | "Screenshots too: it found the payment link inside this Marketplace chat and checked it." |
 | Web: ejemplo **"Remote job offer"** → el mensaje con frases subrayadas en rojo y numeradas. | **Every red flag, pointed out in the message** | "And it points at the exact words that give it away." |
@@ -54,7 +54,8 @@ Estructura: **gancho con el producto (0–15 s) → problema con cifra → demo 
 ### 3b · El agente actúa, con tu aprobación (0:55–1:15) — **simulado, y se dice**
 | Imagen | En pantalla | Voz |
 |---|---|---|
-| Teléfono: llega el **tercer mensaje** con botones. Tocar **Alert Ana**: aparece la respuesta "Simulated: Ana would get this". El agente decide qué ofrece y a veces no ofrece esa acción con el mensaje del paquete; para esta toma, reenviar el texto del ejemplo "Already paid" junto con su nota. | **It prepares what to do. You approve. · Demo: simulated, nothing is sent** | "Then a second agent prepares what to do next: alert someone you trust, write the report, warn others. You approve each step. In this demo the actions are simulated." |
+| Prototipo: tocar el enlace bloqueado → **Wait. This link looks dangerous.** → **Open anyway** → aparece "You tried to open it, so the agent told Ana". | **It steps in when you're about to fall for it · Simulated** | "And if you tap it anyway, the agent steps in and tells someone you trust. In this prototype, that alert is simulated." |
+| Teléfono real: llega el **tercer mensaje** con botones. Tocar **Alert Ana**: aparece la respuesta "Simulated: Ana would get this". El agente decide qué ofrece y a veces no ofrece esa acción con el mensaje del paquete; para esta toma, reenviar el texto del ejemplo "Already paid" junto con su nota. | **It prepares what to do. You approve. · Demo: simulated, nothing is sent** | "On the real bot, it prepares what to do next, and you approve each step. These actions are simulated too." |
 | Web: ejemplo **"Already paid"** → tarjeta "What the agent prepared": el informe va al equipo de fraude del banco. Botón **Copy report**. | **Already paid? It writes to your bank's fraud team** | "If you already paid, it changes its plan and writes to your bank's fraud team. That report is real. You copy it and send it." |
 
 ### 4 · No eres el primero (1:15–1:27)
@@ -89,6 +90,7 @@ Estructura: **gancho con el producto (0–15 s) → problema con cifra → demo 
 
 ## Lo que no hay que decir (no está respaldado)
 
+- **Que está dentro de WhatsApp, o que Meta lo aprobó.** La portada es un prototipo de concepto y se rotula así. Si preguntan por el cifrado de extremo a extremo: "a native version has to be opt-in and keep that promise; we haven't solved that yet".
 - **Que las acciones o la red ya funcionan de verdad.** Las alertas, el bloqueo y la red son simulados, y se dice en voz y en pantalla. Lo real: el agente las elige y las redacta con Muse Spark, y el informe sirve para copiar y enviar.
 - **"Habríamos protegido a N personas."** La repetición es una ilustración: el umbral se eligió mirando estos datos. Se dice "could have been warned".
 - **"La IA fabrica las estafas."** En nuestros datos, solo 46 de 1.902 casos (2,4 %) dicen que se usó IA.

@@ -224,6 +224,7 @@ export interface AgentAction {
   heads_up?: string;
   report_number?: number | null;
   family?: string | null;
+  auto?: boolean;
 }
 
 export interface ActOut {

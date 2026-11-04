@@ -182,7 +182,13 @@ BUTTON_LABEL = {"alert_contact": f"Alert {act.CONTACT}", "draft_report": "Write 
 
 
 async def offer_actions(http: httpx.AsyncClient, sender: str, actions: list[dict[str, Any]]) -> None:
-    """Las acciones del agente, con un botón por cada una. WhatsApp permite 3: bloquear es la primera en quedar fuera."""
+    """Las acciones del agente, con un botón por cada una. WhatsApp permite 3: bloquear es la primera en quedar fuera.
+
+    Si la persona ya pagó o entregó datos, el agente no espera: avisa al contacto (simulado) y sigue con lo demás."""
+    for a in actions:
+        if a.get("auto"):
+            await send_text(http, sender, "🚨 *You already acted, so I didn't wait.*\n\n" + action_reply(a))
+    actions = [a for a in actions if not a.get("auto")]
     shown = [a for a in actions if a["tool"] != "block_sender"][:MAX_BUTTONS] if len(actions) > MAX_BUTTONS else actions
     if not shown:
         return

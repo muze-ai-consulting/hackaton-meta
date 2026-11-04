@@ -91,6 +91,17 @@ def test_scam_offers_actions_and_button_answers(tmp_path, monkeypatch) -> None:
     assert "Simulated" in sent[-1]["text"]["body"] and "Nothing was sent" in sent[-1]["text"]["body"]
 
 
+def test_urgent_alert_runs_without_a_button() -> None:
+    sent: list[dict] = []
+    action = {"tool": "alert_contact", "why": "w", "body": "Help them.", "auto": True}
+
+    async def go() -> None:
+        async with fake_graph(sent) as http:
+            await whatsapp.offer_actions(http, "1", [action])
+    asyncio.run(go())
+    assert len(sent) == 1 and "didn't wait" in sent[0]["text"]["body"] and "Simulated" in sent[0]["text"]["body"]
+
+
 def test_expired_button(tmp_path, monkeypatch) -> None:
     env(monkeypatch)
     sent = run({"from": "9", "id": "wamid.c", "type": "interactive", "interactive": {"button_reply": {"id": "act:0"}}}, tmp_path, monkeypatch)

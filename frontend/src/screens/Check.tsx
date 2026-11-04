@@ -503,7 +503,8 @@ function ActionCard({ action, done, onDo }: { action: AgentAction; done: boolean
       {done ? (
         <div className="flex flex-col gap-2">
           <p className="m-0 flex gap-1.5 text-sm font-semibold text-ok" role="status">
-            <CheckIcon className="mt-0.5 size-4 shrink-0" aria-hidden="true" /> {doneLine(action)}
+            <CheckIcon className="mt-0.5 size-4 shrink-0" aria-hidden="true" /> {action.auto ? "You already acted, so the agent didn't wait. " : ""}
+            {doneLine(action)}
           </p>
           {report && (
             <Button size="sm" variant="outline" className="self-start" onClick={copy}>
@@ -529,7 +530,7 @@ function ActionCard({ action, done, onDo }: { action: AgentAction; done: boolean
 
 function AgentActions({ plan, planning, onNetwork }: { plan: ActOut | null; planning: boolean; onNetwork: () => void }) {
   const [done, setDone] = useState<number[]>([]);
-  useEffect(() => setDone([]), [plan]);
+  useEffect(() => setDone((plan?.actions ?? []).flatMap((a, i) => (a.auto ? [i] : []))), [plan]);
   if (planning) {
     return (
       <Card className="flex items-center gap-3 p-5 text-sm text-muted sm:p-7" aria-live="polite">
@@ -576,7 +577,7 @@ const SIGNAL = {
 const TREND_LABEL = { rising: "Rising", falling: "Falling", steady: "Steady" } as const;
 
 /** One line per tool the agent used, in plain words. */
-function stepLine(s: ToolStep): { icon: typeof Link2; text: string } {
+export function stepLine(s: ToolStep): { icon: typeof Link2; text: string } {
   const r = s.result as Record<string, unknown>;
   if (s.tool === "inspect_link") {
     const hops = (r.hops as { domain: string }[] | undefined) ?? [];

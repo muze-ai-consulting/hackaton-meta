@@ -47,6 +47,12 @@ def test_shared_pattern_is_scrubbed() -> None:
     assert "7700" not in a["body"] and "x.top" not in a["body"]
 
 
+def test_only_an_explicit_urgent_runs_by_itself() -> None:
+    assert act.to_action("alert_contact", {"message": "m", "why": "w", "urgent": True}, None)["auto"] is True
+    assert act.to_action("alert_contact", {"message": "m", "why": "w", "urgent": "yes"}, None)["auto"] is False
+    assert act.to_action("alert_contact", {"message": "m", "why": "w"}, None)["auto"] is False
+
+
 def test_unknown_or_empty_tool_is_dropped() -> None:
     assert act.to_action("wire_money", {"amount": 1}, None) is None
     assert act.to_action("alert_contact", {"why": "x"}, None) is None

@@ -1,7 +1,8 @@
 """Agente de respuesta: después del veredicto, Spark 1.3 decide qué acciones preparar para la persona.
 
 Las herramientas son reales para el modelo (function calling), pero ejecutarlas está simulado: nada se envía, se bloquea
-ni se publica. Cada acción espera la aprobación de la persona y el producto la muestra como simulada. El borrador de
+ni se publica. Cada acción espera la aprobación de la persona, salvo avisar al contacto cuando ya pagó o entregó datos,
+y el producto siempre la muestra como simulada. El borrador de
 denuncia sí sirve tal cual: la persona lo copia y lo envía por su cuenta.
 
 Va aparte del veredicto (ensayo/shield.py): usa su resultado, no lo cambia. Si no hay señales de estafa no se llama
@@ -24,7 +25,8 @@ RESPONDER = (
     "You are the response agent inside a scam shield. The verdict below is final: do not judge it again. Prepare the "
     "actions that would protect this person, by calling your tools. Nothing runs until the person approves it.\n"
     f"- alert_contact: their trusted contact is {CONTACT}. Use it only if money, codes or an account are at risk, or the "
-    "person is about to act or already acted.\n"
+    "person is about to act or already acted. Set urgent to true only if they already paid or shared card, bank or login "
+    "details: then it runs right away, without asking.\n"
     "- draft_report: if they already paid or shared card, bank or login details, write to their bank's fraud team and ask "
     "to block the card or account. Otherwise write to the company being imitated, or to the platform where it arrived. "
     "Use [brackets] for anything you don't know. Never invent phone numbers, emails, references or amounts.\n"
@@ -40,6 +42,7 @@ TOOLS = [
         "description": f"Prepare a message to {CONTACT}, the person's trusted contact, about what arrived and what to do.",
         "parameters": {"type": "object", "required": ["message", "why"], "properties": {
             "message": {"type": "string", "description": "Max 40 words, plain and calm."},
+            "urgent": {"type": "boolean", "description": "True only if the person already paid or shared details."},
             "why": {"type": "string", "description": "Max 15 words."}}}}},
     {"type": "function", "function": {
         "name": "draft_report",
@@ -81,7 +84,7 @@ def to_action(name: str, args: dict[str, Any], family: dict[str, Any] | None) ->
     why = str(args.get("why") or "")
     if name == "alert_contact" and args.get("message"):
         return {"tool": name, "title": f"Alert {CONTACT}", "why": why, "to": f"{CONTACT}, your trusted contact",
-                "body": defang(str(args["message"]))}
+                "body": defang(str(args["message"])), "auto": args.get("urgent") is True}
     if name == "draft_report" and args.get("body"):
         recipient = str(args.get("recipient") or "The company being imitated")
         return {"tool": name, "title": f"Report to {recipient[0].lower() + recipient[1:] if recipient.startswith('Your ') else recipient}", "why": why, "to": recipient,
