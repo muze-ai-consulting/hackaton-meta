@@ -54,7 +54,7 @@ Estructura: **gancho con el producto (0–15 s) → problema con cifra → demo 
 ### 3b · El agente actúa, con tu aprobación (0:55–1:15) — **simulado, y se dice**
 | Imagen | En pantalla | Voz |
 |---|---|---|
-| Teléfono: llega el **tercer mensaje** con botones. Tocar **Alert Ana**: aparece la respuesta "Simulated: Ana would get this". | **It prepares what to do. You approve. · Demo: simulated, nothing is sent** | "Then a second agent prepares what to do next: alert someone you trust, write the report, warn others. You approve each step. In this demo the actions are simulated." |
+| Teléfono: llega el **tercer mensaje** con botones. Tocar **Alert Ana**: aparece la respuesta "Simulated: Ana would get this". El agente decide qué ofrece y a veces no ofrece esa acción con el mensaje del paquete; para esta toma, reenviar el texto del ejemplo "Already paid" junto con su nota. | **It prepares what to do. You approve. · Demo: simulated, nothing is sent** | "Then a second agent prepares what to do next: alert someone you trust, write the report, warn others. You approve each step. In this demo the actions are simulated." |
 | Web: ejemplo **"Already paid"** → tarjeta "What the agent prepared": el informe va al equipo de fraude del banco. Botón **Copy report**. | **Already paid? It writes to your bank's fraud team** | "If you already paid, it changes its plan and writes to your bank's fraud team. That report is real. You copy it and send it." |
 
 ### 4 · No eres el primero (1:15–1:27)
