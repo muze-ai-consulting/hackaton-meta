@@ -1,4 +1,4 @@
-"""Ensayo para anuncios: población sintética, lotes del backtest y métricas."""
+"""Second Look. El paquete conserva el nombre de la primera idea, Ensayo, cuyo código sigue aquí."""
 
 from pathlib import Path
 

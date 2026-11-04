@@ -101,13 +101,13 @@ flowchart LR
 |---|---|---|
 | **Runs live** | Docker Compose behind nginx, restart policy and health check, real mode on | [`docker-compose.yml`](docker-compose.yml), [`Dockerfile`](Dockerfile) |
 | **Spending** | Every model call passes through a ledger with a cap per phase, and is logged | [`ensayo/costs.py`](ensayo/costs.py), [`ensayo/llm.py`](ensayo/llm.py) |
-| **Abuse** | 30 checks a day per IP and per WhatsApp number, input size limits. Client-supplied forwarding headers can't reset the quota | [`ensayo/api.py`](ensayo/api.py), [`ensayo/whatsapp.py`](ensayo/whatsapp.py) |
+| **Abuse** | 30 checks a day per IP and per WhatsApp number, input size limits. Client-supplied forwarding headers can't reset the quota. Our earlier idea's endpoints and the API docs are off in production | [`ensayo/api.py`](ensayo/api.py), [`ensayo/whatsapp.py`](ensayo/whatsapp.py) |
 | **Following a scammer's link** | A GET from our server that reads only the status and redirect headers, never the body, so the site sees our server and not the person. http(s) on ports 80 and 443 only; private and reserved addresses rejected at every redirect | [`ensayo/investigate.py`](ensayo/investigate.py) |
 | **Webhooks** | HMAC signature check on every WhatsApp call, duplicate deliveries ignored, a fast 200 with processing in the background | [`ensayo/whatsapp.py`](ensayo/whatsapp.py) |
-| **Privacy** | Our code doesn't store user messages, logs keep only a keyed hash of the number, and user data never goes through the contributor endpoint. Web server logs keep visitors' IPs | [`ensayo/whatsapp.py`](ensayo/whatsapp.py), [`ensayo/shield.py`](ensayo/shield.py) |
+| **Privacy** | Our code doesn't store user messages, logs keep only a keyed hash of the number, and user data never goes through the contributor endpoint. Web server logs keep visitors' IPs. [Privacy policy](https://secondlook.muze.cl/privacy) | [`ensayo/whatsapp.py`](ensayo/whatsapp.py), [`ensayo/shield.py`](ensayo/shield.py) |
 | **Agent limits** | Capped turns; no model call for the response agent if there are no signs of a scam; simulated actions always labeled | [`ensayo/act.py`](ensayo/act.py) |
 | **Failures** | Spending cap, model errors, timeouts and a missing key return clear HTTP errors instead of a crash | [`ensayo/api.py`](ensayo/api.py) |
-| **Tests** | 81 tests in [CI](.github/workflows/test.yml), a mock model server for running without a key, and a test confirming the product sends the same prompt we measured | [`tests/`](tests) |
+| **Tests** | 84 tests in [CI](.github/workflows/test.yml), a mock model server for running without a key, and a test confirming the product sends the same prompt we measured | [`tests/`](tests) |
 
 **Speed, in our runs:** the verdict takes 5 to 8 seconds, and the prepared actions about 20 seconds. With voice on the server, 10 to 20 seconds.
 
@@ -118,7 +118,7 @@ flowchart LR
 | Model or API | Where |
 |---|---|
 | **Muse Spark 1.3** (standard) | The verdict, including screenshots; both agents, through function calling with our own tools; family matching. All user data goes here. |
-| **Muse Spark 1.3 contributor** | Public data only: labeling Reddit threads, running the tests and building the families. |
+| **Muse Spark 1.3 contributor** | Public data only: labeling Reddit threads, running the tests and building the families, plus the ad tests of our earlier idea. Meta can use what's sent to this endpoint. Here that includes public Reddit posts and their screenshots, which can contain personal details. That's why user data never goes through it. |
 | **Muse Voice Transcribe 1.0** | Voice notes and recorded calls. |
 | **WhatsApp Cloud API** | The bot, with reply buttons for the actions the agent prepares. |
 
@@ -142,7 +142,7 @@ We built the agent's tools ourselves because it needs specific checks: following
 ```bash
 python3 scripts/verify_results.py              # recompute the test's main results; needs only Python 3.12
 uv sync --group dev
-uv run --group dev pytest                      # 81 tests, mock server, no network
+uv run --group dev pytest                      # 84 tests, mock server, no network
 uv run uvicorn ensayo.api:app --port 8040      # mock mode, no key needed
 ENSAYO_REAL=1 uv run uvicorn ensayo.api:app --port 8041   # real mode: needs MODEL_API_KEY in .env
 cd frontend && npm install && npm run build    # rebuilds web/
@@ -183,7 +183,7 @@ data/scams/  Labels and model-written descriptions, no raw posts
 docs/        Validation protocol
 ```
 
-**The earlier idea.** We started with Ensayo, synthetic audiences predicting which ad variant would win. In its backtest it beat neither chance nor a single prompt, so we dropped it and pivoted. Its code, unused endpoints and results are still here (`population.py`, `simulate.py`, `results/backtest_*`, `results/holdout_*`), because we think failed tests should stay visible.
+**The earlier idea.** We started with Ensayo, synthetic audiences predicting which ad variant would win. In its backtest it beat neither chance nor a single prompt, so we dropped it and pivoted. Its code and results are still here (`population.py`, `simulate.py`, `ensayo/apify.py`, `scripts/eu_advertisers.py`, `scripts/download_images.py`, `results/backtest_*`, `results/holdout_*`, `results/audience_validation_*`), because we think failed tests should stay visible. Its endpoints are off in production.
 
 **Language.** The product is in English. Code comments and commit messages are in Spanish, as we work in Chile. Internal planning notes were kept out of the current tree, but remain in git history, which we kept because the preregistration commits live there.
 
@@ -192,9 +192,9 @@ docs/        Validation protocol
 - **Built during the event:** the first commit is from 27 October 2026.
 - **Coding tools:** built with Claude Code (Anthropic) as the coding assistant. The product runs only on Meta's models.
 - **Reddit data:** public posts from the [Arctic Shift](https://arctic-shift.photon-reddit.com) archive and, for the first pilot, an Apify scraper. We use post text, public image links and replies. The families page shows model-written summaries without names, numbers or links, plus links to the original threads.
-- **Ad data (earlier idea):** Meta Ad Library pages through an Apify scraper, because we didn't get an official API token in time.
+- **Ad data (earlier idea):** Meta Ad Library pages through an Apify scraper, because we didn't get an official API token in time. For the backtest we also kept local 720 px copies of the ad images: they were never in this repository and the product doesn't serve them. The results in this repository no longer include the ads' text, image links or targeting, but earlier versions in git history do.
 - **Fraud figures:** FTC Consumer Sentinel 2025, through the press coverage linked above.
 
 ## License
 
-[MIT](LICENSE). Built by [Muze AI](https://muze.cl), Chile.
+The code is [MIT](LICENSE). The license doesn't cover third-party data in this repository or its git history, such as Reddit links and labels, advertisers' names and ad content. Built by [Muze AI](https://muze.cl), Chile.

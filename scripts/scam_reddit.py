@@ -22,14 +22,14 @@ CUTOFF = "2026-09-03"
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 
-def tokens() -> list[str]:
-    """Las cuentas de Apify de .env, en orden (APIFY_TOKEN, APIFY_TOKEN_2…)."""
+def apify_token() -> str:
+    """El token de Apify de .env."""
     env = {}
     for line in (ROOT / ".env").read_text().splitlines():
         if "=" in line and not line.startswith("#"):
             key, value = line.split("=", 1)
             env[key.strip()] = value.strip().strip('"')
-    return [env[k] for k in sorted(env) if k.startswith("APIFY_TOKEN") and env[k]]
+    return env["APIFY_TOKEN"]
 
 
 def run(url: str, posts: int, comments: int) -> list[dict]:
@@ -38,22 +38,19 @@ def run(url: str, posts: int, comments: int) -> list[dict]:
         "maxComments": comments, "includeMediaLinks": True, "skipUserPosts": True, "skipCommunity": True,
         "postDateLimit": CUTOFF, "proxy": {"useApifyProxy": True, "apifyProxyGroups": ["RESIDENTIAL"]},
     }
-    for token in tokens():
-        head = {"Authorization": f"Bearer {token}"}
-        started = httpx.post(f"{API}/acts/{ACTOR}/runs?timeout=2400&memory=2048", json=payload, headers=head, timeout=60).json()
-        if "data" not in started:
-            log.warning("cuenta sin cupo: %s", started.get("error", {}).get("message"))
-            continue
-        run_id = started["data"]["id"]
-        while True:
-            state = httpx.get(f"{API}/actor-runs/{run_id}", headers=head, timeout=60).json().get("data") or {}
-            if state.get("status") not in (None, "READY", "RUNNING"):
-                break
-            time.sleep(10)
-        items = httpx.get(f"{API}/datasets/{state['defaultDatasetId']}/items", headers=head, timeout=300).json()
-        log.info("%s: %s, %d ítems, US$ %s", url, state["status"], len(items), state.get("usageTotalUsd"))
-        return items
-    raise RuntimeError("ninguna cuenta de Apify tiene cupo")
+    head = {"Authorization": f"Bearer {apify_token()}"}
+    started = httpx.post(f"{API}/acts/{ACTOR}/runs?timeout=2400&memory=2048", json=payload, headers=head, timeout=60).json()
+    if "data" not in started:
+        raise RuntimeError(f"Apify: {started.get('error', {}).get('message')}")
+    run_id = started["data"]["id"]
+    while True:
+        state = httpx.get(f"{API}/actor-runs/{run_id}", headers=head, timeout=60).json().get("data") or {}
+        if state.get("status") not in (None, "READY", "RUNNING"):
+            break
+        time.sleep(10)
+    items = httpx.get(f"{API}/datasets/{state['defaultDatasetId']}/items", headers=head, timeout=300).json()
+    log.info("%s: %s, %d ítems, US$ %s", url, state["status"], len(items), state.get("usageTotalUsd"))
+    return items
 
 
 def main() -> None:

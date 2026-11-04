@@ -12,11 +12,11 @@ scripts/eu_advertisers.py a ads_archive, así ensayo.batches y el resto no cambi
   descarta (regla de contaminación), pero gastan parte del tope de anuncios.
 - El género viene traducido ("Svi" = todos): se reconocen mujeres y hombres en varios idiomas; lo demás es All.
 - Trae la URL de la imagen (`image_url`). Es de fbcdn y vence en días: sirve para simular al poco tiempo de bajarla.
-  No se descargan las imágenes (términos de almacenamiento de Meta).
+  Por eso scripts/download_images.py guarda aparte una copia de 720 px en data/images/ (decisión de Mark, 2-nov), que
+  no se versiona. Este módulo no descarga imágenes.
 
 Costo: desde US$0,30 por 1.000 anuncios, con el alcance incluido. Lo paga la cuenta de Apify, no los créditos de Meta.
-El token va en APIFY_TOKEN (.env) y viaja en la cabecera, nunca en la URL. Con más cuentas (APIFY_TOKEN_2, _3…),
-scripts/eu_advertisers.py pasa a la siguiente cuando una se queda sin crédito (decisión de Mark, 1-nov).
+El token va en APIFY_TOKEN (.env) y viaja en la cabecera, nunca en la URL.
 """
 
 import logging
@@ -167,23 +167,9 @@ def to_ads_archive(item: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
-class OutOfCredit(RuntimeError):
-    """La cuenta de Apify no tiene crédito o llegó a su límite de uso."""
-
-
-CREDIT_WORDS = ("limit", "usage", "credit", "exceed", "payment", "insufficient")
-
-
-def _is_credit_problem(text: str) -> bool:
-    text = text.lower()
-    return any(w in text for w in CREDIT_WORDS)
-
-
 def run_actor(client: httpx.Client, run_input: dict[str, Any]) -> list[dict[str, Any]]:
     """Lanza el actor, espera a que termine y devuelve los ítems de su dataset."""
     r = client.post(f"{API}/acts/{ACTOR}/runs", json=run_input)
-    if r.status_code == 402 or (r.status_code == 403 and _is_credit_problem(r.text)):
-        raise OutOfCredit(f"Apify {r.status_code}: {r.text[:200]}")
     if not r.is_success:
         raise RuntimeError(f"Apify {r.status_code}: {r.text[:300]}")
     run = r.json()["data"]
@@ -195,8 +181,7 @@ def run_actor(client: httpx.Client, run_input: dict[str, Any]) -> list[dict[str,
         run = client.get(f"{API}/actor-runs/{run['id']}").json()["data"]
     if run["status"] != "SUCCEEDED":
         message = str(run.get("statusMessage") or "")
-        error = OutOfCredit if _is_credit_problem(message) else RuntimeError
-        raise error(f"Apify: la corrida {run['id']} terminó en {run['status']}: {message[:200]}")
+        raise RuntimeError(f"Apify: la corrida {run['id']} terminó en {run['status']}: {message[:200]}")
     items = client.get(f"{API}/datasets/{run['defaultDatasetId']}/items", params={"clean": "true", "format": "json"})
     items.raise_for_status()
     usd = (run.get("usageTotalUsd") or 0) or (run.get("stats") or {}).get("costUsd") or 0

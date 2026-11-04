@@ -10,12 +10,14 @@
 - GET /api/campaigns: qué está circulando, desde los casos públicos de Reddit (results/scam_campaigns.json).
 - GET /api/evidence: la validación preregistrada del escudo (dos intentos, hashes y bandas; results/scam_bands.json).
 
+- Idea anterior (anuncios): no existen en producción (ENSAYO_REAL=1) y fuera de ella solo corren con el servidor falso.
 - POST /api/simulate: ensaya las variantes de un anuncio con una población sintética y el rival de llamada única.
 - POST /api/chat: una pregunta a una persona de la audiencia sobre su reacción a las variantes.
 - POST /api/variants: propone variantes (título, texto e imagen de Muse Image) desde una descripción y una foto.
 - GET /api/examples: lanzamientos reales del set de desarrollo (nunca del sellado) para la pantalla "anuncio real", con
   la predicción precalculada del último backtest real de dev si existe (así el jurado ve predicciones reales sin gastar).
 - GET /api/backtest: el último resultado de scripts/run_backtest.py (prefiere corridas reales a las de prueba).
+- GET /privacy: la política de privacidad (web/privacy.html, fuente en frontend/public/).
 - GET /: la página (web/).
 
 Por defecto todo corre con el servidor falso. El modo real usa Spark 1.3 estándar (datos de clientes nunca van al
@@ -37,7 +39,7 @@ from collections import defaultdict
 from typing import Any, Literal
 
 import httpx
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -61,17 +63,16 @@ WEB = ROOT / "web"  # build de frontend/ (npm run build)
 DEV_BATCHES = DATA / "batches" / "dev.json"
 AD_IMAGES = DATA / "images"  # scripts/download_images.py: copia local porque las URLs de fbcdn vencen
 MAX_EXAMPLES = 20
-# Marcas que no se muestran como ejemplo en el demo (decisión de Mark, 2-nov: ropa interior de hombre en primer plano).
-HIDDEN_EXAMPLE_PAGES = {"Le Slip Français"}
 # Pedidos en modo real por visitante (IP) y por día. El gasto total lo limita la fase "demo" del Ledger.
-REAL_DAILY_LIMITS = {"simulate": 5, "variants": 3, "chat": 30, "check": 30, "investigate": 30, "act": 30}
+REAL_DAILY_LIMITS = {"check": 30, "investigate": 30, "act": 30}
 _real_usage: dict[tuple[str, str, str], int] = defaultdict(int)
 REAL_MODEL = "muse-spark-1.3"
 REAL_MAX_PERSONAS = 300
 MAX_IMAGE_CHARS = 4_000_000  # ~3 MB en base64
 MAX_AUDIO_CHARS = 14_000_000  # ~10 MB en base64 (una nota de voz de varios minutos)
 
-app = FastAPI(title="Second Look")
+# Sin /docs, /redoc ni /openapi.json: el sitio público no necesita publicar el catálogo de la API.
+app = FastAPI(title="Second Look", docs_url=None, redoc_url=None, openapi_url=None)
 
 
 def real_allowed() -> bool:
@@ -87,6 +88,18 @@ def model_client(mock: bool) -> ModelClient:
         raise HTTPException(503, "Real mode is not configured on this server.") from exc
 
 
+def earlier_idea_off() -> None:
+    """En producción no existen los endpoints de la idea anterior: gastarían el tope del demo de Second Look."""
+    if real_allowed():
+        raise HTTPException(404, "Not found.")
+
+
+def mock_only(mode: str) -> None:
+    """Fuera de producción, los endpoints de la idea anterior corren solo con el servidor falso."""
+    if mode != "mock":
+        raise HTTPException(403, "Real mode is disabled for this endpoint.")
+
+
 def guard_real(request: Request, kind: str) -> None:
     """403 si el modo real está apagado; 429 si este visitante ya usó su cupo de hoy."""
     if not real_allowed():
@@ -96,7 +109,7 @@ def guard_real(request: Request, kind: str) -> None:
     ip = forwarded or (request.client.host if request.client else "?")
     key = (time.strftime("%Y-%m-%d"), ip, kind)
     if _real_usage[key] >= REAL_DAILY_LIMITS[kind]:
-        raise HTTPException(429, "Daily limit reached for this demo. Try the real-ad examples, or come back tomorrow.")
+        raise HTTPException(429, "Daily limit reached for this demo. Come back tomorrow.")
     _real_usage[key] += 1
 
 
@@ -200,21 +213,19 @@ def config() -> dict[str, Any]:
     return {"real_allowed": real_allowed(), "real_max_personas": REAL_MAX_PERSONAS, "real_model": REAL_MODEL}
 
 
-@app.post("/api/simulate")
-async def simulate(req: SimulateIn, request: Request) -> dict[str, Any]:
-    mock = req.mode == "mock"
-    if not mock:
-        guard_real(request, "simulate")
-    personas = req.personas if mock else min(req.personas, REAL_MAX_PERSONAS)
+@app.post("/api/simulate", dependencies=[Depends(earlier_idea_off)])
+async def simulate(req: SimulateIn) -> dict[str, Any]:
+    mock_only(req.mode)
+    personas = req.personas
     batch = to_batch(req)
     people = build_population(spec_from_ad(batch["target"]), n=personas)
-    client = model_client(mock)
+    client = model_client(mock=True)
     spent_before = client.ledger.spent()
     try:
         sim = await simulate_batch(client, batch, people, model=REAL_MODEL, phase="demo", sample_size=8)
         single = await single_call_ranking(client, batch, model=REAL_MODEL, phase="demo")
     except BudgetExceeded as exc:
-        raise HTTPException(402, "The demo has reached its spending cap. The real-ad examples still work.") from exc
+        raise HTTPException(402, "The demo has reached its spending cap.") from exc
     except RuntimeError as exc:
         log.exception("Fallo de la Model API")
         raise HTTPException(502, f"The Model API returned an error: {exc}") from exc
@@ -250,7 +261,7 @@ async def check(req: CheckIn, request: Request) -> dict[str, Any]:
             client, model=REAL_MODEL, phase="demo", text=req.text, note=req.note, images=req.images, audio=audio
         )
     except BudgetExceeded as exc:
-        raise HTTPException(402, "The demo has reached its spending cap. Try again tomorrow.") from exc
+        raise HTTPException(402, "The demo has reached its spending cap.") from exc
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
     except (RuntimeError, KeyError, TypeError, httpx.HTTPError) as exc:
@@ -288,7 +299,7 @@ async def investigate(req: InvestigateIn, request: Request) -> dict[str, Any]:
         await client.aclose()
     for part in (family, clues):
         if isinstance(part, BudgetExceeded):
-            raise HTTPException(402, "The demo has reached its spending cap. Try again tomorrow.")
+            raise HTTPException(402, "The demo has reached its spending cap.")
         if isinstance(part, BaseException):
             log.error(f"Fallo de la investigación: {part!r}")
     return {
@@ -317,7 +328,7 @@ async def act_on(req: ActIn, request: Request) -> dict[str, Any]:
         out = await act.respond(client, model=REAL_MODEL, phase="demo", verdict=req.verdict, text=req.text, images=pics,
                                 family=req.family, clues=req.clues)
     except BudgetExceeded as exc:
-        raise HTTPException(402, "The demo has reached its spending cap. Try again tomorrow.") from exc
+        raise HTTPException(402, "The demo has reached its spending cap.") from exc
     except (RuntimeError, KeyError, TypeError, httpx.HTTPError) as exc:
         log.exception("Fallo del agente de respuesta")
         raise HTTPException(502, f"The Model API returned an error: {exc}") from exc
@@ -382,16 +393,14 @@ def evidence() -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-@app.post("/api/chat")
-async def chat(req: ChatIn, request: Request) -> dict[str, Any]:
-    mock = req.mode == "mock"
-    if not mock:
-        guard_real(request, "chat")
+@app.post("/api/chat", dependencies=[Depends(earlier_idea_off)])
+async def chat(req: ChatIn) -> dict[str, Any]:
+    mock_only(req.mode)
     variants = [
         {"ad_id": f"v{i + 1}", "title": v.title, "body": v.body, "image_url": v.image_url or None}
         for i, v in enumerate(req.variants)
     ]
-    client = model_client(mock)
+    client = model_client(mock=True)
     spent_before = client.ledger.spent()
     try:
         answer = await ask_persona(
@@ -408,7 +417,7 @@ async def chat(req: ChatIn, request: Request) -> dict[str, Any]:
             question=req.question,
         )
     except BudgetExceeded as exc:
-        raise HTTPException(402, "The demo has reached its spending cap. The real-ad examples still work.") from exc
+        raise HTTPException(402, "The demo has reached its spending cap.") from exc
     except RuntimeError as exc:
         log.exception("Fallo de la Model API")
         raise HTTPException(502, f"The Model API returned an error: {exc}") from exc
@@ -417,21 +426,19 @@ async def chat(req: ChatIn, request: Request) -> dict[str, Any]:
     return {"mode": req.mode, "usd": round(client.ledger.spent() - spent_before, 4), "answer": answer}
 
 
-@app.post("/api/variants")
-async def variants(req: VariantsIn, request: Request) -> dict[str, Any]:
+@app.post("/api/variants", dependencies=[Depends(earlier_idea_off)])
+async def variants(req: VariantsIn) -> dict[str, Any]:
     if not req.brief.strip() and not req.photo_url:
         raise HTTPException(422, "Describe the product or upload a photo.")
-    mock = req.mode == "mock"
-    if not mock:
-        guard_real(request, "variants")
-    client = model_client(mock)
+    mock_only(req.mode)
+    client = model_client(mock=True)
     spent_before = client.ledger.spent()
     try:
         out = await generate_variants(
             client, brand=req.brand, brief=req.brief, n=req.n, photo_url=req.photo_url, model=REAL_MODEL, phase="demo"
         )
     except BudgetExceeded as exc:
-        raise HTTPException(402, "The demo has reached its spending cap. The real-ad examples still work.") from exc
+        raise HTTPException(402, "The demo has reached its spending cap.") from exc
     except (RuntimeError, ValueError) as exc:
         log.exception("Fallo al generar variantes")
         raise HTTPException(502, f"Could not generate the versions: {exc}") from exc
@@ -509,7 +516,7 @@ def examples() -> list[dict[str, Any]]:
     batches = [
         b
         for b in json.loads(DEV_BATCHES.read_text(encoding="utf-8"))
-        if not b.get("sealed") and b.get("page_name") not in HIDDEN_EXAMPLE_PAGES
+        if not b.get("sealed")
     ]
     # Primero los que tienen imagen en todas las variantes y 3 o 4 versiones: se ven mejor en el demo.
     batches.sort(
@@ -553,6 +560,11 @@ def backtest() -> dict[str, Any]:
         "model": (data.get("config") or {}).get("model"),
         "summary": data["summary"],
     }
+
+
+@app.get("/privacy")
+def privacy() -> FileResponse:
+    return FileResponse(WEB / "privacy.html", headers={"Cache-Control": "no-cache"})
 
 
 @app.get("/")

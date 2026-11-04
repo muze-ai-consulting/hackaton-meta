@@ -84,9 +84,37 @@ def test_examples_empty_without_batches(tmp_path, monkeypatch) -> None:
 
 def test_real_daily_limit(tmp_path, monkeypatch) -> None:
     monkeypatch.setenv("ENSAYO_REAL", "1")
-    monkeypatch.setitem(api.REAL_DAILY_LIMITS, "simulate", 0)
-    res = client(tmp_path, monkeypatch).post("/api/simulate", json=request(mode="real"))
+    monkeypatch.setitem(api.REAL_DAILY_LIMITS, "check", 0)
+    res = client(tmp_path, monkeypatch).post("/api/check", json={"text": "hola", "mode": "real"})
     assert res.status_code == 429
+
+
+def test_earlier_idea_is_off_in_production(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("ENSAYO_REAL", "1")
+    c = client(tmp_path, monkeypatch)
+    chat = {"persona": "P", "variants": [{"title": "Uno"}], "question": "¿Por qué?"}
+    for mode in ("mock", "real"):
+        assert c.post("/api/simulate", json=request(mode=mode)).status_code == 404
+        assert c.post("/api/variants", json={"brief": "x", "mode": mode}).status_code == 404
+        assert c.post("/api/chat", json={**chat, "mode": mode}).status_code == 404
+
+
+def test_api_docs_are_not_public(tmp_path, monkeypatch) -> None:
+    c = client(tmp_path, monkeypatch)
+    assert [c.get(p).status_code for p in ("/docs", "/redoc", "/openapi.json")] == [404, 404, 404]
+
+
+def test_privacy_page_is_served(tmp_path, monkeypatch) -> None:
+    res = client(tmp_path, monkeypatch).get("/privacy")
+    assert res.status_code == 200 and "Privacy Policy" in res.text and "secondlook.muze.cl" in res.text
+
+
+def test_published_results_carry_no_ad_content() -> None:
+    import json
+
+    for name in ("holdout_scored", "audience_validation_v1", "audience_validation_pob200"):
+        rows = json.loads((api.RESULTS / f"{name}.json").read_text(encoding="utf-8"))["rows"]
+        assert rows and not {"body", "title", "image_url", "target"} & {k for r in rows for k in r}
 
 
 def test_examples_carry_real_dev_prediction(tmp_path, monkeypatch) -> None:

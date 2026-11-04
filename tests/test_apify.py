@@ -138,16 +138,3 @@ def test_real_run_shape() -> None:
     assert ad["age_country_gender_reach_breakdown"][0]["age_gender_breakdowns"][0] == {
         "age_range": "25-34", "male": None, "female": 1200, "unknown": 3,
     }
-
-
-def test_out_of_credit_is_detected() -> None:
-    def handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(402, json={"error": {"type": "not-enough-usage-to-run-paid-actor", "message": "Monthly usage limit exceeded"}})
-
-    client = httpx.Client(transport=httpx.MockTransport(handler))
-    try:
-        apify.run_actor(client, {"advertisers": ["1"]})
-    except apify.OutOfCredit:
-        pass
-    else:
-        raise AssertionError("debía avisar que la cuenta no tiene crédito")
