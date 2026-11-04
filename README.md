@@ -112,7 +112,7 @@ The trend compares September with October as a share of all reports, and it is o
 
 ```bash
 uv sync --group dev
-uv run --group dev pytest                      # 73 tests, mock server, no network
+uv run --group dev pytest                      # 75 tests, mock server, no network
 uv run uvicorn ensayo.api:app --port 8040      # mock mode (no key needed)
 ENSAYO_REAL=1 uv run uvicorn ensayo.api:app --port 8041   # real mode: needs MODEL_API_KEY in .env
 cd frontend && npm install && npm run build    # rebuilds web/
