@@ -82,7 +82,7 @@ export default function Evidence({ evidence, onBack }: { evidence: EvidenceData 
           <li>The answer key is the community's verdict, read only from the replies. Unclear threads were left out.</li>
           <li>Second Look read only the post (title, text and up to 3 screenshots), never the replies.</li>
           <li>
-            We published the predictions' SHA-256 hash in a commit <strong>before</strong> scoring them, and compared against two rivals: a keyword filter and
+            We committed the predictions' SHA-256 hash <strong>before</strong> scoring them, and compared against two rivals: a keyword filter and
             always saying "scam".
           </li>
         </ol>
