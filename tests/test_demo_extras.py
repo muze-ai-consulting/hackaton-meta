@@ -9,7 +9,6 @@ from fastapi.testclient import TestClient
 from ensayo import api, llm, mock
 from ensayo.costs import IMAGE_PRICE, BudgetExceeded, Ledger
 from ensayo.images import IMAGE_MODEL, generate_variants
-
 from tests.test_api import PIXEL
 
 

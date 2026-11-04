@@ -162,3 +162,10 @@ def test_security_headers_on_every_response(tmp_path, monkeypatch) -> None:
     assert res.headers["x-content-type-options"] == "nosniff"
     assert res.headers["x-frame-options"] == "DENY"
     assert res.headers["referrer-policy"] == "no-referrer"
+
+
+def test_earlier_idea_read_endpoints_are_off_in_production(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("ENSAYO_REAL", "1")
+    c = client(tmp_path, monkeypatch)
+    for path in ("/api/examples", "/api/backtest", "/api/ad-image/123"):
+        assert c.get(path).status_code == 404

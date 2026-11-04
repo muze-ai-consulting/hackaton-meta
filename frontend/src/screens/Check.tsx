@@ -559,7 +559,7 @@ function AgentActions({ plan, planning, onNetwork }: { plan: ActOut | null; plan
         ))}
       </ul>
       <p className="m-0 text-xs text-muted">
-        An agent on Muse Spark 1.3 chose these with function calling, and each one waits for your approval. Ana is a made-up contact.{" "}
+        An agent on Muse Spark 1.3 chose these with function calling, and each one waits for your approval, unless you've already paid: then the alert to your contact runs at once. Ana is a made-up contact.{" "}
         <button type="button" onClick={onNetwork} className="cursor-pointer underline">
           See how early warning would work
         </button>

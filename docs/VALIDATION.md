@@ -18,10 +18,10 @@ People post messages, screenshots and calls on Reddit and ask "is this a scam?",
 |---|---|---|
 | **Cases** | Posts published **from 3 September 2026 on**, the day after Muse Spark 1.3 was released, so the model can't have memorized them. Attempt 1: r/Scams to 23 September, r/isthisascam, r/IsThisAScamIndia, plus 40 posts from an Apify pilot, most of them from r/Scams and up to 2 November. Attempt 2: r/Scams from 24 September, r/ScamCenter, r/scamsUK, leaving out every post from attempt 1. | `scripts/scam_arctic.py`, `scripts/scam_reddit.py` |
 | **Answer key** | Muse Spark 1.3 reads **only the replies** and extracts the community's verdict: scam, legit or unclear. Unclear threads are dropped. | `data/scams/labels*.json` |
-| **Audit** | We read 30 random labels by hand before scoring. | Results below |
+| **Audit** | Before scoring, our coding assistant (Claude Code), not a person, read 30 random labels. | Results below |
 | **Prediction** | Muse Spark 1.3 reads **only the post**: title, text and up to 3 images. It never sees the replies. | `scripts/validate_scams.py` |
 | **Preregistration** | The SHA-256 of all predictions is committed before scoring. | `results/scam_predictions*.sha256` |
-| **Baselines** | A keyword filter (2 or more typical scam terms, matched as substrings) and "always say scam". | `scripts/validate_scams.py` |
+| **Baselines** | A keyword filter (2 or more typical scam terms, matched as substrings; the preregistration said 3, see the limits below) and "always say scam". | `scripts/validate_scams.py` |
 
 **The rule, written before each attempt (commits `8a0395b` and `b570050`; the rule is in `ESTADO.md` at those commits, in Spanish). All four must hold:**
 
@@ -47,7 +47,7 @@ We use balanced accuracy because 85% to 87% of the cases are scams. A model that
 | AUC | 0.85 | 0.88 |
 | Keyword filter, balanced accuracy | 0.505 | 0.517 |
 | Gap over keywords (95% interval) | +0.28 (0.23 to 0.33) | +0.28 (0.22 to 0.34) |
-| Label audit, by hand | Scam 15/15 correct; genuine 13/15 clear | Scam 15/15 correct; genuine 12/15 clear |
+| Label audit (by our coding assistant) | Scam 15/15 correct; genuine 13/15 clear | Scam 15/15 correct; genuine 12/15 clear |
 | Predictions hash | `1665740b…d898` | `38b435bb…bb2c` |
 | Commit with the hash → commit with the score | `4de2c5f` → `d3da904` | `be7ec95` → `66d935b` |
 
@@ -55,7 +55,7 @@ We use balanced accuracy because 85% to 87% of the cases are scams. A model that
 
 Attempt 1 failed. Reading the missed cases afterwards, many were posts where someone describes what happened to them ("they took US$200 from my account"). The model was judging whether the *post* was deceptive, while the community answers whether *what the person ran into* was a scam.
 
-So we changed the question: judge the situation the person describes, even if it has already happened, and treat bad service, disputes and commercial spam as genuine. The model, the threshold, the rule and the labeling method stayed the same. We ran it on **new posts only**, excluding every ID from attempt 1. Had it failed, we had committed to dropping the idea.
+So we changed the question: judge the situation the person describes, even if it has already happened, and treat bad service, disputes and commercial spam as genuine. The model, the threshold, the rule and the labeling method stayed the same. We ran it on **new posts only**, excluding every ID from attempt 1. Attempt 1's preregistration said that a failure meant moving to another idea, and we ran this second attempt instead. For attempt 2 we committed to the same thing, with no third attempt.
 
 ### The sample changed too
 
@@ -70,7 +70,7 @@ The new posts didn't come from the same places. Attempt 2 added r/ScamCenter and
 | r/ScamCenter | 2 | 200 / 6 | 0.824 |
 | r/scamsUK | 2 | 74 / 10 | 0.828 |
 
-On r/Scams, the only community in both, the score went from 0.816 to 0.803: scams caught rose from 85% to 86%, and false alarms from 22% to 26%. **So we can't credit the pass to the new question.** Part of it comes from the sample, and r/ScamCenter and r/scamsUK have too few genuine cases to say much alone. Across communities, the score ranges from 0.74 to 0.83. These figures need the raw posts, so `verify_results.py` doesn't recompute them.
+On r/Scams, the only community in both, the score went from 0.816 to 0.803: scams caught rose from 85% to 86%, and false alarms from 22% to 25%. **So we can't credit the pass to the new question.** Part of it comes from the sample, and r/ScamCenter and r/scamsUK have too few genuine cases to say much alone. Across communities, the score ranges from 0.74 to 0.83. These figures need the raw posts, so `verify_results.py` doesn't recompute them.
 
 ### What each answer means (attempt 2)
 
@@ -92,7 +92,7 @@ We'd rather you hear these from us.
 - **We dropped unclear threads,** 26% in attempt 1 and 21% in attempt 2. Real messages can be just as unclear.
 - **People post when already suspicious,** so a mix that is mostly scams isn't what a person's inbox looks like. On ordinary messages, the share of correct "Likely a scam" answers would be lower than 96%.
 - **About 1 in 4 genuine cases gets a false alarm.** We read the model's reasons for all 29 in attempt 2. By our rough reading, about half look like consumer disputes, and several look like real fraud that the community's label missed.
-- **The keyword filter is a low bar.** It's close to a coin flip, and it matches substrings, so "fee" also matches "feel". A strict 3-term rule scores about the same (0.513).
+- **The keyword filter is a low bar.** It's close to a coin flip, and it matches substrings, so "fee" also matches "feel". The preregistration said 3 or more terms and the code used 2. With 3, it scores about the same (0.510 and 0.513), and the outcome doesn't change.
 - **We didn't test it against adversaries.** Scammers could write messages designed to fool the model, including prompt injection.
 - **The posts lean English.** Attempt 2 has no India-specific community, and attempt 1's India community scored lowest. The product answers in other languages, but we didn't test its accuracy in them.
 - **Voice notes weren't tested.** Neither were the agents: the investigation, the families and the prepared actions run after the verdict and don't change it.

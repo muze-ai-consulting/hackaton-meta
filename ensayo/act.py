@@ -19,7 +19,7 @@ from ensayo.llm import ModelClient, estimate_call_usd
 MAX_TURNS = 2
 CONTACT = "Ana"
 # Solo el dominio entero: "royalmail-redelivery-uk.com" pasa a "royalmail-redelivery-uk[.]com", para que no sea un enlace.
-_DOMAIN = re.compile(r"(?:https?://)?(?:[a-z0-9-]+\.)+[a-z]{2,}(?:/\S*)?", re.I)
+_DOMAIN = re.compile(r"(?:https?://)?(?:[a-z0-9-]+\.)+[a-z]{2,}(?:/\S*)?", re.IGNORECASE)
 
 RESPONDER = (
     "You are the response agent inside a scam shield. The verdict below is final: do not judge it again. Prepare the "

@@ -115,3 +115,24 @@ def test_letters_cover_max_batch() -> None:
     from ensayo.batches import MAX_BATCH
 
     assert len(LETTERS) >= MAX_BATCH
+
+
+def test_error_without_json_does_not_quote_the_answer() -> None:
+    with pytest.raises(ValueError) as err:
+        extract_json("the person wrote: my card is 1234")
+    assert "1234" not in str(err.value)
+
+
+def test_deadline_cuts_off_a_slow_model_call() -> None:
+    async def slow(request: httpx.Request) -> httpx.Response:
+        await asyncio.sleep(1)
+        return httpx.Response(200, json={})
+
+    async def run() -> None:
+        client = ModelClient(mock_ledger(), base="https://mock.local/v1", transport=httpx.MockTransport(slow))
+        client.deadline = 0.01
+        with pytest.raises(RuntimeError, match="sin respuesta"):
+            await client._post("/chat/completions", {})
+        await client.aclose()
+
+    asyncio.run(run())

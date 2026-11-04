@@ -69,7 +69,7 @@ export default function Evidence({ evidence, onBack }: { evidence: EvidenceData 
     <>
       <PageTitle
         title="How we measured it"
-        lead="We wrote the pass rule before looking at any result, tested on real cases the model could not have seen, and published both attempts, including the one that failed."
+        lead="We wrote the pass rule before each attempt, tested on real cases the model could not have seen, and published both attempts, including the one that failed."
       />
 
       <Card className="flex flex-col gap-4 p-5 sm:p-7">

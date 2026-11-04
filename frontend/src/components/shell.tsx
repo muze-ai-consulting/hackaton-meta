@@ -1,8 +1,5 @@
-import { Check } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { Backtest } from "@/lib/api";
-import { cn, pct } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 export function Logo() {
   return <img src="static/brand/second-look-wordmark-light-bg.svg" alt="Second Look" className="h-[30px] w-auto" />;
@@ -48,29 +45,6 @@ export function Header({
 
 const STEPS = ["Your versions", "Your audience", "Result"];
 
-export function Steps({ current, onGo }: { current: number; onGo: (i: number) => void }) {
-  return (
-    <ol aria-label="Steps" className="m-0 flex list-none flex-wrap gap-2 p-0">
-      {STEPS.map((s, i) => (
-        <li key={s}>
-          <button
-            type="button"
-            disabled={i > current}
-            onClick={() => onGo(i)}
-            aria-current={i === current ? "step" : undefined}
-            className={cn(
-              "flex items-center gap-2 rounded-[10px] px-3.5 py-2 text-sm font-semibold",
-              i === current ? "bg-ink text-white" : i < current ? "cursor-pointer bg-white text-ok" : "bg-white text-muted",
-            )}
-          >
-            {i < current ? <Check className="size-4" aria-hidden="true" /> : `${i + 1} ·`} {s}
-          </button>
-        </li>
-      ))}
-    </ol>
-  );
-}
-
 export function PageTitle({ title, lead, big = false }: { title: string; lead: string; big?: boolean }) {
   return (
     <div className="flex max-w-[760px] flex-col gap-2.5">
@@ -83,22 +57,6 @@ export function PageTitle({ title, lead, big = false }: { title: string; lead: s
 }
 
 /** The trust line: how often Ensayo picks the winner vs the rivals. Hidden until there is a real backtest. */
-export function TrustLine({ backtest, onMore }: { backtest: Backtest | null; onMore?: () => void }) {
-  if (!backtest || backtest.mock) return null;
-  const s = backtest.summary;
-  return (
-    <div className="text-sm leading-normal">
-      Across <strong>{backtest.batches} real launches</strong>, Ensayo picked the winning version <strong>{pct(s.population.top1.mean)}</strong> of
-      the time. A single AI prompt: {pct(s.single_call.top1.mean)}. Chance: {pct(s.random.top1.mean)}.{" "}
-      {onMore && (
-        <button type="button" onClick={onMore} className="cursor-pointer font-semibold underline">
-          How we measure it
-        </button>
-      )}
-    </div>
-  );
-}
-
 export function ErrorNote({ message }: { message: string }) {
   return (
     <p role="alert" className="m-0 rounded-xl bg-[#fdecec] px-4 py-3 text-sm text-[#9b1c1c]">

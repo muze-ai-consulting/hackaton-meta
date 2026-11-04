@@ -93,7 +93,7 @@ function Replay({ campaign }: { campaign: NetworkCampaign }) {
                 </div>
                 {isFlag && (
                   <div className="flex items-center gap-2 rounded-xl bg-[#fdecec] px-3 py-2.5 text-sm font-semibold text-[#9b1c1c]">
-                    <BellRing className="size-4 shrink-0" aria-hidden="true" /> Campaign flagged on {DAY(r.date)}: {campaign.flag_index + 1} reports in under two weeks
+                    <BellRing className="size-4 shrink-0" aria-hidden="true" /> Campaign flagged on {DAY(r.date)}: {campaign.flag_index + 1} reports within two weeks
                   </div>
                 )}
               </li>
@@ -149,7 +149,7 @@ export default function Network({ onCheck }: { onCheck: () => void }) {
           <span className="text-sm text-muted">later reports came after the flag, so they could have been warned</span>
         </Card>
         <Card className="flex flex-col gap-1 p-5">
-          <span className="text-3xl font-bold text-heading">{Math.round(data.median_days_ahead)} days</span>
+          <span className="text-3xl font-bold text-heading">{data.median_days_ahead} days</span>
           <span className="text-sm text-muted">median head start between the flag and those later reports</span>
         </Card>
       </div>

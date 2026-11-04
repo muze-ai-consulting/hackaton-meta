@@ -76,7 +76,7 @@ When it says "Likely a scam", 96% of 720 cases were scams, in a set where 87% of
 - The keyword filter is close to a coin flip, so beating it is a low bar.
 - Voice notes and the agents weren't part of the test.
 - We haven't tested it against scammers who write messages to fool the model, including prompt injection.
-- The two attempts are less clean than a single shot, and the commits only prove the predictions didn't change after they were hashed.
+- The two attempts are less clean than a single shot: attempt 1's rule said a failure meant moving to another idea, and we ran attempt 2 instead. The commits only prove the predictions didn't change after they were hashed.
 
 [docs/VALIDATION.md](docs/VALIDATION.md) has all of it.
 
@@ -106,12 +106,12 @@ flowchart LR
 | **Webhooks** | HMAC signature check on every WhatsApp call, duplicate deliveries ignored, a fast 200 with processing in the background | [`ensayo/whatsapp.py`](ensayo/whatsapp.py) |
 | **Privacy** | Our code doesn't store user messages, logs keep only a keyed hash of the number, and user data never goes through the contributor endpoint. Web server logs keep visitors' IPs. While we run on Meta's free hackathon credits, Meta's billing page says content may be used for product improvement, so real users should run on a paid balance. [Privacy policy](https://secondlook.muze.cl/privacy) | [`ensayo/whatsapp.py`](ensayo/whatsapp.py), [`ensayo/shield.py`](ensayo/shield.py) |
 | **Agent limits** | Capped turns; no model call for the response agent if there are no signs of a scam; simulated actions always labeled | [`ensayo/act.py`](ensayo/act.py) |
-| **Failures** | Spending cap, model errors, timeouts and a missing key return clear HTTP errors instead of a crash | [`ensayo/api.py`](ensayo/api.py) |
-| **Tests** | 80 tests in [CI](.github/workflows/test.yml), a mock model server for running without a key, and a test confirming the product sends the same prompt we measured | [`tests/`](tests) |
+| **Failures** | Spending cap, model errors and a missing key return clear messages instead of a crash, and a model call that takes over 75 seconds, retries included, is cut off | [`ensayo/api.py`](ensayo/api.py) |
+| **Tests** | 83 tests in [CI](.github/workflows/test.yml), a mock model server for running without a key, and a test confirming the product sends the same prompt we measured | [`tests/`](tests) |
 
 **Speed, in our runs:** the verdict takes 5 to 8 seconds, and the prepared actions about 20 seconds. With voice on the server, 10 to 20 seconds.
 
-**Not there yet:** this is a hackathon deployment, with one server and no load test. Quotas and prepared actions live in memory and reset on restart. A slow model call can retry for several minutes with no overall deadline. The link check resolves DNS separately from the request, which leaves a small DNS-rebinding window.
+**Not there yet:** this is a hackathon deployment, with one server and no load test. Quotas and prepared actions live in memory and reset on restart. The link check resolves DNS separately from the request, which leaves a small DNS-rebinding window.
 
 ## How we use Meta's models
 
@@ -149,7 +149,7 @@ We built the agent's tools ourselves because it needs specific checks: following
 ```bash
 python3 scripts/verify_results.py              # recompute the test's main results; needs only Python 3.12
 uv sync --group dev
-uv run --group dev pytest                      # 80 tests, mock server, no network
+uv run --group dev pytest                      # 83 tests, mock server, no network
 uv run uvicorn ensayo.api:app --port 8040      # mock mode, no key needed
 ENSAYO_REAL=1 uv run uvicorn ensayo.api:app --port 8041   # real mode: needs MODEL_API_KEY in .env
 cd frontend && npm install && npm run build    # rebuilds web/
@@ -163,7 +163,7 @@ docker compose up --build                      # how it runs in production
 Rerun attempt 2 (a few dollars of credits). This reproduces the method on the posts available in the archive, and it **overwrites** the published labels, predictions and score, which you can restore with `git checkout`:
 
 ```bash
-uv run python scripts/scam_arctic.py --out-dir scams2 --subs Scams --after 2026-09-24
+uv run python scripts/scam_arctic.py --out-dir scams2 --subs Scams --after 2026-09-24 --per-sub 1000
 uv run python scripts/scam_arctic.py --out-dir scams2 --subs ScamCenter scamsUK
 uv run python scripts/validate_scams.py --round 2 --label --yes
 uv run python scripts/validate_scams.py --round 2 --predict --yes
@@ -190,14 +190,14 @@ data/scams/  Labels and model-written descriptions, no raw posts
 docs/        Validation protocol
 ```
 
-**The earlier idea.** We started with Ensayo, synthetic audiences predicting which ad variant would win. In its backtest it beat neither chance nor a single prompt, so we dropped it and pivoted. We think failed tests should stay visible, so what's left is still here: its code (`population.py`, `simulate.py`, `chat.py`, `images.py`, `batches.py`), unused screens (`Audience`, `RealAd`, `Result`, `Versions`), endpoints that are off in production, its list of advertisers (`results/eu_advertisers*`, `results/holdout_advertisers.csv`, `data/*_candidates.csv`) and its scores (`results/backtest_*`, `results/holdout_*`, `results/audience_validation_*`). We removed the ads' text and image links from those results, and the ad scraper from the tree; earlier versions of both remain in git history.
+**The earlier idea.** We started with Ensayo, synthetic audiences predicting which ad variant would win. In its backtest it beat neither chance nor a single prompt, so we dropped it and pivoted. We think failed tests should stay visible, so what's left is still here: its code (`population.py`, `simulate.py`, `chat.py`, `images.py`, `batches.py`), endpoints that are off in production, its list of advertisers (`results/eu_advertisers*`, `results/holdout_advertisers.csv`, `data/*_candidates.csv`) and its scores (`results/backtest_*`, `results/holdout_*`, `results/audience_validation_*`). We removed the ads' text and image links from those results, and the ad scraper from the tree; earlier versions of both remain in git history.
 
 **Language.** The product is in English. Code comments and commit messages are in Spanish, as we work in Chile. Internal planning notes were kept out of the current tree, but remain in git history, which we kept because the preregistration commits live there.
 
 ## What we declare
 
 - **Built during the event:** the first commit is from 27 October 2026.
-- **Coding tools:** built with Claude Code (Anthropic) as the coding assistant. The product runs only on Meta's models.
+- **Coding tools:** built with Claude Code (Anthropic) as the coding assistant, which also ran the audit of 30 labels. The product runs only on Meta's models.
 - **Reddit data:** public posts from the [Arctic Shift](https://arctic-shift.photon-reddit.com) archive and, for the first pilot, an Apify scraper through residential proxies. 40 of attempt 1's 1,137 scored cases came from that pilot. This data supports the test and the families; commercial use would need a license from Reddit. We use post text, public image links and replies. The families page shows model-written summaries without names, numbers or links, plus links to the original threads.
 - **Ad data (earlier idea):** Meta Ad Library pages through an Apify scraper, because we didn't get an official API token in time. For the backtest we also kept local 720 px copies of the ad images: they were never in this repository and the product doesn't serve them. The results in this repository no longer include the ads' text, image links or targeting, but earlier versions in git history do.
 - **Design:** the site's first palette and typeface were taken from [zenith.chat](https://zenith.chat), an earlier hackathon project, and some of those choices remain.

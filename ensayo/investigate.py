@@ -31,7 +31,7 @@ TIMEOUT = 6.0
 SHORTENERS = {"bit.ly", "tinyurl.com", "t.co", "goo.gl", "is.gd", "cutt.ly", "rb.gy", "ow.ly", "shorturl.at", "t.ly",
               "rebrand.ly", "tiny.cc", "s.id", "lnkd.in"}
 # Sufijos de dos niveles más comunes en los casos (sin depender de la lista pública de sufijos).
-LINKISH = re.compile(r"https?://|www\.|\b[a-z0-9-]+\.(?:com|net|org|co|uk|in|io|info|xyz|top|shop|site|online|app|me|ly|cc)\b", re.I)
+LINKISH = re.compile(r"https?://|www\.|\b[a-z0-9-]+\.(?:com|net|org|co|uk|in|io|info|xyz|top|shop|site|online|app|me|ly|cc)\b", re.IGNORECASE)
 TWO_LEVEL = {"co.uk", "org.uk", "gov.uk", "ac.uk", "com.au", "net.au", "co.in", "net.in", "org.in", "com.br", "co.nz",
              "co.za", "com.mx", "com.sg", "com.my", "co.jp", "com.tr", "com.ar", "com.co", "com.pk", "com.ng", "co.ke"}
 
@@ -82,7 +82,7 @@ async def _public_host(host: str) -> bool:
 
 async def inspect_link(http: httpx.AsyncClient, url: str) -> dict[str, Any]:
     url = url.strip()
-    if not re.match(r"^https?://", url, re.I):
+    if not re.match(r"^https?://", url, re.IGNORECASE):
         url = "http://" + url
     hops: list[dict[str, Any]] = []
     for _ in range(MAX_HOPS):

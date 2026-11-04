@@ -27,7 +27,7 @@ from dotenv import load_dotenv
 from ensayo import ROOT, act, campaigns
 from ensayo.costs import BudgetExceeded
 from ensayo.investigate import investigate
-from ensayo.llm import ModelClient
+from ensayo.llm import PRODUCT_DEADLINE, ModelClient
 from ensayo.shield import check
 
 log = logging.getLogger(__name__)
@@ -220,7 +220,9 @@ def action_reply(action: dict[str, Any]) -> str:
 async def handle_button(http: httpx.AsyncClient, sender: str, message: dict[str, Any]) -> None:
     """Un toque en un botón de acción. No llama al modelo: la respuesta ya está preparada."""
     button = (message.get("interactive") or {}).get("button_reply") or {}
-    _, actions = _pending.get(who(sender), (0, []))
+    prepared_at, actions = _pending.get(who(sender), (0.0, []))
+    if time.time() - prepared_at > PENDING_SECONDS:
+        actions = []
     index = str(button.get("id", "")).removeprefix("act:")
     if not index.isdigit() or int(index) >= len(actions):
         await send_text(http, sender, "That action has expired. Forward the message again and I'll prepare it again.")
@@ -234,8 +236,17 @@ async def handle(message: dict[str, Any], client: ModelClient | None = None, htt
     own_http = http is None
     http = http or graph()
     own_client = client is None
-    client = client or ModelClient.from_env()
+    try:
+        client = client or ModelClient.from_env()
+    except SystemExit:  # sin MODEL_API_KEY: en una tarea de fondo tumbaría el servidor
+        log.error("whatsapp: falta MODEL_API_KEY")
+        await send_text(http, sender, "Sorry, something went wrong on my side. Please try again in a minute.", mid)
+        if own_http:
+            await http.aclose()
+        return
     client.effort = "low"
+    if own_client:
+        client.deadline = PRODUCT_DEADLINE
     spent_before = client.ledger.spent()
     try:
         text, images, audio = "", [], None

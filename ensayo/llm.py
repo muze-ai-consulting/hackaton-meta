@@ -25,6 +25,7 @@ log = logging.getLogger(__name__)
 BASE = "https://api.meta.ai/v1"
 RETRY_STATUS = {429, 500, 502, 503, 504}
 ATTEMPTS = 5
+PRODUCT_DEADLINE = 75.0  # segundos que espera el producto en vivo por una llamada, reintentos incluidos
 # Spark 1.3 razona antes de responder y esos tokens cuentan dentro de max_tokens (sonda del 2-nov: con 200 tokens
 # y el esfuerzo por defecto, la respuesta salía vacía). Se fija el esfuerzo y se suma un margen para razonar.
 DEFAULT_EFFORT = "low"
@@ -53,7 +54,8 @@ def extract_json(text: str) -> dict[str, Any]:
     cleaned = re.sub(r"^```(?:json)?|```$", "", text.strip(), flags=re.MULTILINE).strip()
     start, end = cleaned.find("{"), cleaned.rfind("}")
     if start == -1 or end <= start:
-        raise ValueError(f"Sin JSON en la respuesta: {text[:200]!r}")
+        # Solo el largo: el texto del modelo puede citar el mensaje de la persona, y esto termina en los logs.
+        raise ValueError(f"Sin JSON en la respuesta ({len(text)} caracteres)")
     return json.loads(cleaned[start : end + 1])
 
 
@@ -70,6 +72,7 @@ class ModelClient:
         effort: str = DEFAULT_EFFORT,
     ) -> None:
         self.effort = effort
+        self.deadline: float | None = None  # segundos por llamada, reintentos incluidos; el producto en vivo lo fija
         headers = {}
         if key:
             headers["Authorization"] = f"Bearer {key}"
@@ -152,6 +155,13 @@ class ModelClient:
         return str(body.get("transcript") or "")
 
     async def _post(self, path: str, payload: dict[str, Any] | None = None, *, files: dict[str, Any] | None = None) -> dict[str, Any]:
+        try:
+            async with asyncio.timeout(self.deadline):
+                return await self._post_with_retries(path, payload, files)
+        except TimeoutError as exc:
+            raise RuntimeError(f"Model API: sin respuesta en {self.deadline} s") from exc
+
+    async def _post_with_retries(self, path: str, payload: dict[str, Any] | None, files: dict[str, Any] | None) -> dict[str, Any]:
         for attempt in range(ATTEMPTS):
             try:
                 r = await self._http.post(path, json=payload) if files is None else await self._http.post(path, files=files)

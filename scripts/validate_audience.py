@@ -199,7 +199,7 @@ async def predict_population(
     total = sum(w for _, w in pairs)
     if total == 0:
         return None
-    share = lambda cond: sum(w for p, w in pairs if cond(p)) / total  # noqa: E731
+    share = lambda cond: sum(w for p, w in pairs if cond(p)) / total
     return {
         "women": share(lambda p: p.gender == "female"),
         "age_18_34": share(lambda p: p.age_bucket in ("18-24", "25-34")),

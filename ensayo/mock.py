@@ -107,7 +107,7 @@ def _conversation(messages: list[dict[str, Any]]) -> str:
     return f"(Placeholder answer from the mock server.) You're asking me \"{question}\". What I remember is how I reacted in the feed."
 
 
-SCAM_HINTS = re.compile(r"gift ?card|crypto|code|verify|urgent|locked|fee|prize|won|click|link|password|bank", re.I)
+SCAM_HINTS = re.compile(r"gift ?card|crypto|code|verify|urgent|locked|fee|prize|won|click|link|password|bank", re.IGNORECASE)
 
 
 def _shield(prompt: str) -> dict[str, Any]:
@@ -144,7 +144,7 @@ def respond(payload: dict[str, Any]) -> dict[str, Any]:
         text = json.dumps({"clues": [{"label": "Mock investigation", "detail": "The mock server does not check links.",
                                       "signal": "neutral"}], "summary": "Turn on real mode to check links."})
     elif "Scam families:" in prompt:
-        fam = re.search(r"^- ([a-z0-9_]+):", prompt, re.M)
+        fam = re.search(r"^- ([a-z0-9_]+):", prompt, re.MULTILINE)
         text = json.dumps({"family": fam.group(1) if fam else "other", "fit": "partial"})
     elif "Task: conversation" in prompt:
         text = _conversation(messages)

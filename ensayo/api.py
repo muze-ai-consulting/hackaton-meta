@@ -45,13 +45,12 @@ from fastapi.responses import FileResponse, PlainTextResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from ensayo import DATA, RESULTS, ROOT
-from ensayo import act, campaigns, whatsapp
+from ensayo import DATA, RESULTS, ROOT, act, campaigns, whatsapp
 from ensayo.chat import ask_persona
 from ensayo.costs import BudgetExceeded
 from ensayo.images import MAX_VARIANTS, generate_variants
 from ensayo.investigate import investigate as run_investigation
-from ensayo.llm import ModelClient
+from ensayo.llm import PRODUCT_DEADLINE, ModelClient
 from ensayo.population import build_population, spec_from_ad
 from ensayo.shield import MAX_IMAGES as SHIELD_MAX_IMAGES
 from ensayo.shield import check as shield_check
@@ -68,6 +67,7 @@ MAX_EXAMPLES = 20
 REAL_DAILY_LIMITS = {"check": 30, "investigate": 30, "act": 30}
 _real_usage: dict[tuple[str, str, str], int] = defaultdict(int)
 REAL_MODEL = "muse-spark-1.3"
+MODEL_DOWN = "The model isn't responding right now. Please try again in a minute."
 REAL_MAX_PERSONAS = 300
 MAX_IMAGE_CHARS = 4_000_000  # ~3 MB en base64
 MAX_AUDIO_CHARS = 14_000_000  # ~10 MB en base64 (una nota de voz de varios minutos)
@@ -91,7 +91,9 @@ def real_allowed() -> bool:
 def model_client(mock: bool) -> ModelClient:
     """El cliente del modelo; sin key, un 503 en vez de botar el servidor."""
     try:
-        return ModelClient.from_env(mock=mock)
+        client = ModelClient.from_env(mock=mock)
+        client.deadline = PRODUCT_DEADLINE
+        return client
     except SystemExit as exc:
         log.error("Modo real sin MODEL_API_KEY")
         raise HTTPException(503, "Real mode is not configured on this server.") from exc
@@ -237,7 +239,7 @@ async def simulate(req: SimulateIn) -> dict[str, Any]:
         raise HTTPException(402, "The demo has reached its spending cap.") from exc
     except RuntimeError as exc:
         log.exception("Fallo de la Model API")
-        raise HTTPException(502, f"The Model API returned an error: {exc}") from exc
+        raise HTTPException(502, MODEL_DOWN) from exc
     finally:
         await client.aclose()
     return {
@@ -275,7 +277,7 @@ async def check(req: CheckIn, request: Request) -> dict[str, Any]:
         raise HTTPException(422, str(exc)) from exc
     except (RuntimeError, KeyError, TypeError, httpx.HTTPError) as exc:
         log.exception("Fallo del escudo")
-        raise HTTPException(502, f"The Model API returned an error: {exc}") from exc
+        raise HTTPException(502, MODEL_DOWN) from exc
     finally:
         await client.aclose()
     return {"mode": req.mode, "model": REAL_MODEL, "usd": round(client.ledger.spent() - spent_before, 5), **out}
@@ -340,7 +342,7 @@ async def act_on(req: ActIn, request: Request) -> dict[str, Any]:
         raise HTTPException(402, "The demo has reached its spending cap.") from exc
     except (RuntimeError, KeyError, TypeError, httpx.HTTPError) as exc:
         log.exception("Fallo del agente de respuesta")
-        raise HTTPException(502, f"The Model API returned an error: {exc}") from exc
+        raise HTTPException(502, MODEL_DOWN) from exc
     finally:
         await client.aclose()
     return {"mode": req.mode, "usd": round(client.ledger.spent() - spent_before, 5), **out}
@@ -429,7 +431,7 @@ async def chat(req: ChatIn) -> dict[str, Any]:
         raise HTTPException(402, "The demo has reached its spending cap.") from exc
     except RuntimeError as exc:
         log.exception("Fallo de la Model API")
-        raise HTTPException(502, f"The Model API returned an error: {exc}") from exc
+        raise HTTPException(502, MODEL_DOWN) from exc
     finally:
         await client.aclose()
     return {"mode": req.mode, "usd": round(client.ledger.spent() - spent_before, 4), "answer": answer}
@@ -506,7 +508,7 @@ def ad_image_url(ad_id: str, remote: str | None) -> str | None:
     return f"api/ad-image/{ad_id}" if (AD_IMAGES / f"{ad_id}.jpg").exists() else remote
 
 
-@app.get("/api/ad-image/{ad_id}")
+@app.get("/api/ad-image/{ad_id}", dependencies=[Depends(earlier_idea_off)])
 def ad_image(ad_id: str) -> FileResponse:
     if not ad_id.isdigit():
         raise HTTPException(404, "Unknown ad.")
@@ -516,7 +518,7 @@ def ad_image(ad_id: str) -> FileResponse:
     return FileResponse(path, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=604800"})
 
 
-@app.get("/api/examples")
+@app.get("/api/examples", dependencies=[Depends(earlier_idea_off)])
 def examples() -> list[dict[str, Any]]:
     """Lotes reales del set de desarrollo con su alcance real. El set sellado nunca sale por aquí."""
     if not DEV_BATCHES.exists():
@@ -551,7 +553,7 @@ def examples() -> list[dict[str, Any]]:
     return out
 
 
-@app.get("/api/backtest")
+@app.get("/api/backtest", dependencies=[Depends(earlier_idea_off)])
 def backtest() -> dict[str, Any]:
     files = sorted(RESULTS.glob("backtest_*.json"), key=lambda p: ("_mock" not in p.name, p.stat().st_mtime))
     scored = [p for p in files if "summary" in json.loads(p.read_text(encoding="utf-8"))]
